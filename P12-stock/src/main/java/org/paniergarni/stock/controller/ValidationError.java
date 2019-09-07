@@ -1,4 +1,4 @@
-package org.paniergarni.account.controller;
+package org.paniergarni.stock.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;

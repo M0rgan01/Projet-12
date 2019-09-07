@@ -1,5 +1,6 @@
 package org.paniergarni.stock.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class Farmer {
     private String location;
     private String phone;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "farmer")
     private List<Product> products;
 }
