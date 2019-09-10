@@ -2,11 +2,11 @@ package org.paniergarni.apigateway.security.auth.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.paniergarni.apigateway.security.exception.JwtExpiredTokenException;
-import org.paniergarni.apigateway.security.response.ErrorCode;
 import org.paniergarni.apigateway.security.response.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -42,9 +42,11 @@ public class LoginAwareAuthenticationFailureHandler implements AuthenticationFai
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		
 		 if (e instanceof JwtExpiredTokenException) {
-			mapper.writeValue(response.getWriter(), ErrorResponse.of(e.getMessage(), ErrorCode.JWT_TOKEN_EXPIRED, HttpStatus.UNAUTHORIZED));
-		}
-		 
-		mapper.writeValue(response.getWriter(), ErrorResponse.of(e.getMessage(), ErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
+			mapper.writeValue(response.getWriter(), ErrorResponse.of(e.getMessage(), e.getClass().getCanonicalName(), HttpStatus.UNAUTHORIZED));
+		}else if (e instanceof AuthenticationServiceException){
+			 mapper.writeValue(response.getWriter(), ErrorResponse.of(e.getMessage(), e.getClass().getCanonicalName(), HttpStatus.INTERNAL_SERVER_ERROR));
+		 }else{
+			 mapper.writeValue(response.getWriter(), ErrorResponse.of(e.getMessage(), e.getClass().getCanonicalName(), HttpStatus.UNAUTHORIZED));
+		 }
 	}
 }

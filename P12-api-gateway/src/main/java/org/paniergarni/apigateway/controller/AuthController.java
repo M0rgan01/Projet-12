@@ -7,6 +7,7 @@ import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.proxy.UserProxy;
 import org.paniergarni.apigateway.security.SecurityConstants;
 import org.paniergarni.apigateway.security.auth.model.UserContext;
+import org.paniergarni.apigateway.security.response.ErrorResponse;
 import org.paniergarni.apigateway.security.token.JwtService;
 import org.paniergarni.apigateway.security.token.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +46,11 @@ public class AuthController {
             return ResponseEntity.ok().headers(responseHeaders).body(contact);
 
         } catch (FeignException e) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.contentUTF8());
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ErrorResponse.of(e.contentUTF8(), e.getClass().getCanonicalName(), HttpStatus.NOT_ACCEPTABLE));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ErrorResponse.of(e.getMessage(), e.getClass().getCanonicalName(), HttpStatus.NOT_ACCEPTABLE));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse.of(e.getMessage(), e.getClass().getCanonicalName(), HttpStatus.INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -67,12 +68,10 @@ public class AuthController {
             responseHeaders.add(SecurityConstants.HEADER_REFRESH_STRING, tokenRefresh);
             return ResponseEntity.ok().headers(responseHeaders).body(null);
 
-        } catch (ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            if (e instanceof BadCredentialsException || e instanceof  ExpiredJwtException)
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ErrorResponse.of(e.getMessage(), e.getClass().getCanonicalName(), HttpStatus.NOT_ACCEPTABLE));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse.of(e.getMessage(), e.getClass().getCanonicalName(), HttpStatus.INTERNAL_SERVER_ERROR));
         }
     }
 

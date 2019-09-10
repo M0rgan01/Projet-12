@@ -30,11 +30,12 @@ public class UserController {
        return ResponseEntity.ok().body(user);
    }
 
-    @PatchMapping(value = "/user")
+    @PutMapping(value = "/user")
     public ResponseEntity<?> updateUser(@RequestBody @Valid User user){
+
         try {
             user = userBusiness.updateUser(user);
-        }catch (IllegalArgumentException e){
+        }catch (AccountException e){
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -87,5 +88,18 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
+    @GetMapping(value = "/userConnection/{username}/{password}")
+    public ResponseEntity<?> getUserById(@PathVariable String username, @PathVariable String password){
 
+        User user;
+
+        try {
+            user = userBusiness.doConnection(username, password);
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body(user);
+    }
 }

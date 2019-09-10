@@ -2,6 +2,7 @@ package org.paniergarni.apigateway.security.token;
 
 
 import feign.FeignException;
+import feign.RetryableException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -14,6 +15,7 @@ import org.paniergarni.apigateway.security.auth.model.UserContext;
 import org.paniergarni.apigateway.security.exception.ProxyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -74,15 +76,16 @@ public class JwtServiceImpl implements JwtService {
         try {
             contact = userProxy.findByUserName(claims.getBody().getSubject());
         } catch (FeignException e1) {
+            if (e1 instanceof RetryableException)
+                throw new AuthenticationServiceException("internal.error");
             throw new UsernameNotFoundException("user.not.found");
         } catch (Exception e) {
             throw new ProxyException("internal.error");
         }
 
-
         // si le contact est toujours bon, alors le token est toujours valide
         if (contact.isActive() != (boolean) claims.getBody().get(SecurityConstants.REFRESH_ACTIVE_PREFIX))
-            throw new AuthenticationServiceException("contact.not.active");
+            throw new DisabledException("contact.not.active");
 
         return UserContext.create(claims.getBody().getSubject(), Role.getListAuthorities(contact.getRoles()));
     }

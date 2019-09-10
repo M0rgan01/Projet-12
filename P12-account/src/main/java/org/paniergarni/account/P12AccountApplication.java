@@ -58,15 +58,17 @@ public class P12AccountApplication implements CommandLineRunner {
 
         User user = new User();
         user.setUserName("Admin");
-        user.setPassWord(bCryptPasswordEncoder.encode("1234"));
+        user.setPassWord(bCryptPasswordEncoder.encode("Admin1234"));
         user.setMail(mail);
         user.setRoles(Arrays.asList(role, role2));
+        user.setActive(true);
 
         User user2 = new User();
         user2.setUserName("User");
-        user2.setPassWord(bCryptPasswordEncoder.encode("1234"));
+        user2.setPassWord(bCryptPasswordEncoder.encode("User1234"));
         user2.setMail(mail2);
         user2.setRoles(Arrays.asList(role2));
+        user2.setActive(true);
 
         userRepository.saveAll(Arrays.asList(user, user2));
     }

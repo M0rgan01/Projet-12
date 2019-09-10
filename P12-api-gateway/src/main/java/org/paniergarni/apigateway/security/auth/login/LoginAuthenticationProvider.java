@@ -1,6 +1,7 @@
 package org.paniergarni.apigateway.security.auth.login;
 
 import feign.FeignException;
+import feign.RetryableException;
 import org.paniergarni.apigateway.object.Role;
 import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.proxy.UserProxy;
@@ -8,12 +9,11 @@ import org.paniergarni.apigateway.security.auth.model.UserContext;
 import org.paniergarni.apigateway.security.exception.ProxyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  */
 @Component
 public class LoginAuthenticationProvider implements AuthenticationProvider {
+
     private BCryptPasswordEncoder encoder;
     private UserProxy userProxy;
 
@@ -50,25 +51,15 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
         User contact = null;
 
         try {
-            contact = userProxy.findByUserName(username);
+            contact = userProxy.userConnection(username, password);
         } catch (FeignException e) {
-            try {
-                contact = userProxy.findByEmail(username);
-            } catch (FeignException e1) {
-                throw new UsernameNotFoundException("user.not.found");
-            }
+            // si l'instance est encore dans le register mais down
+            if (e instanceof RetryableException)
+                throw new AuthenticationServiceException("internal.error");
+            throw new ProxyException(e.contentUTF8());
+            // si l'instance n'est plus dans le register
         } catch (Exception e) {
-            throw new ProxyException("internal.error");
-        }
-
-        // vérification de la permession de connection
-        //contactService.checkPermissionToLogin(contact);
-
-        // vérification du password
-        if (!encoder.matches(password, contact.getPassWord())) {
-            // on incrémente un compteur d'échec
-            //contactService.incorrectPassworld(contact);
-            throw new BadCredentialsException("user.password.not.valid");
+            throw new AuthenticationServiceException("internal.error");
         }
 
         // vérification des roles

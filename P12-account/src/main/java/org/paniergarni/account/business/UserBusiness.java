@@ -9,4 +9,5 @@ public interface UserBusiness {
     User getUserById(Long id);
     User getUserByUserName(String userName);
     User getUserByEmail(String email);
+    User doConnection(String userName, String passWord);
 }

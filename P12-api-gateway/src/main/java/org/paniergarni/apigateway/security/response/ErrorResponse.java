@@ -20,19 +20,19 @@ public class ErrorResponse {
     private final String message;
 
     // Error code
-    private final ErrorCode errorCode;
+    private final String exceptionClass;
 
     private final Date timestamp;
 
-    protected ErrorResponse(final String message, final ErrorCode errorCode, HttpStatus status) {
+    protected ErrorResponse(final String message, final String exceptionClass, HttpStatus status) {
         this.message = message;
-        this.errorCode = errorCode;
+        this.exceptionClass = exceptionClass;
         this.status = status;
         this.timestamp = new Date();
     }
 
-    public static ErrorResponse of(final String message, final ErrorCode errorCode, HttpStatus status) {
-        return new ErrorResponse(message, errorCode, status);
+    public static ErrorResponse of(final String message, final String exceptionClass, HttpStatus status) {
+        return new ErrorResponse(message, exceptionClass, status);
     }
 
     public Integer getStatus() {
@@ -43,8 +43,8 @@ public class ErrorResponse {
         return message;
     }
 
-    public ErrorCode getErrorCode() {
-        return errorCode;
+    public String getExceptionClass() {
+        return exceptionClass;
     }
 
     public Date getTimestamp() {
