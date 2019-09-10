@@ -28,7 +28,7 @@ public class MailController {
     }
 
     @GetMapping(value = "/mailByEmail/{email}")
-    public ResponseEntity<?> getUserByUserName(@PathVariable String email){
+    public ResponseEntity<?> getMailByEmail(@PathVariable String email){
 
         Mail mail;
 
@@ -43,7 +43,7 @@ public class MailController {
     }
 
     @GetMapping(value = "/mailById/{id}")
-    public ResponseEntity<?> getUserByUserName(@PathVariable Long id){
+    public ResponseEntity<?> getMailById(@PathVariable Long id){
 
         Mail mail;
 

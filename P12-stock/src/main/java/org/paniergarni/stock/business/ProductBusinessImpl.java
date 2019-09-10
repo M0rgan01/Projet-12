@@ -41,7 +41,7 @@ public class ProductBusinessImpl implements ProductBusiness {
 
     @Override
     public Page<Product> getPageProductsByPromotion(int page, int size) {
-        return productRepository.findByPromotion(PageRequest.of(page, size));
+        return productRepository.findByPromotionIsTrue(PageRequest.of(page, size));
     }
 
     @Override

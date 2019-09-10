@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.paniergarni.order.object.User;
 
 import javax.persistence.*;
 import java.util.ArrayList;

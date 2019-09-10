@@ -11,6 +11,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Arrays;
 
@@ -25,6 +27,14 @@ public class P12AccountApplication implements CommandLineRunner {
     private MailRepository mailRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Bean
+    public BCryptPasswordEncoder getBCPE() {
+        return new BCryptPasswordEncoder();
+    }
+
 
     public static void main(String[] args) {
         SpringApplication.run(P12AccountApplication.class, args);
@@ -48,11 +58,13 @@ public class P12AccountApplication implements CommandLineRunner {
 
         User user = new User();
         user.setUserName("Admin");
+        user.setPassWord(bCryptPasswordEncoder.encode("1234"));
         user.setMail(mail);
         user.setRoles(Arrays.asList(role, role2));
 
         User user2 = new User();
         user2.setUserName("User");
+        user2.setPassWord(bCryptPasswordEncoder.encode("1234"));
         user2.setMail(mail2);
         user2.setRoles(Arrays.asList(role2));
 

@@ -17,7 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("select p from Product p where p.category.id = :id")
     Page<Product> findByCategoryId(@Param("id") Long id, Pageable pageable);
 
-    Page<Product> findByPromotion(Pageable pageable);
+    Page<Product> findByPromotionIsTrue(Pageable pageable);
 
     Page<Product> findByNameContains(String name, Pageable pageable);
 }
