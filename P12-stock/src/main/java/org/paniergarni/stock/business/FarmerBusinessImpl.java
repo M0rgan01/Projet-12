@@ -2,6 +2,7 @@ package org.paniergarni.stock.business;
 
 import org.paniergarni.stock.dao.FarmerRepository;
 import org.paniergarni.stock.entities.Farmer;
+import org.paniergarni.stock.exception.StockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +16,10 @@ public class FarmerBusinessImpl implements FarmerBusiness{
 
     @Override
     public Farmer createFarmer(Farmer farmer) {
-        farmerRepository.findByName(farmer.getName()).ifPresent(farmer1 -> {
-            throw new IllegalArgumentException("Farmer name " + farmer1.getName() + " already exist");
-        });
+
+        if (farmerRepository.findByName(farmer.getName()).isPresent())
+            throw new StockException("farmer.name.already.exist");
+
         return farmerRepository.save(farmer);
     }
 
@@ -28,7 +30,7 @@ public class FarmerBusinessImpl implements FarmerBusiness{
 
     @Override
     public Farmer getFarmer(Long id) {
-        return farmerRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("ID " + id + " Incorrect"));
+        return farmerRepository.findById(id).orElseThrow(() -> new StockException("farmer.id.incorrect"));
     }
 
     @Override

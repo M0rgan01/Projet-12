@@ -1,5 +1,7 @@
 package org.paniergarni.account.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,10 +9,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -29,7 +28,11 @@ public class User {
     @NotBlank
     @Size(min = 4, max = 20)
     private String userName;
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$", message = "user.password.not.true")
     private String passWord;
+    private String passWordConfirm;
+    @Transient
+    private String oldPassWord;
     private boolean active;
     private int tryConnection;
     private Date expiryConnection;
@@ -38,4 +41,30 @@ public class User {
     private Mail mail;
     @ManyToMany
     private Collection<Role> roles = new HashSet<>();
+
+    @JsonIgnore
+    public String getPassWordConfirm() {
+        return passWordConfirm;
+    }
+    @JsonIgnore
+    public String getOldPassWord() {
+        return oldPassWord;
+    }
+    @JsonIgnore
+    public String getPassWord() {
+        return passWord;
+    }
+    @JsonProperty
+    public void setPassWord(String passWord) {
+        this.passWord = passWord;
+    }
+    @JsonProperty
+    public void setPassWordConfirm(String passWordConfirm) {
+        this.passWordConfirm = passWordConfirm;
+    }
+    @JsonProperty
+    public void setOldPassWord(String oldPassWord) {
+        this.oldPassWord = oldPassWord;
+    }
+
 }
