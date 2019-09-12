@@ -137,9 +137,5 @@ public class MailBusinessTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testValidateTokenWithNullToken() throws AccountException {
-        Mockito.when(mailRepository.findByEmail(mail.getEmail())).thenReturn(Optional.of(mail));
-            mailBusiness.validateToken(mail.getToken(), mail.getEmail());
-    }
+
 }

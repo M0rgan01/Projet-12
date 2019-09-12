@@ -2,6 +2,7 @@ package org.paniergarni.stock.business;
 
 import org.paniergarni.stock.dao.ProductRepository;
 import org.paniergarni.stock.entities.Product;
+import org.paniergarni.stock.exception.StockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,9 +18,9 @@ public class ProductBusinessImpl implements ProductBusiness {
     @Override
     public Product createProduct(Product product) {
 
-        productRepository.findByName(product.getName()).ifPresent(product1 -> {
-            throw new IllegalArgumentException("Category name " + product1.getName() + " already exist");
-        });
+        if (productRepository.findByName(product.getName()).isPresent())
+            throw new StockException("product.name.already.exist");
+
 
         return productRepository.save(product);
     }
@@ -31,7 +32,7 @@ public class ProductBusinessImpl implements ProductBusiness {
 
     @Override
     public Product getProduct(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("ID " + id + " Incorrect"));
+        return productRepository.findById(id).orElseThrow(() -> new StockException("product.id.incorrect"));
     }
 
     @Override

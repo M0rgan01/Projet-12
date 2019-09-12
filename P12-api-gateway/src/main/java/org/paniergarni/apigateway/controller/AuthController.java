@@ -33,33 +33,33 @@ public class AuthController {
     private JwtService jwtService;
 
     @PostMapping(value = "/api/auth/register")
-    public ResponseEntity<?> register(@RequestBody User contact) {
+    public ResponseEntity<?> register(@RequestBody User user) {
 
-            contact = userProxy.createUser(contact);
-            // on créer un token JWT
-            String jwt = jwtService.createAuthToken(UserContext.create(contact.getUserName(), Role.getListAuthorities(contact.getRoles())));
-            String jwtRefresh = jwtService.createRefreshToken(UserContext.create(contact.getUserName(), null));
+        user = userProxy.createUser(user);
+        // on créer un token JWT
+        String jwt = jwtService.createAuthToken(UserContext.create(user.getUserName(), Role.getListAuthorities(user.getRoles())));
+        String jwtRefresh = jwtService.createRefreshToken(UserContext.create(user.getUserName(), null));
 
-            // on l'ajoute au headers de la réponse
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.add(headerAuth, tokenPrefix + jwt);
-            responseHeaders.add(headerRefresh, tokenPrefix + jwtRefresh);
+        // on l'ajoute au headers de la réponse
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add(headerAuth, tokenPrefix + jwt);
+        responseHeaders.add(headerRefresh, tokenPrefix + jwtRefresh);
 
-            return ResponseEntity.ok().headers(responseHeaders).body(contact);
+        return ResponseEntity.ok().headers(responseHeaders).body(user);
     }
 
     @GetMapping(value = "/api/auth/token")
     public ResponseEntity<?> refreshToken(HttpServletRequest request) {
 
-            JwtToken token = new JwtToken(jwtService.extract(request.getHeader(headerRefresh)));
+        JwtToken token = new JwtToken(jwtService.extract(request.getHeader(headerRefresh)));
 
-            // on créer un token JWT, grace à la vérification du tokenRefresh
-            String jwt = jwtService.createAuthToken(jwtService.validateRefreshToken(token));
+        // on créer un token JWT, grace à la vérification du tokenRefresh
+        String jwt = jwtService.createAuthToken(jwtService.validateRefreshToken(token));
 
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.add(headerAuth, tokenPrefix + jwt);
-            responseHeaders.add(headerRefresh, request.getHeader(headerRefresh));
-            return ResponseEntity.ok().headers(responseHeaders).body(null);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add(headerAuth, tokenPrefix + jwt);
+        responseHeaders.add(headerRefresh, request.getHeader(headerRefresh));
+        return ResponseEntity.ok().headers(responseHeaders).body(null);
 
     }
 

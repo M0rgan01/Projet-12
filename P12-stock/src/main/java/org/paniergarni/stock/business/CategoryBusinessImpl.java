@@ -2,6 +2,7 @@ package org.paniergarni.stock.business;
 
 import org.paniergarni.stock.dao.CategoryRepository;
 import org.paniergarni.stock.entities.Category;
+import org.paniergarni.stock.exception.StockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,15 +17,15 @@ public class CategoryBusinessImpl implements CategoryBusiness {
     @Override
     public Category createCategory(Category category) {
 
-        categoryRepository.findByName(category.getName()).ifPresent(category1 -> {
-         throw new IllegalArgumentException("Category name " + category1.getName() + " already exist");
-        });
+        if (categoryRepository.findByName(category.getName()).isPresent())
+            throw new StockException("category.name.already.exist");
+
         return categoryRepository.save(category);
     }
 
     @Override
     public Category getCategory(Long id) {
-        return categoryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("ID " + id + " Incorrect"));
+        return categoryRepository.findById(id).orElseThrow(() -> new StockException("category.id.incorrect"));
     }
 
     @Override
