@@ -10,11 +10,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.paniergarni.apigateway.object.Role;
 import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.proxy.UserProxy;
-import org.paniergarni.apigateway.security.SecurityConstants;
 import org.paniergarni.apigateway.security.auth.model.UserContext;
 import org.paniergarni.apigateway.security.exception.ProxyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,19 @@ public class JwtServiceImpl implements JwtService {
     @Autowired
     private UserProxy userProxy;
 
+    @Value("${jwt.secret}")
+    private String secret;
+    @Value("${jwt.expiration.token.auth}")
+    private Long authTokenExpiration;
+    @Value("${jwt.expiration.token.refresh}")
+    private Long refreshTokenExpiration;
+    @Value("${jwt.prefix}")
+    private String tokenPrefix;
+    @Value("${jwt.prefix.authorities}")
+    private String authoritiesPrefix;
+    @Value("${jwt.prefix.active.refresh}")
+    private String activePrefix;
+
     @Override
     public String createAuthToken(UserContext userContext) {
         if (userContext.getUsername() == null || userContext.getUsername().isEmpty())
@@ -42,12 +56,11 @@ public class JwtServiceImpl implements JwtService {
             throw new IllegalArgumentException("jwt.auth.authorities.null");
 
         // construction du Json web token
-        String jwt = Jwts.builder().setSubject(userContext.getUsername()) // ajout de username
-                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME_AUTH_TOKEN)) // ajout d'une date d'expiration
-                .signWith(SignatureAlgorithm.HS256, SecurityConstants.SECRET) // partie secrete servant de clé, avec un algorithme de type HS 256
-                .claim(SecurityConstants.AUTHORITIES_PREFIX, userContext.getAuthorities().stream().map(s -> s.toString()).collect(Collectors.toList())) // ajout personnalisé --> on ajoute les roles
+        return Jwts.builder().setSubject(userContext.getUsername()) // ajout de username
+                .setExpiration(new Date(System.currentTimeMillis() + authTokenExpiration)) // ajout d'une date d'expiration
+                .signWith(SignatureAlgorithm.HS256, secret) // partie secrete servant de clé, avec un algorithme de type HS 256
+                .claim(authoritiesPrefix, userContext.getAuthorities().stream().map(s -> s.toString()).collect(Collectors.toList())) // ajout personnalisé --> on ajoute les roles
                 .compact(); // construction du token
-        return jwt;
     }
 
     @Override
@@ -57,19 +70,19 @@ public class JwtServiceImpl implements JwtService {
             throw new IllegalArgumentException("jwt.refresh.username.null");
 
         // construction du Json web token
-        String jwt = Jwts.builder().setSubject(userContext.getUsername()) // ajout de username
-                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME_REFRESH_TOKEN)) // ajout d'une date d'expiration
-                .signWith(SignatureAlgorithm.HS256, SecurityConstants.SECRET) // partie secrete servant de clé, avec un algorithme de type HS 256
-                .claim(SecurityConstants.REFRESH_ACTIVE_PREFIX, true) // ajout de vérification pour le rafraichissement
+        return Jwts.builder().setSubject(userContext.getUsername()) // ajout de username
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration)) // ajout d'une date d'expiration
+                .signWith(SignatureAlgorithm.HS256, secret) // partie secrete servant de clé, avec un algorithme de type HS 256
+                .claim(activePrefix, true) // ajout de vérification pour le rafraichissement
                 .compact(); // construction du token
-        return jwt;
+
     }
 
     @Override
     public UserContext validateRefreshToken(JwtToken token) {
 
         // vérification du token
-        Jws<Claims> claims = token.parseClaims(token.getToken());
+        Jws<Claims> claims = token.parseClaims(token.getToken(), secret);
 
         // on recupere le contact pour comparaison
         User contact;
@@ -84,7 +97,7 @@ public class JwtServiceImpl implements JwtService {
         }
 
         // si le contact est toujours bon, alors le token est toujours valide
-        if (contact.isActive() != (boolean) claims.getBody().get(SecurityConstants.REFRESH_ACTIVE_PREFIX))
+        if (contact.isActive() != (boolean) claims.getBody().get(activePrefix))
             throw new DisabledException("contact.not.active");
 
         return UserContext.create(claims.getBody().getSubject(), Role.getListAuthorities(contact.getRoles()));
@@ -94,10 +107,10 @@ public class JwtServiceImpl implements JwtService {
     public String extract(String header) {
 
         if (header == null || header.isEmpty()) {
-            throw new AuthenticationServiceException("authorization.header.blank");
+            throw new BadCredentialsException("authorization.header.blank");
         }
 
-        return header.substring(SecurityConstants.TOKEN_PREFIX.length(), header.length());
+        return header.substring(tokenPrefix.length(), header.length());
     }
 
 }

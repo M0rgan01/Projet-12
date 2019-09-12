@@ -1,11 +1,11 @@
 package org.paniergarni.apigateway.security.auth.jwt;
 
 
-import org.paniergarni.apigateway.security.SecurityConstants;
 import org.paniergarni.apigateway.security.token.JwtAuthenticationToken;
 import org.paniergarni.apigateway.security.token.JwtService;
 import org.paniergarni.apigateway.security.token.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -29,23 +29,26 @@ import java.io.IOException;
  * 20 Juillet 2019
  */
 public class JwtTokenAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
+
     private final AuthenticationFailureHandler failureHandler;
     private final JwtService jwtService;
-    
+    private String headerAuth;
+
     @Autowired
     public JwtTokenAuthenticationProcessingFilter(AuthenticationFailureHandler failureHandler, 
-    		JwtService jwtService, RequestMatcher matcher) {
+    		JwtService jwtService, RequestMatcher matcher, String headerAuth) {
         super(matcher);
         this.failureHandler = failureHandler;
         this.jwtService = jwtService;
+        this.headerAuth = headerAuth;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-    	    	
+
     	//on récupère le token
-        String tokenPayload = request.getHeader(SecurityConstants.HEADER_AUTH_STRING);
+        String tokenPayload = request.getHeader(headerAuth);
                
         // on enlève le préfixe et on créé un objet JwtToken
         JwtToken token = new JwtToken(jwtService.extract(tokenPayload));

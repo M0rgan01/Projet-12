@@ -1,7 +1,6 @@
 package org.paniergarni.apigateway.security.token;
 
 import io.jsonwebtoken.*;
-import org.paniergarni.apigateway.security.SecurityConstants;
 import org.paniergarni.apigateway.security.exception.JwtExpiredTokenException;
 import org.springframework.security.authentication.BadCredentialsException;
 
@@ -17,7 +16,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 public class JwtToken {
 
 	private String token;
-	  	
+
 	public JwtToken(String token) {
 		super();
 		this.token = token;
@@ -34,9 +33,9 @@ public class JwtToken {
      * @throws JwtExpiredTokenException
      * 
      */
-    public Jws<Claims> parseClaims(String token) {
+    public Jws<Claims> parseClaims(String token, String secret) {
         try {
-            return Jwts.parser().setSigningKey(SecurityConstants.SECRET).parseClaimsJws(token);
+            return Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
         } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException | SignatureException ex) {
             throw new BadCredentialsException("jwt.invalid");
         } catch (ExpiredJwtException expiredEx) {       

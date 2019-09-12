@@ -10,6 +10,7 @@ import org.paniergarni.apigateway.security.auth.login.LoginAuthenticationProvide
 import org.paniergarni.apigateway.security.auth.login.LoginProcessingFilter;
 import org.paniergarni.apigateway.security.token.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -59,6 +60,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private AuthenticationFailureHandler failureHandler; // succès d'authentification par mauvais login/JWT personnalisé
 
+	@Value("#{'${security.authorized.url}'.split(',')}")
+	private List<String> authorizedUrl;
+	@Value("${security.authentication.url}")
+	private String authenticationUrl;
+	@Value("${security.api.root.url}")
+	private String apiRoot;
+	@Value("#{'${cors.allowed.origins}'.split(',')}")
+	private List<String> allowedOrigins;
+	@Value("#{'${cors.allowed.methods}'.split(',')}")
+	private List<String> allowedMethods;
+	@Value("#{'${cors.allowed.headers}'.split(',')}")
+	private List<String> allowedHeaders;
+	@Value("#{'${cors.expose.headers}'.split(',')}")
+	private List<String> exposeHeaders;
+	@Value("${jwt.header.token.auth}")
+	private String headerAuth;
+
 	/**
 	 * Création du filtre d'authentification par login
 	 * 
@@ -85,7 +103,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			List<String> pathsToSkip, String pattern) throws Exception {
 		SkipPathRequestMatcher matcher = new SkipPathRequestMatcher(pathsToSkip, pattern);
 		JwtTokenAuthenticationProcessingFilter filter = new JwtTokenAuthenticationProcessingFilter(failureHandler,
-				jwtService, matcher);
+				jwtService, matcher, headerAuth);
 		filter.setAuthenticationManager(this.authenticationManager);
 		return filter;
 	}
@@ -101,10 +119,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		// liste des url ne nécéssitant pas une authentication
-		List<String> permitAllEndpointList = Arrays.asList(SecurityConstants.AUTHENTICATED_URL,
-				SecurityConstants.STORE_URL);
-	
 		// prend en compte la config cors initialiser dans la config des beans
 		http.cors();
 
@@ -116,7 +130,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 			
 		// requete ne nécésitant aucune authentification
-		http.authorizeRequests().antMatchers(permitAllEndpointList.toArray(new String[permitAllEndpointList.size()]))
+		http.authorizeRequests().antMatchers(authorizedUrl.toArray(new String[authorizedUrl.size()]))
 				.permitAll();
 		
 		// requete nécésitant un Role particulier
@@ -127,13 +141,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		// filtre pour le processus de login initial, s'effectue uniquement à l'adresse
 		// indiqué en param 1
-		http.addFilterBefore(buildLoginProcessingFilter(SecurityConstants.AUTHENTICATION_URL),
+		http.addFilterBefore(buildLoginProcessingFilter(authenticationUrl),
 				UsernamePasswordAuthenticationFilter.class);
 
 		// filtre pour le processus de login par JWT, ne s'éffectue pas pour les adresse
 		// en params 1, et est utilisé pour les adresse en params 2
 		http.addFilterBefore(
-				buildJwtTokenAuthenticationProcessingFilter(permitAllEndpointList, SecurityConstants.API_ROOT_URL),
+				buildJwtTokenAuthenticationProcessingFilter(authorizedUrl, apiRoot),
 				UsernamePasswordAuthenticationFilter.class);
 
 	}
@@ -149,16 +163,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		// indique les url autorisé
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+		configuration.setAllowedOrigins(allowedOrigins);
 		//configuration.setAllowedOrigins(Arrays.asList("*"));
 		// méthode autorisé
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+		configuration.setAllowedMethods(allowedMethods);
 		// en-tête autorisé
-		configuration.setAllowedHeaders(Arrays.asList("Origin", "Accept", "X-Requested-With", "Content-Type",
-				"Access-Control-Request-Method", "Authorization", "Access-Control-Request-Headers", "refresh"));
+		configuration.setAllowedHeaders(allowedHeaders);
 		// en-tête exposé
-		configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Authorization", "refresh",
-				"Access-Control-Allow-Credentials"));
+		configuration.setExposedHeaders(exposeHeaders);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		// les adresses utilisé avec la configuration cors
 		source.registerCorsConfiguration("/**", configuration);

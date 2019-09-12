@@ -1,10 +1,10 @@
 package org.paniergarni.apigateway.security.auth.handler;
 
 
-import org.paniergarni.apigateway.security.SecurityConstants;
 import org.paniergarni.apigateway.security.auth.model.UserContext;
 import org.paniergarni.apigateway.security.token.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.WebAttributes;
@@ -34,6 +34,12 @@ public class LoginAwareAuthenticationSuccessHandler implements AuthenticationSuc
     public LoginAwareAuthenticationSuccessHandler(final JwtService jwtService) {
         this.jwtService = jwtService;
     }
+    @Value("${jwt.prefix}")
+    private String tokenPrefix;
+    @Value("${jwt.header.token.auth}")
+    private String headerAuth;
+    @Value("${jwt.header.token.refresh}")
+    private String headerRefresh;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -49,8 +55,8 @@ public class LoginAwareAuthenticationSuccessHandler implements AuthenticationSuc
         response.setStatus(HttpStatus.OK.value());
            
        //on ajoute le token d'auth et le token de refresh à l'en-tête de la réponse
-      	response.addHeader(SecurityConstants.HEADER_AUTH_STRING, SecurityConstants.TOKEN_PREFIX + accessToken);
-      	response.addHeader(SecurityConstants.HEADER_REFRESH_STRING, SecurityConstants.TOKEN_PREFIX + refreshToken);
+      	response.addHeader(headerAuth, tokenPrefix + accessToken);
+      	response.addHeader(headerRefresh, tokenPrefix + refreshToken);
         clearAuthenticationAttributes(request);
         
     }

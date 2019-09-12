@@ -3,20 +3,30 @@ package org.paniergarni.apigateway.controller;
 import org.paniergarni.apigateway.object.Role;
 import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.proxy.UserProxy;
-import org.paniergarni.apigateway.security.SecurityConstants;
 import org.paniergarni.apigateway.security.auth.model.UserContext;
 import org.paniergarni.apigateway.security.token.JwtService;
 import org.paniergarni.apigateway.security.token.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 @RestController
 public class AuthController {
 
-
+    @Value("${jwt.prefix}")
+    private String tokenPrefix;
+    @Value("${jwt.header.token.auth}")
+    private String headerAuth;
+    @Value("${jwt.header.token.refresh}")
+    private String headerRefresh;
     @Autowired
     private UserProxy userProxy;
     @Autowired
@@ -32,24 +42,23 @@ public class AuthController {
 
             // on l'ajoute au headers de la réponse
             HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.add(SecurityConstants.HEADER_AUTH_STRING, SecurityConstants.TOKEN_PREFIX + jwt);
-            responseHeaders.add(SecurityConstants.HEADER_REFRESH_STRING, SecurityConstants.TOKEN_PREFIX + jwtRefresh);
+            responseHeaders.add(headerAuth, tokenPrefix + jwt);
+            responseHeaders.add(headerRefresh, tokenPrefix + jwtRefresh);
 
             return ResponseEntity.ok().headers(responseHeaders).body(contact);
     }
 
     @GetMapping(value = "/api/auth/token")
-    public ResponseEntity<?> refreshToken(@RequestHeader(SecurityConstants.HEADER_REFRESH_STRING) String tokenRefresh) {
+    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
 
-
-            JwtToken token = new JwtToken(jwtService.extract(tokenRefresh));
+            JwtToken token = new JwtToken(jwtService.extract(request.getHeader(headerRefresh)));
 
             // on créer un token JWT, grace à la vérification du tokenRefresh
             String jwt = jwtService.createAuthToken(jwtService.validateRefreshToken(token));
 
             HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.add(SecurityConstants.HEADER_AUTH_STRING, SecurityConstants.TOKEN_PREFIX + jwt);
-            responseHeaders.add(SecurityConstants.HEADER_REFRESH_STRING, tokenRefresh);
+            responseHeaders.add(headerAuth, tokenPrefix + jwt);
+            responseHeaders.add(headerRefresh, request.getHeader(headerRefresh));
             return ResponseEntity.ok().headers(responseHeaders).body(null);
 
     }
