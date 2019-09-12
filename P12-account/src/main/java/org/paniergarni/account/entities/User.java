@@ -1,6 +1,7 @@
 package org.paniergarni.account.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -49,9 +50,21 @@ public class User {
     public String getOldPassWord() {
         return oldPassWord;
     }
-
     @JsonIgnore
     public String getPassWord() {
         return passWord;
     }
+    @JsonProperty
+    public void setPassWord(String passWord) {
+        this.passWord = passWord;
+    }
+    @JsonProperty
+    public void setPassWordConfirm(String passWordConfirm) {
+        this.passWordConfirm = passWordConfirm;
+    }
+    @JsonProperty
+    public void setOldPassWord(String oldPassWord) {
+        this.oldPassWord = oldPassWord;
+    }
+
 }

@@ -19,7 +19,7 @@ public class RoleBusinessImpl implements RoleBusiness {
     public Role createRole(Role role) {
 
         roleRepository.findByName(role.getName()).ifPresent(role1 -> {
-            throw new IllegalArgumentException("Role name " + role1.getName() + " already exist");
+            throw new AccountException("role.name.already.exist");
         });
 
         return roleRepository.save(role);
@@ -27,7 +27,7 @@ public class RoleBusinessImpl implements RoleBusiness {
 
     @Override
     public Role getRoleById(Long id) {
-        return roleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("ID " + id + " Incorrect"));
+        return roleRepository.findById(id).orElseThrow(() -> new AccountException("role.id.incorrect"));
     }
 
     @Override

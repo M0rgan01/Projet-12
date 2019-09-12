@@ -1,5 +1,8 @@
 package org.paniergarni.apigateway.security.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import java.util.Date;
@@ -12,42 +15,26 @@ import java.util.Date;
  * 20 Juillet 2019
  *
  */
+@Data
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorResponse {
     // HTTP Response Status Code
-    private final HttpStatus status;
+    private HttpStatus status;
 
     // General Error message
-    private final String message;
+    private String error;
 
-    // Error code
-    private final String exceptionClass;
+    private Date timestamp;
 
-    private final Date timestamp;
-
-    protected ErrorResponse(final String message, final String exceptionClass, HttpStatus status) {
-        this.message = message;
-        this.exceptionClass = exceptionClass;
+    protected ErrorResponse(String error, HttpStatus status) {
+        this.error = error;
         this.status = status;
         this.timestamp = new Date();
     }
 
-    public static ErrorResponse of(final String message, final String exceptionClass, HttpStatus status) {
-        return new ErrorResponse(message, exceptionClass, status);
+    public static ErrorResponse of(String error, HttpStatus status) {
+        return new ErrorResponse(error, status);
     }
 
-    public Integer getStatus() {
-        return status.value();
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getExceptionClass() {
-        return exceptionClass;
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
-    }
 }

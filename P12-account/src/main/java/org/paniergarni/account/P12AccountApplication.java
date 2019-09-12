@@ -43,10 +43,10 @@ public class P12AccountApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         Mail mail = new Mail();
-        mail.setEmail("test@test.fr");
+        mail.setEmail("account@account.fr");
 
         Mail mail2 = new Mail();
-        mail2.setEmail("test2@test.fr");
+        mail2.setEmail("test2@account.fr");
 
         Role role = new Role();
         role.setName("ROLE_ADMIN");

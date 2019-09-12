@@ -8,4 +8,7 @@ public interface MailBusiness {
     Mail updateMail(Mail mail);
     Mail getMailById(Long id);
     Mail getMailByEmail(String email);
+    void checkEmailExist(String email);
+    void sendTokenForRecovery(String email);
+    void validateToken(String token, String email);
 }
