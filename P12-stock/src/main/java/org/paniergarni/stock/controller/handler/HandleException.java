@@ -61,6 +61,6 @@ public class HandleException {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ErrorResponse handleException(HttpMessageNotReadableException ex) {
-        return ErrorResponse.of("body.not.readable", HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of("json.error", HttpStatus.BAD_REQUEST);
     }
 }

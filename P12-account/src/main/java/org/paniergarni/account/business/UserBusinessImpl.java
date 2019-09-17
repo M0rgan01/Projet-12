@@ -1,6 +1,5 @@
 package org.paniergarni.account.business;
 
-import org.jetbrains.annotations.NotNull;
 import org.paniergarni.account.dao.UserRepository;
 import org.paniergarni.account.entities.Role;
 import org.paniergarni.account.entities.User;

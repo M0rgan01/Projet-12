@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: P12-api-gateway
+  cloud:
+    config:
+      uri: http://localhost:9101
