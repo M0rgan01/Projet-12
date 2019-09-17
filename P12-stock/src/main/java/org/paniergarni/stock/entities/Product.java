@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 @Data
@@ -26,6 +27,7 @@ public class Product {
     private String name;
     private boolean available;
     private int quantity;
+    private double capacity;
     private double price;
     private boolean promotion;
     private double promotionPrice;
@@ -35,4 +37,6 @@ public class Product {
     private Category category;
     @ManyToOne
     private Farmer farmer;
+    @Enumerated(EnumType.ORDINAL)
+    private Measure measure;
 }
