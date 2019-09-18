@@ -1,6 +1,7 @@
 package org.paniergarni.stock.controller;
 
 import org.paniergarni.stock.business.ProductBusiness;
+import org.paniergarni.stock.entities.Measure;
 import org.paniergarni.stock.entities.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,11 @@ public class ProductController {
         Product product = productBusiness.getProduct(id);
 
         return ResponseEntity.ok().body(product);
+    }
+
+    @GetMapping(value = "/product/measures")
+    public ResponseEntity<?> getMeasure() {
+        return ResponseEntity.ok().body(Measure.getListMeasure());
     }
 
     @GetMapping(value = "/productsByCategoryId/{id}/{page}/{size}")
@@ -54,4 +60,13 @@ public class ProductController {
 
         return ResponseEntity.ok().body(product);
     }
+
+    @PutMapping(value = "/productQuantity/{quantity}/{id}")
+    public ResponseEntity<?> updateProductQuantity(@PathVariable int quantity, @PathVariable Long id) {
+
+       Product product = productBusiness.updateProductQuantity(quantity, id);
+
+        return ResponseEntity.ok().body(product);
+    }
+
 }
