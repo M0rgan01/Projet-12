@@ -2,7 +2,6 @@ package org.paniergarni.order.business;
 
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
-import org.paniergarni.order.exception.CancelException;
 import org.paniergarni.order.exception.OrderException;
 
 import java.util.Date;
@@ -13,4 +12,6 @@ public interface OrderBusiness {
     Order getOrder(Long id) throws OrderException;
     void cancelOrder(Long id) throws OrderException;
     void paidOrder(Long id);
+    List<Order> getListOrderLate();
+    List<Order> getListOrderReception();
 }

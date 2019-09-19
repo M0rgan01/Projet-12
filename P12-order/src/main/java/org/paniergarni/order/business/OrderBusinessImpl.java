@@ -16,13 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Component
-public class OrderBusinessImpl implements OrderBusiness{
+public class OrderBusinessImpl implements OrderBusiness {
 
     @Autowired
     private OrderRepository orderRepository;
@@ -55,7 +56,7 @@ public class OrderBusinessImpl implements OrderBusiness{
             }
         }
 
-        if (totalPrice == 0){
+        if (totalPrice == 0) {
             throw new OrderException("order.products.quantity.null");
         }
 
@@ -77,7 +78,7 @@ public class OrderBusinessImpl implements OrderBusiness{
         order.setDate(new Date());
         order.setPaid(false);
         order.setCancel(false);
-        order.setReception(new Date());
+        order.setReception(truncateTime(reception));
         order.setTotalPrice(totalPrice);
         return orderRepository.save(order);
     }
@@ -107,6 +108,27 @@ public class OrderBusinessImpl implements OrderBusiness{
         Order order = getOrder(id);
         order.setPaid(true);
         orderRepository.save(order);
+    }
+
+    @Override
+    public List<Order> getListOrderLate() {
+        return orderRepository.getListOrderLate(truncateTime(new Date()));
+    }
+
+    @Override
+    public List<Order> getListOrderReception() {
+        return orderRepository.getListOrderReception(truncateTime(new Date()));
+    }
+
+
+    public static Date truncateTime(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
     }
 
 }

@@ -1,5 +1,7 @@
 package org.paniergarni.order;
 
+import org.paniergarni.order.business.OrderBusiness;
+import org.paniergarni.order.business.OrderBusinessImpl;
 import org.paniergarni.order.dao.OrderRepository;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
@@ -12,10 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -28,6 +27,8 @@ public class P12OrderApplication implements CommandLineRunner {
 
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private OrderBusiness orderBusiness;
     @Autowired
     private UserProxy userProxy;
 
@@ -72,5 +73,50 @@ public class P12OrderApplication implements CommandLineRunner {
 
         System.out.println(order1.getId());
         System.out.println(order1.getOrderProducts().size());*/
+
+        Order order = new Order();
+        order.setReception(new Date());
+        order.setUserId(1L);
+        order.setDate(OrderBusinessImpl.truncateTime(new Date()));
+        order.setPaid(false);
+
+        Order order2 = new Order();
+        order2.setReception(OrderBusinessImpl.truncateTime(new Date()));
+        order2.setUserId(1L);
+        order2.setDate(new Date());
+        order2.setPaid(false);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -1);
+
+        Order order3 = new Order();
+        order3.setReception(OrderBusinessImpl.truncateTime(calendar.getTime()));
+        order3.setUserId(1L);
+        order3.setDate(new Date());
+        order3.setPaid(false);
+
+        calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, 1);
+
+        Order order4 = new Order();
+        order4.setReception(OrderBusinessImpl.truncateTime(calendar.getTime()));
+        order4.setUserId(1L);
+        order4.setDate(new Date());
+        order4.setPaid(false);
+
+        order = orderRepository.save(order);
+        order2 = orderRepository.save(order2);
+        order3 = orderRepository.save(order3);
+        order4 = orderRepository.save(order4);
+
+        System.out.println(order.getReception());
+        System.out.println(order2.getReception());
+        System.out.println(order3.getReception());
+        System.out.println(order4.getReception());
+
+        List<Order> orderLate = orderBusiness.getListOrderLate();
+        System.out.println(orderLate.size());
+        List<Order> orderReception = orderBusiness.getListOrderReception();
+        System.out.println(orderReception.size());
     }
 }
