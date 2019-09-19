@@ -20,7 +20,8 @@ public class ProductBusinessImpl implements ProductBusiness {
 
         if (productRepository.findByName(product.getName()).isPresent())
             throw new StockException("product.name.already.exist");
-
+        if (product.getQuantity() == 0)
+            product.setAvailable(false);
 
         return productRepository.save(product);
     }
@@ -50,4 +51,26 @@ public class ProductBusinessImpl implements ProductBusiness {
         return productRepository.findByCategoryId(categoryId, PageRequest.of(page, size));
     }
 
+    @Override
+    public Product updateProductQuantity(int quantity, Long id) {
+        Product product = getProduct(id);
+        if (product.isAvailable()) {
+
+            if (product.getQuantity() < quantity)
+                quantity = product.getQuantity();
+
+            product.setQuantity(product.getQuantity() - quantity);
+
+            if (product.getQuantity() == 0) {
+                product.setOrderProductRealQuantity(quantity);
+                product.setAvailable(false);
+            } else {
+                product.setOrderProductRealQuantity(quantity);
+            }
+            productRepository.save(product);
+            return product;
+        } else {
+            throw new StockException("product.not.available");
+        }
+    }
 }

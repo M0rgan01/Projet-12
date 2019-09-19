@@ -3,7 +3,6 @@ package org.paniergarni.stock.controller;
 import org.paniergarni.stock.business.CategoryBusiness;
 import org.paniergarni.stock.entities.Category;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,15 +18,7 @@ public class CategoryController {
     @GetMapping(value = "/category/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable(name = "id") Long id) {
 
-        Category category;
-
-        try {
-            category = categoryBusiness.getCategory(id);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        Category category = categoryBusiness.getCategory(id);
 
         return ResponseEntity.ok().body(category);
     }
@@ -35,31 +26,19 @@ public class CategoryController {
     @GetMapping(value = "/categories")
     public ResponseEntity<?> getCategories() {
 
-        List<Category> categories;
-
-        try {
-            categories = categoryBusiness.getCategories();
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        List<Category> categories = categoryBusiness.getCategories();
 
         return ResponseEntity.ok().body(categories);
     }
 
     @PostMapping(value = "/category")
-    public  ResponseEntity<?> createCategory( @Valid @RequestBody Category category){
+    public ResponseEntity<?> createCategory(@Valid @RequestBody Category category) {
 
-        try {
-            category = categoryBusiness.createCategory(category);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+
+        category = categoryBusiness.createCategory(category);
 
         return ResponseEntity.ok().body(category);
     }
-
 
 
 }

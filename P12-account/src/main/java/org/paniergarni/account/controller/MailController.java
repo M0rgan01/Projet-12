@@ -14,8 +14,8 @@ public class MailController {
     @Autowired
     private MailBusiness mailBusiness;
 
-    @PutMapping (value = "/mail")
-    public ResponseEntity<?> updateUser(@RequestBody @Valid Mail mail){
+    @PostMapping (value = "/mail")
+    public ResponseEntity<?> updateMail(@RequestBody @Valid Mail mail){
 
         mail = mailBusiness.updateMail(mail);
 

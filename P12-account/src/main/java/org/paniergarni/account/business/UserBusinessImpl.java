@@ -4,6 +4,9 @@ import org.paniergarni.account.dao.UserRepository;
 import org.paniergarni.account.entities.Role;
 import org.paniergarni.account.entities.User;
 import org.paniergarni.account.exception.AccountException;
+import org.paniergarni.account.exception.BadCredencialException;
+import org.paniergarni.account.exception.ExpirationException;
+import org.paniergarni.account.exception.PassWordException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,7 +31,7 @@ public class UserBusinessImpl implements UserBusiness{
     private int waitingMinutes;
 
     @Override
-    public User createUser(User user) {
+    public User createUser(User user) throws AccountException {
         checkUserNameExist(user.getUserName());
         mailBusiness.checkEmailExist(user.getMail().getEmail());
         user.setActive(true);
@@ -44,7 +47,7 @@ public class UserBusinessImpl implements UserBusiness{
     }
 
     @Override
-    public User updateUser(User user) {
+    public User updateUser(User user) throws AccountException {
 
         User user1 = getUserById(user.getId());
 
@@ -90,7 +93,7 @@ public class UserBusinessImpl implements UserBusiness{
 
         if (contact.getExpiryConnection() != null) {
             if (contact.getExpiryConnection().after(new Date())) {
-                throw new AccountException("user.expiryConnection.after.date");
+                throw new ExpirationException("user.expiryConnection.after.date");
             } else {
                 contact.setTryConnection(0);
                 contact.setExpiryConnection(null);
@@ -112,7 +115,7 @@ public class UserBusinessImpl implements UserBusiness{
                 throw new AccountException("user.tryConnection.out");
             }
             userRepository.save(contact);
-            throw new AccountException("user.password.not.valid");
+            throw new BadCredencialException("user.password.not.valid");
         }
 
         return contact;
@@ -121,16 +124,16 @@ public class UserBusinessImpl implements UserBusiness{
 
     public void checkPassWordConfirm(User user){
         if (user.getPassWordConfirm() == null || user.getPassWordConfirm().isEmpty())
-            throw new AccountException("user.password.confirm.empty");
+            throw new PassWordException("user.password.confirm.empty");
         if (!user.getPassWord().equals(user.getPassWordConfirm()))
-            throw new AccountException("user.incorrect.password.confirm");
+            throw new PassWordException("user.incorrect.password.confirm");
     }
 
     public void checkOldPassWord(User user, String oldPassWord){
         if (user.getOldPassWord() == null || user.getOldPassWord().isEmpty())
-            throw new AccountException("user.old.password.empty");
+            throw new PassWordException("user.old.password.empty");
         if (!bCryptPasswordEncoder.matches(user.getOldPassWord(), oldPassWord))
-            throw new AccountException("user.incorrect.old.password");
+            throw new PassWordException("user.incorrect.old.password");
     }
 
     public void checkUserNameExist(String userName){

@@ -14,6 +14,9 @@ import org.paniergarni.account.entities.Mail;
 import org.paniergarni.account.entities.Role;
 import org.paniergarni.account.entities.User;
 import org.paniergarni.account.exception.AccountException;
+import org.paniergarni.account.exception.BadCredencialException;
+import org.paniergarni.account.exception.ExpirationException;
+import org.paniergarni.account.exception.PassWordException;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -144,7 +147,7 @@ public class UserBusinessTest {
         userBusiness.updateUser(user);
     }
 
-    @Test(expected = AccountException.class)
+    @Test(expected = PassWordException.class)
     public void testUpdateUserWithNotSamePassWordConfirm() throws AccountException {
         user.setId(1l);
 
@@ -180,7 +183,7 @@ public class UserBusinessTest {
         userBusiness.doConnection(user.getUserName(), user.getPassWord());
     }
 
-    @Test(expected = AccountException.class)
+    @Test(expected = BadCredencialException.class)
     public void testDoConnectionWithBadPassWorld() throws AccountException {
         user.setActive(true);
         Mockito.when(userRepository.findByUserName(user.getUserName())).thenReturn(Optional.of(user));
@@ -202,7 +205,7 @@ public class UserBusinessTest {
         assertNotNull(user.getExpiryConnection());
     }
 
-    @Test(expected = AccountException.class)
+    @Test(expected = ExpirationException.class)
     public void testDoConnectionWithExpiryConnection() throws AccountException {
         user.setActive(true);
         Calendar c = Calendar.getInstance();

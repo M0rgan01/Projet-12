@@ -3,7 +3,6 @@ package org.paniergarni.order;
 import org.paniergarni.order.dao.OrderRepository;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
-import org.paniergarni.order.object.Product;
 import org.paniergarni.order.object.User;
 import org.paniergarni.order.proxy.UserProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -32,35 +34,43 @@ public class P12OrderApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-
+/*
         User user = userProxy.findByUserName("Admin");
-
-        System.out.println(user.toString());
-
-        /*Product p = new Product();
-        p.setId(1l);
-        p.setName("Product1");
-
-        Product p2 = new Product();
-        p2.setId(2l);
-        p2.setName("Product2");
-
 
         Order order = new Order();
 
+
         OrderProduct orderProduct = new OrderProduct();
-        orderProduct.setProductId(p.getId());
+        orderProduct.setProductId(1L);
+        orderProduct.setOrderQuantity(1);
         orderProduct.setOrder(order);
-        orderProduct.setQuantity(5);
-        order.setOrderProducts(Arrays.asList(orderProduct));
+
+        OrderProduct orderProduct2 = new OrderProduct();
+        orderProduct2.setProductId(2L);
+        orderProduct2.setOrderQuantity(1);
+        orderProduct2.setOrder(order);
+
+        OrderProduct orderProduct3 = new OrderProduct();
+        orderProduct3.setProductId(3L);
+        orderProduct3.setOrderQuantity(1);
+        orderProduct3.setOrder(order);
+
+        List<OrderProduct> orderProducts = new ArrayList<>();
+        orderProducts.add(orderProduct);
+        orderProducts.add(orderProduct2);
+        orderProducts.add(orderProduct3);
+
+        order.setOrderProducts(orderProducts);
+        order.setUserId(user.getId());
+        order.setDate(new Date());
+        order.setPaid(false);
+        order.setReception(new Date());
 
         order = orderRepository.save(order);
 
         Order order1 = orderRepository.findById(order.getId()).get();
 
-        for ( OrderProduct orderProduct1: order1.getOrderProducts()) {
-            System.out.println(orderProduct1.getQuantity());
-        }*/
-
+        System.out.println(order1.getId());
+        System.out.println(order1.getOrderProducts().size());*/
     }
 }

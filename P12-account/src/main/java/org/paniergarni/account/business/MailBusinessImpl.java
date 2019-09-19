@@ -4,6 +4,8 @@ import org.paniergarni.account.dao.MailRepository;
 import org.paniergarni.account.entities.Mail;
 import org.paniergarni.account.entities.User;
 import org.paniergarni.account.exception.AccountException;
+import org.paniergarni.account.exception.BadCredencialException;
+import org.paniergarni.account.exception.ExpirationException;
 import org.paniergarni.account.service.SendMail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +44,7 @@ public class MailBusinessImpl implements MailBusiness {
     private int expirationToken;
 
     @Override
-    public Mail createMail(Mail mail) {
+    public Mail createMail(Mail mail) throws AccountException {
         checkEmailExist(mail.getEmail());
         return mailRepository.save(mail);
     }
@@ -53,17 +55,17 @@ public class MailBusinessImpl implements MailBusiness {
     }
 
     @Override
-    public Mail getMailById(Long id) {
+    public Mail getMailById(Long id) throws AccountException {
         return mailRepository.findById(id).orElseThrow(() -> new AccountException("mail.id.incorrect"));
     }
 
     @Override
-    public Mail getMailByEmail(String email) {
+    public Mail getMailByEmail(String email) throws AccountException {
         return mailRepository.findByEmail(email).orElseThrow(() -> new AccountException("mail.email.incorrect"));
     }
 
     @Override
-    public void checkEmailExist(String email) {
+    public void checkEmailExist(String email) throws AccountException {
         if (mailRepository.findByEmail(email).isPresent())
             throw new AccountException("mail.email.already.exist");
     }
@@ -110,7 +112,7 @@ public class MailBusinessImpl implements MailBusiness {
             // on vérifie la date
             if (!new Date().before(mail.getExpiryToken())) {
                 logger.error("Token for email " + mail.getId() + " expiry");
-                throw new AccountException("mail.token.expiry");
+                throw new ExpirationException("mail.token.expiry");
             }
             // sinon on incrémente le nombre d'essais
         } else {
@@ -124,7 +126,7 @@ public class MailBusinessImpl implements MailBusiness {
             mail.setTryToken(mail.getTryToken() + 1);
             mailRepository.save(mail);
             logger.info("Increment tryToken for Mail " + mail.getId() + " and update");
-            throw new AccountException("mail.token.not.correct");
+            throw new BadCredencialException("mail.token.not.correct");
         }
     }
 

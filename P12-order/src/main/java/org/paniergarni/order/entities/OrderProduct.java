@@ -1,42 +1,29 @@
 package org.paniergarni.order.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import java.io.Serializable;
-import java.util.Objects;
+import javax.persistence.*;
 
-@Data
 @Entity
-public class OrderProduct implements Serializable {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class OrderProduct {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private Long productId;
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn
     private Order order;
 
-    @Id
-    @JoinColumn
-    private Long productId;
-
-    private int quantity;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OrderProduct)) return false;
-        OrderProduct that = (OrderProduct) o;
-        return Objects.equals(order.getReference(), that.order.getReference()) &&
-                Objects.equals(productId, that.productId) &&
-                Objects.equals(quantity, that.quantity);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(order.getReference(), productId, quantity);
-    }
+    private int orderQuantity;
+    private int realQuantity;
+    private double totalPriceRow;
 
 }

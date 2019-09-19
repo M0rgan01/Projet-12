@@ -1,18 +1,19 @@
 package org.paniergarni.stock.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.ToString;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-@AllArgsConstructor
-@ToString
 public enum Measure {
 
-    KILOS ("Kilos"),
-    KILOSGRAMME ("Kilos-gramme"),
-    LITRE ("Litre"),
-    CENTILITRE ("Centilitre"),
-    UNITE ("Unité");
+    Kilos,
+    Gramme,
+    Litre,
+    Centilitre,
+    Unite;
 
-    private String name;
+    public static List<Measure> getListMeasure(){
+        return new ArrayList<>(Arrays.asList(Kilos, Gramme, Litre, Centilitre, Unite));
+    }
 
 }
