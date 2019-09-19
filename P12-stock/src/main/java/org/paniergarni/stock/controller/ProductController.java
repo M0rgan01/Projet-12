@@ -61,8 +61,8 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
-    @PutMapping(value = "/productQuantity/{quantity}/{id}")
-    public ResponseEntity<?> updateProductQuantity(@PathVariable int quantity, @PathVariable Long id) {
+    @PutMapping(value = "/productQuantity/{id}/{quantity}")
+    public ResponseEntity<?> updateProductQuantity( @PathVariable Long id, @PathVariable int quantity) {
 
        Product product = productBusiness.updateProductQuantity(quantity, id);
 

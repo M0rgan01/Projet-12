@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -15,9 +16,6 @@ public class OrderController {
 
     @Autowired
     private OrderBusiness orderBusiness;
-    @Autowired
-    private OrderProductRepository orderProductRepository;
-
 
     @GetMapping(value = "/order/{id}")
     public ResponseEntity<?> getOrderById(@PathVariable(name = "id") Long id) {
@@ -27,19 +25,28 @@ public class OrderController {
         return ResponseEntity.ok().body(order);
     }
 
-    @GetMapping(value = "/orderProduct/{id}")
-    public ResponseEntity<?> getOrderProductById(@PathVariable(name = "id") Long id) {
-
-        OrderProduct orderProduct = orderProductRepository.findById(id).get();
-
-        return ResponseEntity.ok().body(orderProduct);
-    }
 
     @PostMapping(value = "/order/{userName}")
-    public ResponseEntity<?> createOrder(@PathVariable(name = "userName") String userName, @RequestBody List<OrderProduct> orderProducts) {
+    public ResponseEntity<?> createOrder(@PathVariable(name = "userName") String userName, @PathVariable(name = "reception") Date reception, @RequestBody List<OrderProduct> orderProducts) {
 
-        Order order = orderBusiness.createOrder(orderProducts, userName);
+        Order order = orderBusiness.createOrder(orderProducts, userName, reception);
 
         return ResponseEntity.ok().body(order);
+    }
+
+    @PutMapping(value = "/cancelOrder/{id}")
+    public ResponseEntity<?> cancelOrder(@PathVariable(name = "id") Long id) {
+
+        orderBusiness.cancelOrder(id);
+
+        return ResponseEntity.ok().body(null);
+    }
+
+    @PutMapping(value = "/paidOrder/{id}")
+    public ResponseEntity<?> paidOrder(@PathVariable(name = "id") Long id) {
+
+        orderBusiness.paidOrder(id);
+
+        return ResponseEntity.ok().body(null);
     }
 }

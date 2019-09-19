@@ -23,7 +23,7 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @PutMapping(value = "/user")
+    @PostMapping(value = "/user")
     public ResponseEntity<?> updateUser(@RequestBody @Valid User user) {
 
         user = userBusiness.updateUser(user);

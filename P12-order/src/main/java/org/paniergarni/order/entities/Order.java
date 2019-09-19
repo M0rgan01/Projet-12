@@ -31,6 +31,7 @@ public class Order {
     private Date reception;
     @NotNull
     private Boolean paid;
+    private Boolean cancel;
     @NotNull
     private Long userId;
 

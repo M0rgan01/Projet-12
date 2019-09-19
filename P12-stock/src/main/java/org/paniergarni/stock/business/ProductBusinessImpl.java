@@ -56,20 +56,20 @@ public class ProductBusinessImpl implements ProductBusiness {
         Product product = getProduct(id);
         if (product.isAvailable()) {
 
+            if (product.getQuantity() < quantity)
+                quantity = product.getQuantity();
+
             product.setQuantity(product.getQuantity() - quantity);
-            if (product.getQuantity() < 0) {
-                product.setOrderProductRealQuantity(Math.abs(product.getQuantity()));
-                product.setQuantity(0);
-                product.setAvailable(false);
-            }else if(product.getQuantity() == 0){
+
+            if (product.getQuantity() == 0) {
                 product.setOrderProductRealQuantity(quantity);
                 product.setAvailable(false);
-            }else {
+            } else {
                 product.setOrderProductRealQuantity(quantity);
             }
             productRepository.save(product);
             return product;
-        }else {
+        } else {
             throw new StockException("product.not.available");
         }
     }
