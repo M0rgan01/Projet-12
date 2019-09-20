@@ -1,13 +1,14 @@
 package org.paniergarni.order.business;
 
 import feign.FeignException;
-import org.hibernate.cache.CacheException;
 import org.paniergarni.order.dao.OrderRepository;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
+import org.paniergarni.order.entities.Sequence;
 import org.paniergarni.order.exception.CancelException;
 import org.paniergarni.order.exception.OrderException;
 import org.paniergarni.order.exception.ReceptionException;
+import org.paniergarni.order.exception.SequenceException;
 import org.paniergarni.order.object.Product;
 import org.paniergarni.order.object.User;
 import org.paniergarni.order.proxy.ProductProxy;
@@ -16,17 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class OrderBusinessImpl implements OrderBusiness {
 
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private SequenceBusiness sequenceBusiness;
     @Autowired
     private UserProxy userProxy;
     @Autowired
@@ -76,6 +77,7 @@ public class OrderBusinessImpl implements OrderBusiness {
         order.setTotalPrice(totalPrice);
         order.setUserId(user.getId());
         order.setDate(new Date());
+        order.setReference(addReference(order));
         order.setPaid(false);
         order.setCancel(false);
         order.setReception(truncateTime(reception));
@@ -89,7 +91,7 @@ public class OrderBusinessImpl implements OrderBusiness {
     }
 
     @Override
-    public void cancelOrder(Long id) throws CancelException {
+    public void cancelOrder(Long id) throws OrderException {
         Order order = getOrder(id);
 
         Calendar calendar = Calendar.getInstance();
@@ -104,8 +106,9 @@ public class OrderBusinessImpl implements OrderBusiness {
     }
 
     @Override
-    public void paidOrder(Long id) {
+    public void paidOrder(Long id) throws OrderException, SequenceException {
         Order order = getOrder(id);
+        sequenceBusiness.addSaleNumber(order.getDate());
         order.setPaid(true);
         orderRepository.save(order);
     }
@@ -118,6 +121,19 @@ public class OrderBusinessImpl implements OrderBusiness {
     @Override
     public List<Order> getListOrderReception() {
         return orderRepository.getListOrderReception(truncateTime(new Date()));
+    }
+
+    @Override
+    public String addReference(Order order) {
+
+        Sequence sequence;
+        try {
+            sequence = sequenceBusiness.getByDate(order.getDate());
+        }catch (SequenceException e){
+            sequence = sequenceBusiness.createSequence();
+        }
+
+        return sequence.getDate() + "-" + sequence.getSequence();
     }
 
 
