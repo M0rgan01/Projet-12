@@ -1,7 +1,6 @@
 package org.paniergarni.order.controller;
 
 import org.paniergarni.order.business.OrderBusiness;
-import org.paniergarni.order.dao.OrderProductRepository;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,22 @@ public class OrderController {
         Order order = orderBusiness.getOrder(id);
 
         return ResponseEntity.ok().body(order);
+    }
+
+    @GetMapping(value = "/receptionOrders")
+    public ResponseEntity<?> getListReceptionOrder() {
+
+        List<Order> orders = orderBusiness.getListOrderReception();
+
+        return ResponseEntity.ok().body(orders);
+    }
+
+    @GetMapping(value = "/lateOrders")
+    public ResponseEntity<?> getListLateOrder() {
+
+        List<Order> orders = orderBusiness.getListOrderLate();
+
+        return ResponseEntity.ok().body(orders);
     }
 
 

@@ -28,6 +28,7 @@ public class Order {
     @NotNull
     private Date date;
     @NotNull
+    @Temporal(TemporalType.DATE)
     private Date reception;
     @NotNull
     private Boolean paid;
