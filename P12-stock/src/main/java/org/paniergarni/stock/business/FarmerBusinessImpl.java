@@ -15,7 +15,7 @@ public class FarmerBusinessImpl implements FarmerBusiness{
     private FarmerRepository farmerRepository;
 
     @Override
-    public Farmer createFarmer(Farmer farmer) {
+    public Farmer createFarmer(Farmer farmer) throws StockException {
 
         if (farmerRepository.findByName(farmer.getName()).isPresent())
             throw new StockException("farmer.name.already.exist");
@@ -29,7 +29,7 @@ public class FarmerBusinessImpl implements FarmerBusiness{
     }
 
     @Override
-    public Farmer getFarmer(Long id) {
+    public Farmer getFarmer(Long id) throws StockException {
         return farmerRepository.findById(id).orElseThrow(() -> new StockException("farmer.id.incorrect"));
     }
 

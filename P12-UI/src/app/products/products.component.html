@@ -1,0 +1,94 @@
+<div *ngIf="products && products.totalElements != 0">
+
+  <div class="text-center">
+    <h3>{{title}}</h3>
+  </div>
+
+  <!-- ------PHILTRE------- -->
+  <form #f="ngForm" (ngSubmit)="onSearchByPhiltre(f.value)">
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="inputState">Size</label>
+        <select id="inputState" class="form-control" name="size" [ngModel]="size">
+          <option *ngFor="let s of listSize" [ngValue]="s" [selected]="size == s">{{s}}</option>
+        </select>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+
+  <!-- ------PRODUCTS DISPLAY------- -->
+
+  <div class="row">
+    <div class="col-md-6" *ngFor="let p of products.content">
+      <div class="card my-3">
+        <div class="card-header">{{p.name}}</div>
+        <div class="card-body">
+          <div class="text-center">
+            <img height="100" [src]="this.api.host + '/p12-stock/product/photo/' + p.id" alt="">
+          </div>
+          <p class="card-text m-0">Price: {{p.price | number:'0.2'}}</p>
+          <p class="card-text m-0">Stock: {{p.quantity}}</p>
+          <p class="card-text m-0">Categorie: {{p.category.name}}</p>
+          <p *ngIf="p.promotion" class="card-text m-0">En promotion !</p>
+
+          <form #f="ngForm" (ngSubmit)="onAddProductToCaddy(p)">
+            <div class="form-group">
+              <label>Quantité : </label>
+              <input type="number" required class="form-control" min="0" max="10" [(ngModel)]="p.quantity"
+                     name="quantite">
+            </div>
+            <button type="submit" class="btn btn-primary">Commander</button>
+            <a *ngIf="authService.isAuth() && authService.isAdmin()" class="btn btn-success text-white cliquable ml-1"
+               (click)="onEditProduct(p)">Modifier</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ------PAGINATION------- -->
+
+
+  <div *ngIf="products.totalPages > 1">
+    <ul class="pagination justify-content-center">
+
+      <li class="page-item"
+          [ngClass]="products.number == 0 ? 'disabled' : ''"><a
+        class="page-link cliquable"
+        (click)="checkProductsHome(0, size)">«</a></li>
+
+      <li class="page-item"
+          [ngClass]="products.number == 0 ? 'disabled' : ''"><a
+        class="page-link cliquable"
+        (click)="checkProductsHome(products.number - 1, size)">←</a></li>
+
+      <li class="page-item" *ngFor="let item of [].constructor(products.totalPages); let i = index"
+          [ngClass]="products.number == i ? 'active' : ''">
+        <a class="page-link cliquable"
+           (click)="checkProductsHome( i, size)">{{i + 1}}</a>
+      </li>
+
+      <li class="page-item"
+          [ngClass]="products.number + 1 == products.totalPages ? 'disabled' : ''">
+        <a class="page-link cliquable"
+           (click)="checkProductsHome(products.number + 1, size)">→</a>
+      </li>
+
+      <li class="page-item"
+          [ngClass]="products.number + 1 == products.totalPages ? 'disabled' : ''">
+        <a class="page-link cliquable"
+           (click)="checkProductsHome(products.totalPages - 1, size)">»</a>
+      </li>
+
+    </ul>
+  </div>
+
+</div>
+<!-- ------PRODUCTS EMPTY------- -->
+
+<div *ngIf="!products || products.totalElements == 0"
+     class="justify-content-center row mt-5 font-weight-bold">
+  <p>Votre recherche n'à donnée aucun résultat !</p>
+</div>

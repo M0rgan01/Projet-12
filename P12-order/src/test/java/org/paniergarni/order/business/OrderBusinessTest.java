@@ -92,7 +92,7 @@ public class OrderBusinessTest {
 
 
     @Test
-    public void testCreateOrder() {
+    public void testCreateOrder() throws OrderException {
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, 2);
@@ -115,7 +115,7 @@ public class OrderBusinessTest {
     }
 
     @Test(expected = OrderException.class)
-    public void testCreateOrderWithNoQuantity() {
+    public void testCreateOrderWithNoQuantity() throws OrderException {
         product.setOrderProductRealQuantity(0);
         product2.setOrderProductRealQuantity(0);
         product3.setOrderProductRealQuantity(0);
@@ -130,7 +130,7 @@ public class OrderBusinessTest {
 
 
     @Test(expected = ReceptionException.class)
-    public void testCreateOrderWithBadMinReception() {
+    public void testCreateOrderWithBadMinReception() throws OrderException {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, 2);
         Mockito.when(userProxy.findByUserName(user.getUserName())).thenReturn(user);
@@ -142,7 +142,7 @@ public class OrderBusinessTest {
     }
 
     @Test(expected = ReceptionException.class)
-    public void testCreateOrderWithBadMaxReception() {
+    public void testCreateOrderWithBadMaxReception() throws OrderException {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, 20);
         Mockito.when(userProxy.findByUserName(user.getUserName())).thenReturn(user);
@@ -154,7 +154,7 @@ public class OrderBusinessTest {
     }
 
     @Test
-    public void testCancelOrder() {
+    public void testCancelOrder() throws OrderException {
         order = new Order();
         order.setId(1L);
         order.setDate(new Date());
@@ -171,7 +171,7 @@ public class OrderBusinessTest {
     }
 
     @Test(expected = CancelException.class)
-    public void testCancelOrderWithBadDate() {
+    public void testCancelOrderWithBadDate() throws OrderException {
         order = new Order();
         order.setId(1L);
         Calendar calendar = Calendar.getInstance();

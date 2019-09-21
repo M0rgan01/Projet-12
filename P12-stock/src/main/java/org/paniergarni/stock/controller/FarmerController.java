@@ -2,6 +2,7 @@ package org.paniergarni.stock.controller;
 
 import org.paniergarni.stock.business.FarmerBusiness;
 import org.paniergarni.stock.entities.Farmer;
+import org.paniergarni.stock.exception.StockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class FarmerController {
 
 
     @GetMapping(value = "/farmer/{id}")
-    public ResponseEntity<?> getFarmerById(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<?> getFarmerById(@PathVariable(name = "id") Long id) throws StockException {
 
         Farmer farmer = farmerBusiness.getFarmer(id);
 
@@ -34,7 +35,7 @@ public class FarmerController {
     }
 
     @PostMapping(value = "/farmer")
-    public ResponseEntity<?> createFarmer(@Valid @RequestBody Farmer farmer) {
+    public ResponseEntity<?> createFarmer(@Valid @RequestBody Farmer farmer) throws StockException {
 
         farmer = farmerBusiness.createFarmer(farmer);
 

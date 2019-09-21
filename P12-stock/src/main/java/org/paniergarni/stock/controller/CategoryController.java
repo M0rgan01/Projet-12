@@ -2,6 +2,7 @@ package org.paniergarni.stock.controller;
 
 import org.paniergarni.stock.business.CategoryBusiness;
 import org.paniergarni.stock.entities.Category;
+import org.paniergarni.stock.exception.StockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class CategoryController {
     private CategoryBusiness categoryBusiness;
 
     @GetMapping(value = "/category/{id}")
-    public ResponseEntity<?> getCategoryById(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<?> getCategoryById(@PathVariable(name = "id") Long id) throws StockException {
 
         Category category = categoryBusiness.getCategory(id);
 
@@ -32,7 +33,7 @@ public class CategoryController {
     }
 
     @PostMapping(value = "/category")
-    public ResponseEntity<?> createCategory(@Valid @RequestBody Category category) {
+    public ResponseEntity<?> createCategory(@Valid @RequestBody Category category) throws StockException {
 
 
         category = categoryBusiness.createCategory(category);

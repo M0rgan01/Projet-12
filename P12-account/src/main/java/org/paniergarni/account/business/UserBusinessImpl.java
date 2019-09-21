@@ -66,22 +66,22 @@ public class UserBusinessImpl implements UserBusiness{
     }
 
     @Override
-    public User getUserById(Long id) {
+    public User getUserById(Long id) throws AccountException {
         return userRepository.findById(id).orElseThrow(() -> new AccountException("user.id.incorrect"));
     }
 
     @Override
-    public User getUserByUserName(String userName) {
+    public User getUserByUserName(String userName) throws AccountException {
         return userRepository.findByUserName(userName).orElseThrow(() -> new AccountException("user.username.incorrect"));
     }
 
     @Override
-    public User getUserByEmail(String email) {
+    public User getUserByEmail(String email) throws AccountException {
         return userRepository.findByEmail(email).orElseThrow(() -> new AccountException("user.email.incorrect"));
     }
 
     @Override
-    public User doConnection(String userName, String passWord) {
+    public User doConnection(String userName, String passWord) throws AccountException {
 
         // récupération du contact pour la comparaison
         User contact = userRepository.findByUserName(userName)
@@ -122,21 +122,21 @@ public class UserBusinessImpl implements UserBusiness{
     }
 
 
-    public void checkPassWordConfirm(User user){
+    public void checkPassWordConfirm(User user) throws PassWordException {
         if (user.getPassWordConfirm() == null || user.getPassWordConfirm().isEmpty())
             throw new PassWordException("user.password.confirm.empty");
         if (!user.getPassWord().equals(user.getPassWordConfirm()))
             throw new PassWordException("user.incorrect.password.confirm");
     }
 
-    public void checkOldPassWord(User user, String oldPassWord){
+    public void checkOldPassWord(User user, String oldPassWord) throws PassWordException {
         if (user.getOldPassWord() == null || user.getOldPassWord().isEmpty())
             throw new PassWordException("user.old.password.empty");
         if (!bCryptPasswordEncoder.matches(user.getOldPassWord(), oldPassWord))
             throw new PassWordException("user.incorrect.old.password");
     }
 
-    public void checkUserNameExist(String userName){
+    public void checkUserNameExist(String userName) throws AccountException {
         if (userRepository.findByUserName(userName).isPresent()){
             throw new AccountException("user.username.already.exist");
         }

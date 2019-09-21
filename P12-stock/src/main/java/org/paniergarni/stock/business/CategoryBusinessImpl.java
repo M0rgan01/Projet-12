@@ -15,7 +15,7 @@ public class CategoryBusinessImpl implements CategoryBusiness {
     private CategoryRepository categoryRepository;
 
     @Override
-    public Category createCategory(Category category) {
+    public Category createCategory(Category category) throws StockException {
 
         if (categoryRepository.findByName(category.getName()).isPresent())
             throw new StockException("category.name.already.exist");
@@ -24,7 +24,7 @@ public class CategoryBusinessImpl implements CategoryBusiness {
     }
 
     @Override
-    public Category getCategory(Long id) {
+    public Category getCategory(Long id) throws StockException {
         return categoryRepository.findById(id).orElseThrow(() -> new StockException("category.id.incorrect"));
     }
 

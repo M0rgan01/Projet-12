@@ -71,7 +71,7 @@ public class MailBusinessImpl implements MailBusiness {
     }
 
     @Override
-    public void sendTokenForRecovery(String email) {
+    public void sendTokenForRecovery(String email) throws AccountException {
 
         User user = userBusiness.getUserByEmail(email);
 
@@ -100,7 +100,7 @@ public class MailBusinessImpl implements MailBusiness {
     }
 
     @Override
-    public void validateToken(String token, String email) {
+    public void validateToken(String token, String email) throws AccountException {
 
         Mail mail = getMailByEmail(email);
 

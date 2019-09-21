@@ -3,12 +3,17 @@ package org.paniergarni.stock.controller;
 import org.paniergarni.stock.business.ProductBusiness;
 import org.paniergarni.stock.entities.Measure;
 import org.paniergarni.stock.entities.Product;
+import org.paniergarni.stock.exception.StockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @RestController
 public class ProductController {
@@ -17,7 +22,7 @@ public class ProductController {
     private ProductBusiness productBusiness;
 
     @GetMapping(value = "/product/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<?> getProductById(@PathVariable(name = "id") Long id) throws StockException {
 
         Product product = productBusiness.getProduct(id);
 
@@ -54,7 +59,7 @@ public class ProductController {
     }
 
     @PostMapping(value = "/product")
-    public ResponseEntity<?> createProduct(@Valid @RequestBody Product product) {
+    public ResponseEntity<?> createProduct(@Valid @RequestBody Product product) throws StockException {
 
         product = productBusiness.createProduct(product);
 
@@ -62,11 +67,17 @@ public class ProductController {
     }
 
     @PutMapping(value = "/productQuantity/{id}/{quantity}")
-    public ResponseEntity<?> updateProductQuantity( @PathVariable Long id, @PathVariable int quantity) {
+    public ResponseEntity<?> updateProductQuantity( @PathVariable Long id, @PathVariable int quantity) throws StockException {
 
        Product product = productBusiness.updateProductQuantity(quantity, id);
 
         return ResponseEntity.ok().body(product);
+    }
+
+    @GetMapping(value = "/product/photo/{id}", produces = MediaType.IMAGE_PNG_VALUE)
+    public byte[] getPhoto(@PathVariable(name = "id") Long id) throws IOException, StockException {
+        Product p = productBusiness.getProduct(id);
+        return Files.readAllBytes(Paths.get(System.getProperty("user.home") + "/Test/" + p.getPhoto()));
     }
 
 }

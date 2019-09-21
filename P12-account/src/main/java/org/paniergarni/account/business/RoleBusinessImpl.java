@@ -16,7 +16,7 @@ public class RoleBusinessImpl implements RoleBusiness {
     private RoleRepository roleRepository;
 
     @Override
-    public Role createRole(Role role) {
+    public Role createRole(Role role) throws AccountException {
 
         roleRepository.findByName(role.getName()).ifPresent(role1 -> {
             throw new AccountException("role.name.already.exist");
@@ -26,17 +26,17 @@ public class RoleBusinessImpl implements RoleBusiness {
     }
 
     @Override
-    public Role getRoleById(Long id) {
+    public Role getRoleById(Long id) throws AccountException {
         return roleRepository.findById(id).orElseThrow(() -> new AccountException("role.id.incorrect"));
     }
 
     @Override
-    public Role getUserRole() {
+    public Role getUserRole() throws AccountException {
         return roleRepository.findByName("ROLE_USER").orElseThrow(() -> new AccountException("role.user.not.found"));
     }
 
     @Override
-    public List<Role> getAdminRole() {
+    public List<Role> getAdminRole() throws AccountException {
 
         Role user = roleRepository.findByName("ROLE_USER").orElseThrow(() -> new AccountException("role.user.not.found"));
         Role admin = roleRepository.findByName("ROLE_ADMIN").orElseThrow(() -> new AccountException("role.admin.not.found"));

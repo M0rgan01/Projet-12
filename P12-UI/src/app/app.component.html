@@ -1,20 +1,113 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<!--BARRE DE NAVIGATION TOP-->
+<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-dark border-bottom border-light">
 
+  <a class="navbar-brand ml-2 text-white cliquable" routerLink="/">{{title}}</a>
+
+  <button (click)="onSwitchToggle()" type="button" class="btn mr-auto d-none d-md-block"><span
+    class="navbar-toggler-icon"></span></button>
+
+  <button class="btn d-md-none" type="button" data-toggle="collapse" data-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+
+      <li class="nav-item dropdown" *ngIf="categoryService.categories">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+           aria-haspopup="true" aria-expanded="false">
+          Catégories
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a *ngFor="let c of categoryService.categories" class="dropdown-item cliquable"
+             (click)="getProductsByCategory(c)">{{c.name}}</a>
+        </div>
+      </li>
+
+      <!-- This menu is hidden in bigger devices with d-sm-none.
+           The sidebar isn't proper for smaller screens imo, so this dropdown menu can keep all the useful sidebar itens exclusively for smaller screens  -->
+      <li class="nav-item dropdown d-sm-block d-md-none">
+        <a class="nav-link dropdown-toggle" href="#" id="smallerscreenmenu" data-toggle="dropdown" aria-haspopup="true"
+           aria-expanded="false">
+          Menu
+        </a>
+        <div class="dropdown-menu" aria-labelledby="smallerscreenmenu">
+          <a class="dropdown-item" href="#">Dashboard</a>
+          <a class="dropdown-item" href="#">Profile</a>
+          <a class="dropdown-item" href="#">Tasks</a>
+          <a class="dropdown-item" href="#">Etc ...</a>
+        </div>
+      </li>
+
+    </ul>
+
+    <form class="form-inline ml-auto">
+      <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-success my-2 my-md-0 mx-sm-2 mx-0" type="submit">Search</button>
+    </form>
+
+    <button routerLink="/caddies" class="btn btn-primary">Panier : {{caddyService.getSize()}}</button>
+
+  </div>
+</nav>
+
+<!-- SIDEBAR https://www.codeply.com/go/7XYosZ7VH5 -->
+<div class="row h-100 m-0" id="body-row">
+  <!-- Sidebar -->
+  <div class="d-none d-md-block col-2 p-0 border-right bg-info"
+       [ngClass]="{'d-md-block': isTogled, 'd-md-none': !isTogled}">
+
+    <ul class="list-group sticky-offset sticky-top list-group-flush mt-4">
+
+      <li class="list-group-item bg-info font-weight-bold" *ngIf="authService.isAuth()">
+        Bonjour {{authService.getUserName()}}
+      </li>
+
+      <a *ngIf="!authService.isAuth()" routerLinkActive="text-dark font-weight-bold" routerLink="/register"
+         class="list-group-item list-group-item-action border-0 bg-info">Register</a>
+      <a *ngIf="!authService.isAuth()" routerLinkActive="text-dark font-weight-bold" routerLink="/login"
+         class="list-group-item list-group-item-action border-0 bg-info">Login</a>
+      <a *ngIf="authService.isAuth()"
+         class="list-group-item list-group-item-action border-0 bg-info">Mon compte</a>
+      <a *ngIf="authService.isAuth()" (click)="onLogout()"
+         class="list-group-item list-group-item-action border-0 bg-info">Logout</a>
+
+
+      <!-- /END Separator -->
+      <!-- Menu with submenu -->
+      <a href="#submenu1" data-toggle="collapse" aria-expanded="false"
+         class="bg-dark font-weight-bold list-group-item list-group-item-action flex-column align-items-start border-0">
+        <div class="d-flex w-100 justify-content-start align-items-center">
+          <span>Mon compte</span>
+        </div>
+      </a>
+      <!-- Submenu content -->
+      <div id="submenu1" class="collapse">
+        <a href="#" class="list-group-item list-group-item-action text-white text-center border-0 bg-dark">
+          <span class="menu-collapsed">Charts</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action text-white text-center border-0 bg-dark">
+          <span class="menu-collapsed">Reports</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action text-white text-center border-0 bg-dark">
+          <span class="menu-collapsed">Reports</span>
+        </a>
+      </div>
+
+    </ul>
+    <!-- List Group END-->
+  </div>
+  <!-- sidebar-container END -->
+
+  <div class="col">
+    <div class="container">
+      <div class="mb-5"></div>
+      <router-outlet></router-outlet>
+    </div>
+    <div class="mt-5"></div>
+  </div>
+
+
+</div>

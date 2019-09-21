@@ -16,7 +16,7 @@ public class ProductBusinessImpl implements ProductBusiness {
 
 
     @Override
-    public Product createProduct(Product product) {
+    public Product createProduct(Product product) throws StockException {
 
         if (productRepository.findByName(product.getName()).isPresent())
             throw new StockException("product.name.already.exist");
@@ -32,7 +32,7 @@ public class ProductBusinessImpl implements ProductBusiness {
     }
 
     @Override
-    public Product getProduct(Long id) {
+    public Product getProduct(Long id) throws StockException {
         return productRepository.findById(id).orElseThrow(() -> new StockException("product.id.incorrect"));
     }
 
@@ -52,7 +52,7 @@ public class ProductBusinessImpl implements ProductBusiness {
     }
 
     @Override
-    public Product updateProductQuantity(int quantity, Long id) {
+    public Product updateProductQuantity(int quantity, Long id) throws StockException {
         Product product = getProduct(id);
         if (product.isAvailable()) {
 

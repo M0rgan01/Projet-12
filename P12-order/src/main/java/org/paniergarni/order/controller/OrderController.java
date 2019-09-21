@@ -3,6 +3,8 @@ package org.paniergarni.order.controller;
 import org.paniergarni.order.business.OrderBusiness;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
+import org.paniergarni.order.exception.OrderException;
+import org.paniergarni.order.exception.SequenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +19,7 @@ public class OrderController {
     private OrderBusiness orderBusiness;
 
     @GetMapping(value = "/order/{id}")
-    public ResponseEntity<?> getOrderById(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<?> getOrderById(@PathVariable(name = "id") Long id) throws OrderException {
 
         Order order = orderBusiness.getOrder(id);
 
@@ -42,7 +44,7 @@ public class OrderController {
 
 
     @PostMapping(value = "/order/{userName}")
-    public ResponseEntity<?> createOrder(@PathVariable(name = "userName") String userName, @PathVariable(name = "reception") Date reception, @RequestBody List<OrderProduct> orderProducts) {
+    public ResponseEntity<?> createOrder(@PathVariable(name = "userName") String userName, @PathVariable(name = "reception") Date reception, @RequestBody List<OrderProduct> orderProducts) throws OrderException {
 
         Order order = orderBusiness.createOrder(orderProducts, userName, reception);
 
@@ -50,7 +52,7 @@ public class OrderController {
     }
 
     @PutMapping(value = "/cancelOrder/{id}")
-    public ResponseEntity<?> cancelOrder(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<?> cancelOrder(@PathVariable(name = "id") Long id) throws OrderException {
 
         orderBusiness.cancelOrder(id);
 
@@ -58,7 +60,7 @@ public class OrderController {
     }
 
     @PutMapping(value = "/paidOrder/{id}")
-    public ResponseEntity<?> paidOrder(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<?> paidOrder(@PathVariable(name = "id") Long id) throws SequenceException, OrderException {
 
         orderBusiness.paidOrder(id);
 

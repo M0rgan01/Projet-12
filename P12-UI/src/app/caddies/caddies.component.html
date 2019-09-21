@@ -1,0 +1,29 @@
+<table *ngIf="caddyService.getSize() != 0" class="table">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Quantity</th>
+    <th>Unit price</th>
+    <th>Price</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let pi of caddyService.caddy.items|keyvalue">
+    <th>{{pi.value.product.id}}</th>
+    <td>{{pi.value.product.name}}</td>
+    <td>{{pi.value.quantite}}</td>
+    <td>{{pi.value.product.currentPrice |number:'0.2'}}</td>
+    <td>{{pi.value.price |number:'0.2'}}</td>
+    <td><button class="btn btn-danger" (click)="caddyService.removeProductToCaddy(pi.value.product)">Remove product</button></td>
+  </tr>
+  <tr>
+    <td colspan="4">Total</td>
+    <td>{{caddyService.getTotalPrice() |number:'0.2'}}</td>
+    <td></td>
+  </tr>
+  </tbody>
+</table>
+
+<div *ngIf="caddyService.getSize() == 0">Your caddy is empty</div>
