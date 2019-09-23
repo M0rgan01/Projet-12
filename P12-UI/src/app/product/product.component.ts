@@ -14,22 +14,22 @@ import {Product} from '../../model/product.model';
 export class ProductComponent implements OnInit {
 
   // object formulaire contenant un produit
-  productForm: FormGroup;
+  public productForm: FormGroup;
   // erreur à afficher dans le cas d'un produit non conforme
-  errorUpdate;
-  errorUpload;
+  public errorUpdate;
+  public errorUpload;
   // booleans de confirmation de mise à jour
-  successUpdate: boolean;
-  successUpload: boolean;
+  public successUpdate: boolean;
+  public successUpload: boolean;
   // produit récupérer par rapport à son id
-  product: Product;
+  public product: Product;
   // fichier(s) séléctionné(s) par l'utilisateur
-  selectedFile;
-  currentFileUpload;
+  public selectedFile;
+  public currentFileUpload;
   // progression de l'upload en serveur
-  progress = 0;
+  public progress = 0;
   // https://www.youtube.com/watch?v=sWX-PAyxphU&t=1197s
-  timeStamp = 0;
+  public timeStamp = 0;
 
   constructor(public authService: AuthenticationService,
               public api: APIService,
@@ -47,7 +47,7 @@ export class ProductComponent implements OnInit {
       // let url = atob(this.activeRoute.snapshot.params.url);
       const id = this.activeRoute.snapshot.params.url;
       // on récupère le produit
-      this.api.getRessources<Product>('/store/products/' + id).subscribe(dataProduct => {
+      this.api.getRessources<Product>('/p12-stock/public/product/' + id).subscribe(dataProduct => {
         this.product = dataProduct;
         this.productForm = this.formBuilder.group(dataProduct);
       }, error1 => {
@@ -85,7 +85,7 @@ export class ProductComponent implements OnInit {
       this.successUpload = false;
       this.progress = 0;
 
-      this.api.uploadPhoto(this.currentFileUpload, '/edit/products/photo/' + this.product.id).subscribe(event => {
+      this.api.uploadPhoto(this.currentFileUpload, '/p12-stock/adminRole/product/photo/' + this.product.id).subscribe(event => {
         // si le type est un événement de UploadProgress
         if (event.type === HttpEventType.UploadProgress) {
           this.progress = Math.round(100 * event.loaded / event.total);

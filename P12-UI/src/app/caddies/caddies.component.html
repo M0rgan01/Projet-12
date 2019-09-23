@@ -1,29 +1,42 @@
-<table *ngIf="caddyService.getSize() != 0" class="table">
-  <thead>
-  <tr>
-    <th>ID</th>
-    <th>Name</th>
-    <th>Quantity</th>
-    <th>Unit price</th>
-    <th>Price</th>
-    <th></th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let pi of caddyService.caddy.items|keyvalue">
-    <th>{{pi.value.product.id}}</th>
-    <td>{{pi.value.product.name}}</td>
-    <td>{{pi.value.quantite}}</td>
-    <td>{{pi.value.product.currentPrice |number:'0.2'}}</td>
-    <td>{{pi.value.price |number:'0.2'}}</td>
-    <td><button class="btn btn-danger" (click)="caddyService.removeProductToCaddy(pi.value.product)">Remove product</button></td>
-  </tr>
-  <tr>
-    <td colspan="4">Total</td>
-    <td>{{caddyService.getTotalPrice() |number:'0.2'}}</td>
-    <td></td>
-  </tr>
-  </tbody>
-</table>
+<div *ngIf="caddyService.getSize() != 0">
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Quantity</th>
+      <th>Unit price</th>
+      <th>Price</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let pi of caddyService.caddy.items|keyvalue">
+      <td>{{pi.value.product.name}}</td>
+      <td>{{pi.value.orderQuantity}}</td>
+      <td *ngIf="!pi.value.product.promotion">{{pi.value.product.price |number:'0.2'}}</td>
+      <td *ngIf="pi.value.product.promotion">{{pi.value.product.promotionPrice |number:'0.2'}}</td>
+      <td>{{pi.value.totalPriceRow | number:'0.2'}}</td>
+      <td>
+        <button class="btn btn-danger" (click)="caddyService.removeProductToCaddy(pi.value.product)">Remove product
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3">Total</td>
+      <td>{{caddyService.getTotalPrice() |number:'0.2'}}</td>
+      <td></td>
+    </tr>
+    </tbody>
+  </table>
+
+
+    <select class="form-control" [(ngModel)]="date">
+      <option disabled selected [value]="undefined">Choisir une date de réception</option>
+      <option *ngFor="let opt of listDate" [value]="opt">{{opt | date: 'dd/MM/yyyy'}}</option>
+    </select>
+    <button class="btn btn-primary mt-2" [disabled]="date == undefined" type="submit" (click)="onSubmitOrder(date)">Commander</button>
+
+
+</div>
 
 <div *ngIf="caddyService.getSize() == 0">Your caddy is empty</div>

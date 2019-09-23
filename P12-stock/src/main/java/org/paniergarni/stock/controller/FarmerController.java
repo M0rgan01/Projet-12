@@ -18,7 +18,7 @@ public class FarmerController {
     private FarmerBusiness farmerBusiness;
 
 
-    @GetMapping(value = "/farmer/{id}")
+    @GetMapping(value = "/public/farmer/{id}")
     public ResponseEntity<?> getFarmerById(@PathVariable(name = "id") Long id) throws StockException {
 
         Farmer farmer = farmerBusiness.getFarmer(id);
@@ -26,7 +26,7 @@ public class FarmerController {
         return ResponseEntity.ok().body(farmer);
     }
 
-    @GetMapping(value = "/farmers")
+    @GetMapping(value = "/public/farmers")
     public ResponseEntity<?> getFarmers() {
 
         List<Farmer> farmers = farmerBusiness.getFarmers();
@@ -34,7 +34,7 @@ public class FarmerController {
         return ResponseEntity.ok().body(farmers);
     }
 
-    @PostMapping(value = "/farmer")
+    @PostMapping(value = "/adminRole/farmer")
     public ResponseEntity<?> createFarmer(@Valid @RequestBody Farmer farmer) throws StockException {
 
         farmer = farmerBusiness.createFarmer(farmer);

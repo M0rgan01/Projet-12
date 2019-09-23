@@ -16,7 +16,7 @@ public class UserController {
     private UserBusiness userBusiness;
 
 
-    @PostMapping(value = "/user")
+    @PostMapping(value = "/adminRole/user")
     public ResponseEntity<?> createUser(@RequestBody @Valid User user) throws AccountException {
 
         user = userBusiness.createUser(user);
@@ -24,15 +24,15 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @PostMapping(value = "/updateUser")
-    public ResponseEntity<?> updateUser(@RequestBody @Valid User user) throws AccountException {
+    @PutMapping(value = "/userRole/updateUser/{userName}")
+    public ResponseEntity<?> updateUser(@PathVariable String userName, @RequestBody @Valid User user) throws AccountException {
 
         user = userBusiness.updateUser(user);
 
         return ResponseEntity.ok().body(user);
     }
 
-    @GetMapping(value = "/userByUserName/{userName}")
+    @GetMapping(value = "/userRole/userByUserName/{userName}")
     public ResponseEntity<?> getUserByUserName(@PathVariable String userName) throws AccountException {
 
         User user = userBusiness.getUserByUserName(userName);
@@ -40,7 +40,7 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @GetMapping(value = "/userByEmail/{email}")
+    @GetMapping(value = "/userRole/userByEmail/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email) throws AccountException {
 
         User user = userBusiness.getUserByEmail(email);
@@ -48,7 +48,7 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @GetMapping(value = "/userById/{id}")
+    @GetMapping(value = "/userRole/userById/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) throws AccountException {
 
         User user = userBusiness.getUserById(id);
@@ -56,7 +56,7 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @GetMapping(value = "/userConnection/{username}/{password}")
+    @GetMapping(value = "/adminRole/userConnection/{username}/{password}")
     public ResponseEntity<?> getUserById(@PathVariable String username, @PathVariable String password) throws AccountException {
 
         User user = userBusiness.doConnection(username, password);

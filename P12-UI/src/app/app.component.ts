@@ -13,7 +13,7 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class AppComponent {
 
-  public title = 'JWT-Front-API';
+  public title = 'Panier garni';
   public isTogled = false;
 
   constructor(public authService: AuthenticationService,

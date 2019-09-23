@@ -25,20 +25,21 @@
         <div class="card-header">{{p.name}}</div>
         <div class="card-body">
           <div class="text-center">
-            <img height="100" [src]="this.api.host + '/p12-stock/product/photo/' + p.id" alt="">
+            <img height="100" [src]="this.api.host + '/p12-stock/public/product/photo/' + p.id" alt="">
           </div>
           <p class="card-text m-0">Price: {{p.price | number:'0.2'}}</p>
-          <p class="card-text m-0">Stock: {{p.quantity}}</p>
+          <p *ngIf="p.available" class="card-text m-0">En stock !</p>
+          <p *ngIf="!p.available" class="card-text m-0">Produit indisponible</p>
           <p class="card-text m-0">Categorie: {{p.category.name}}</p>
           <p *ngIf="p.promotion" class="card-text m-0">En promotion !</p>
 
           <form #f="ngForm" (ngSubmit)="onAddProductToCaddy(p)">
             <div class="form-group">
               <label>Quantité : </label>
-              <input type="number" required class="form-control" min="0" max="10" [(ngModel)]="p.quantity"
-                     name="quantite">
+              <input type="number" required class="form-control" min="1" max="10" [(ngModel)]="p.orderQuantity"
+                     name="orderQuantity">
             </div>
-            <button type="submit" class="btn btn-primary">Commander</button>
+            <button type="submit" [disabled]="f.invalid" class="btn btn-primary">Commander</button>
             <a *ngIf="authService.isAuth() && authService.isAdmin()" class="btn btn-success text-white cliquable ml-1"
                (click)="onEditProduct(p)">Modifier</a>
           </form>

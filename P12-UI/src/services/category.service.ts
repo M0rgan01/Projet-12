@@ -13,7 +13,7 @@ export class CategoryService {
   categories: Array<Category>;
 
   getCategories() {
-     this.api.getRessources<Array<Category>>('/p12-stock/categories').subscribe(data => {
+     this.api.getRessources<Array<Category>>('/p12-stock/public/categories').subscribe(data => {
        this.categories = data;
     }, error1 => {
        console.log(error1.message);

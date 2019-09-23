@@ -15,22 +15,27 @@
 
           <div class="form-group">
             <label>Product Name : </label>
-            <input type="text" required class="form-control" formControlName="id">
-          </div>
-
-          <div class="form-group">
-            <label>Product Name : </label>
             <input type="text" required class="form-control" formControlName="name">
           </div>
 
           <div class="form-group">
             <label>Product price : </label>
-            <input type="text" required class="form-control" formControlName="currentPrice">
+            <input type="number" required class="form-control" formControlName="price">
+          </div>
+
+          <div class="form-group">
+            <label>Product promotionPrice : </label>
+            <input type="number" required class="form-control" formControlName="promotionPrice">
           </div>
 
           <div class="form-group">
             <label>Product stock : </label>
-            <input type="number" required class="form-control" formControlName="stock">
+            <input type="number" required class="form-control" formControlName="quantity">
+          </div>
+
+          <div class="form-group">
+            <label>Product capacity : </label>
+            <input type="number" required class="form-control" formControlName="capacity">
           </div>
 
           <button class="btn btn-primary mt-2" [disabled]="productForm.invalid" type="submit">Save</button>
@@ -51,7 +56,7 @@
         </div>
 
         <div class="text-center">
-          <img height="100" src="{{this.api.host + '/store/products/photo/' + product.id + '?ts=' + timeStamp}}" alt="" class="mb-3">
+          <img height="100" src="{{this.api.host + '/p12-stock/public/product/photo/' + product.id + '?ts=' + timeStamp}}" alt="" class="mb-3">
         </div>
 
         <div class="custom-file overflow-hidden">

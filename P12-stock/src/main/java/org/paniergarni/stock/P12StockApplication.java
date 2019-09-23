@@ -75,6 +75,8 @@ public class P12StockApplication implements CommandLineRunner {
                 p.setQuantity(rm.nextInt(50));
                 p.setAvailable(rm.nextBoolean());
                 p.setPromotion(rm.nextBoolean());
+                if (p.isPromotion())
+                    p.setPromotionPrice(100 + rm.nextInt(1000));
                 p.setPhoto("angular.png");
                 p.setCategory(c);
                 p.setFarmer(farmers.get(rm.nextInt(farmers.size())));

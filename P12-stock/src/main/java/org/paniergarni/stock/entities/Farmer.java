@@ -22,7 +22,7 @@ public class Farmer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank
-    @Size(min = 4, max = 50)
+    @Size(min = 4, max = 50, message = "farmer.name.incorrect.size")
     private String name;
     private String location;
     private String phone;

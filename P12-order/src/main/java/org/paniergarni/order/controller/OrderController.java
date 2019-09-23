@@ -18,7 +18,7 @@ public class OrderController {
     @Autowired
     private OrderBusiness orderBusiness;
 
-    @GetMapping(value = "/order/{id}")
+    @GetMapping(value = "/userRole/order/{id}")
     public ResponseEntity<?> getOrderById(@PathVariable(name = "id") Long id) throws OrderException {
 
         Order order = orderBusiness.getOrder(id);
@@ -26,7 +26,7 @@ public class OrderController {
         return ResponseEntity.ok().body(order);
     }
 
-    @GetMapping(value = "/receptionOrders")
+    @GetMapping(value = "/adminRole/receptionOrders")
     public ResponseEntity<?> getListReceptionOrder() {
 
         List<Order> orders = orderBusiness.getListOrderReception();
@@ -34,7 +34,7 @@ public class OrderController {
         return ResponseEntity.ok().body(orders);
     }
 
-    @GetMapping(value = "/lateOrders")
+    @GetMapping(value = "/adminRole/lateOrders")
     public ResponseEntity<?> getListLateOrder() {
 
         List<Order> orders = orderBusiness.getListOrderLate();
@@ -42,8 +42,15 @@ public class OrderController {
         return ResponseEntity.ok().body(orders);
     }
 
+    @GetMapping(value = "/userRole/listDateReception")
+    public ResponseEntity<?> getListDateReception() {
 
-    @PostMapping(value = "/order/{userName}")
+        List<Date> dateList = orderBusiness.getListDateReception();
+
+        return ResponseEntity.ok().body(dateList);
+    }
+
+    @PostMapping(value = "/userRole/order/{userName}/{reception}")
     public ResponseEntity<?> createOrder(@PathVariable(name = "userName") String userName, @PathVariable(name = "reception") Date reception, @RequestBody List<OrderProduct> orderProducts) throws OrderException {
 
         Order order = orderBusiness.createOrder(orderProducts, userName, reception);
@@ -51,7 +58,7 @@ public class OrderController {
         return ResponseEntity.ok().body(order);
     }
 
-    @PutMapping(value = "/cancelOrder/{id}")
+    @PutMapping(value = "/userRole/cancelOrder/{id}")
     public ResponseEntity<?> cancelOrder(@PathVariable(name = "id") Long id) throws OrderException {
 
         orderBusiness.cancelOrder(id);
@@ -59,7 +66,7 @@ public class OrderController {
         return ResponseEntity.ok().body(null);
     }
 
-    @PutMapping(value = "/paidOrder/{id}")
+    @PutMapping(value = "/adminRole/paidOrder/{id}")
     public ResponseEntity<?> paidOrder(@PathVariable(name = "id") Long id) throws SequenceException, OrderException {
 
         orderBusiness.paidOrder(id);

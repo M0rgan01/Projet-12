@@ -1,10 +1,9 @@
-import {ItemProduct} from './item-product.model';
-import {User} from './user.model';
+import {OrderProduct} from './order-product.model';
 
 export class Caddy {
 
-  items: Map<number, ItemProduct> = new Map();
-  user: User;
+  items: Map<number, OrderProduct> = new Map();
+  userName: string;
 
   constructor() {}
 }

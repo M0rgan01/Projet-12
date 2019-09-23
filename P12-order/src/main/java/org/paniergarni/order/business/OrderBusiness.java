@@ -16,4 +16,5 @@ public interface OrderBusiness {
     List<Order> getListOrderLate();
     List<Order> getListOrderReception();
     String addReference(Order order);
+    List<Date> getListDateReception();
 }

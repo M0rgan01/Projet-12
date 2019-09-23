@@ -54,17 +54,17 @@ export class ProductsComponent implements OnInit {
     const categoryId = this.activeRoute.snapshot.params.categoryId;
     if (promotion === '1' && !isNaN(promotion)) {
       this.title = 'Produit en promotion';
-      this.getProduct('/p12-stock/productsByPromotion/' + page + '/' + size);
+      this.getProduct('/p12-stock/public/productsByPromotion/' + page + '/' + size);
 
     } else if (promotion === '2' && !isNaN(promotion) && !isNaN(categoryId)) {
 
-      this.api.getRessources<Category>('/p12-stock/category/' + categoryId).subscribe(cat => {
+      this.api.getRessources<Category>('/p12-stock/public/category/' + categoryId).subscribe(cat => {
         if (cat) {
           this.title = 'Produit de la catégorie ' + cat.name;
         }
       }, error1 => {
       });
-      this.getProduct('/p12-stock/productsByCategoryId/' + categoryId + '/' + page + '/' + size);
+      this.getProduct('/p12-stock/public/productsByCategoryId/' + categoryId + '/' + page + '/' + size);
     }
 
   }

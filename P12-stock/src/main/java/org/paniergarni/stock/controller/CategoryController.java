@@ -16,7 +16,7 @@ public class CategoryController {
     @Autowired
     private CategoryBusiness categoryBusiness;
 
-    @GetMapping(value = "/category/{id}")
+    @GetMapping(value = "/public/category/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable(name = "id") Long id) throws StockException {
 
         Category category = categoryBusiness.getCategory(id);
@@ -24,7 +24,7 @@ public class CategoryController {
         return ResponseEntity.ok().body(category);
     }
 
-    @GetMapping(value = "/categories")
+    @GetMapping(value = "/public/categories")
     public ResponseEntity<?> getCategories() {
 
         List<Category> categories = categoryBusiness.getCategories();
@@ -32,7 +32,7 @@ public class CategoryController {
         return ResponseEntity.ok().body(categories);
     }
 
-    @PostMapping(value = "/category")
+    @PostMapping(value = "/adminRole/category")
     public ResponseEntity<?> createCategory(@Valid @RequestBody Category category) throws StockException {
 
 

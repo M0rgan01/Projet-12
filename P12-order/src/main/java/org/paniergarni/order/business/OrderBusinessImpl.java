@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -129,11 +130,30 @@ public class OrderBusinessImpl implements OrderBusiness {
         Sequence sequence;
         try {
             sequence = sequenceBusiness.getByDate(order.getDate());
-        }catch (SequenceException e){
+        } catch (SequenceException e) {
             sequence = sequenceBusiness.createSequence();
         }
 
         return sequence.getDate() + "-" + sequence.getSequence();
+    }
+
+    @Override
+    public List<Date> getListDateReception() {
+
+        List<Date> dateList = new ArrayList<>();
+
+        Calendar calendar = Calendar.getInstance();
+
+        for (int i = 0; i < maxDaysReception; i++) {
+
+            if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
+                calendar.add(Calendar.DATE, 1);
+
+            calendar.add(Calendar.DATE, 1);
+            dateList.add(calendar.getTime());
+        }
+
+        return dateList;
     }
 
 

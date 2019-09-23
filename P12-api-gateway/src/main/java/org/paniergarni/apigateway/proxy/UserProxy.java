@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.*;
 @RibbonClient(name = "P12-account")
 public interface UserProxy {
 
-    @GetMapping(value = "/userByUserName/{userName}")
+    @GetMapping(value = "/userRole/userByUserName/{userName}")
     User findByUserName(@PathVariable String userName);
 
-    @GetMapping(value = "/userByEmail/{email}")
+    @GetMapping(value = "/userRole/userByEmail/{email}")
     User findByEmail(@PathVariable String email);
 
-    @PostMapping(value = "/user")
+    @PostMapping(value = "/adminRole/user")
     User createUser(@RequestBody User user);
 
-    @GetMapping(value = "/userConnection/{username}/{password}")
+    @GetMapping(value = "/adminRole/userConnection/{username}/{password}")
     User userConnection(@PathVariable String username, @PathVariable String password);
 }

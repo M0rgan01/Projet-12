@@ -38,10 +38,8 @@ export class TokenInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     return next.handle(this.addToken(request)).pipe(catchError(err => {
-
       if (err.status === 401) {
-        if (err.error.message === 'jwt.expired') {
-
+        if (err.error.error === 'jwt.expired') {
           this.api.sendRefreshToken().subscribe(resp => {
             // nous définisson un object jwt qui aura pour valeur l'en-tete
             if (resp.status === 200) {
@@ -58,8 +56,8 @@ export class TokenInterceptor implements HttpInterceptor {
           });
 
         }
-      } else if (err.status === 406) {
-        if (err.error.message === 'jwt.expired' || err.error.message === 'jwt.invalid') {
+      } else if (err.status === 403) {
+        if (err.error.error === 'jwt.expired' || err.error.error === 'jwt.invalid') {
           this.authService.logout();
         }
       } else if (err.status === 500) {
