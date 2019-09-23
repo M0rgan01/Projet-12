@@ -70,16 +70,22 @@ export class APIService {
     this.router.navigateByUrl('/error');
   }
 
+  /////////////////////////////// NotFound /////////////////////////////////
+
+  redirectToNotFound() {
+    this.router.navigateByUrl('/404');
+  }
+
   /////////////////////////////// RETRY /////////////////////////////////
 
   genericRetryStrategy = ({
                             maxRetryAttempts = 1,
                             scalingDuration = 200,
-                            excludedStatusCodes = []
+                            onlyStatusCodes = [401]
                           }: {
     maxRetryAttempts?: number,
     scalingDuration?: number,
-    excludedStatusCodes?: number[]
+    onlyStatusCodes?: number[]
   } = {}) => (attempts: Observable<any>) => {
     return attempts.pipe(
       mergeMap((error, i) => {
@@ -88,7 +94,7 @@ export class APIService {
         // or response is a status code we don't wish to retry, throw error
         if (
           retryAttempt > maxRetryAttempts ||
-          excludedStatusCodes.find(e => e === error.status)
+          !onlyStatusCodes.find(e => e === error.status)
         ) {
           return throwError(error);
         }
@@ -99,7 +105,5 @@ export class APIService {
         // retry after 1s, 2s, etc...
         return timer(retryAttempt * scalingDuration);
       }));
-  };
-
-
+  }
 }

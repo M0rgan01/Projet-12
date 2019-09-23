@@ -32,12 +32,6 @@ export class AppComponent {
     this.authService.logout();
   }
 
-  // produit par catégorie
-  getProductsByCategory(c) {
-    const timeStamp = Date.now();
-    this.router.navigateByUrl('/products/2/' + c.id + '?ts=' + timeStamp);
-  }
-
   // déroulement de la sidebar
   onSwitchToggle() {
     if (this.isTogled) {

@@ -19,6 +19,7 @@ export class ProductsComponent implements OnInit {
   public page = 0;
   public products: PageProduct;
   public listSize: Array<number> = [4, 8, 12];
+  public paramCategoryId: string;
 
   constructor(public api: APIService,
               public router: Router,
@@ -28,19 +29,30 @@ export class ProductsComponent implements OnInit {
   }
 
   ngOnInit() {
-
     // on écoute un changement de route
     this.router.events.subscribe((val) => {
-
       // si la navigation arrive à terme (il y a plusieur event, donc on en garde que un pour éviter plusieur éxécution)
-      if (val instanceof NavigationEnd) {
+      if (val instanceof NavigationEnd && val.url.startsWith('/products')) {
+        this.setParamCategoryId();
         this.checkProductsHome(this.page, this.size);
       }
     });
 
+    this.setParamCategoryId();
     // s'il y a rafraichissement manuel de la page
     this.checkProductsHome(this.page, this.size);
 
+  }
+
+  setParamCategoryId() {
+    this.paramCategoryId = undefined;
+    this.activeRoute.url.subscribe(() => {
+      if (this.activeRoute.snapshot.firstChild) {
+        if (this.activeRoute.snapshot.firstChild.paramMap.get('categoryId')) {
+          this.paramCategoryId = this.activeRoute.snapshot.firstChild.paramMap.get('categoryId');
+        }
+      }
+    });
   }
 
   private getProduct(url) {
@@ -50,22 +62,17 @@ export class ProductsComponent implements OnInit {
   }
 
   checkProductsHome(page, size) {
-    const promotion = this.activeRoute.snapshot.params.promotion;
-    const categoryId = this.activeRoute.snapshot.params.categoryId;
-    if (promotion === '1' && !isNaN(promotion)) {
-      this.title = 'Produit en promotion';
-      this.getProduct('/p12-stock/public/productsByPromotion/' + page + '/' + size);
-
-    } else if (promotion === '2' && !isNaN(promotion) && !isNaN(categoryId)) {
-
-      this.api.getRessources<Category>('/p12-stock/public/category/' + categoryId).subscribe(cat => {
-        if (cat) {
-          this.title = 'Produit de la catégorie ' + cat.name;
-        }
-      }, error1 => {
-      });
-      this.getProduct('/p12-stock/public/productsByCategoryId/' + categoryId + '/' + page + '/' + size);
-    }
+     if (this.paramCategoryId) {
+         this.api.getRessources<Category>('/p12-stock/public/category/' + this.paramCategoryId).subscribe(cat => {
+           if (cat) {
+             this.title = 'Produit de la catégorie ' + cat.name;
+             this.getProduct('/p12-stock/public/productsByCategoryId/' + this.paramCategoryId + '/' + page + '/' + size);
+           }
+         });
+    } else {
+       this.title = 'Produit en promotion';
+       this.getProduct('/p12-stock/public/productsByPromotion/' + page + '/' + size);
+     }
 
   }
 

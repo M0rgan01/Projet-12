@@ -29,14 +29,20 @@
     </tbody>
   </table>
 
-
+  <div *ngIf="authenticationService.isAuth()">
     <select class="form-control" [(ngModel)]="date">
       <option disabled selected [value]="undefined">Choisir une date de réception</option>
       <option *ngFor="let opt of listDate" [value]="opt">{{opt | date: 'dd/MM/yyyy'}}</option>
     </select>
     <button class="btn btn-primary mt-2" [disabled]="date == undefined" type="submit" (click)="onSubmitOrder(date)">Commander</button>
+  </div>
 
+  <div *ngIf="!authenticationService.isAuth()">
 
+    <p>Pour commander ce panier, veuillez vous identifier</p>
+    <button type="button" routerLink="/login/returnCaddy" routerLinkActive="active" class="btn btn-success mt-1">Login
+    </button>
+  </div>
 </div>
 
 <div *ngIf="caddyService.getSize() == 0">Your caddy is empty</div>

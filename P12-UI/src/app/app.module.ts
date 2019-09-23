@@ -24,12 +24,12 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 
 const appRoutes: Routes = [
-  {path: 'login', component: LoginComponent},
+  {path: 'login', component: LoginComponent, children: [{path: ':redirect', component: LoginComponent}]},
   {path: 'register', component: RegistrationComponent},
-  {path: 'products/:promotion/:categoryId', component: ProductsComponent},
+  {path: 'products', component: ProductsComponent, children: [{path: ':categoryId', component: ProductsComponent}]},
   {path: 'edit-product/:url', canActivate: [AuthGuardService], component: ProductComponent},
   {path: 'caddies', component: CaddiesComponent},
-  {path: '', redirectTo: 'products/1/0', pathMatch: 'full'},
+  {path: '', redirectTo: 'products', pathMatch: 'full'},
   {path: 'error', component: ErrorComponent},
   {path: 'not-found', component: FourHoFourComponent},
   {path: '**', redirectTo: 'not-found'}

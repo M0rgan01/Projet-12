@@ -60,10 +60,7 @@ export class TokenInterceptor implements HttpInterceptor {
         if (err.error.error === 'jwt.expired' || err.error.error === 'jwt.invalid') {
           this.authService.logout();
         }
-      } else if (err.status === 500) {
-        this.api.redirectToError();
       }
-
       return throwError(err);
     }));
   }

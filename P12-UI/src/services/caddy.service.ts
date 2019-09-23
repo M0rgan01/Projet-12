@@ -2,14 +2,14 @@ import {Injectable} from '@angular/core';
 import {Caddy} from '../model/caddy.model';
 import {Product} from '../model/product.model';
 import {OrderProduct} from '../model/order-product.model';
-import {AuthenticationService} from './authentification.service';
+
 
 @Injectable()
 export class CaddyService {
 
   public caddy;
 
-  constructor(public authenticationService: AuthenticationService) {
+  constructor() {
     this.loadCaddyFromLocalStorage();
   }
 
@@ -30,10 +30,6 @@ export class CaddyService {
   }
 
   addProductToCaddy(product: Product) {
-
-    if (this.getSize() === 0) {
-      this.caddy.userName = this.authenticationService.getUserName();
-    }
 
     let orderProduct = this.caddy.items[product.id];
     console.log(product.orderQuantity);
@@ -89,6 +85,7 @@ export class CaddyService {
     }
     return orderProducts;
   }
+
 
   getSize() {
     return Object.keys(this.caddy.items).length;

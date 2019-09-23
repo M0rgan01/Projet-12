@@ -1,7 +1,7 @@
 <!--BARRE DE NAVIGATION TOP-->
 <nav class="navbar fixed-top navbar-expand-md navbar-dark bg-dark border-bottom border-light">
 
-  <a class="navbar-brand ml-2 text-white cliquable" routerLink="/">{{title}}</a>
+  <a class="navbar-brand ml-2 text-white cliquable" routerLink="/products">{{title}}</a>
 
   <button (click)="onSwitchToggle()" type="button" class="btn mr-auto d-none d-md-block"><span
     class="navbar-toggler-icon"></span></button>
@@ -22,7 +22,7 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a *ngFor="let c of categoryService.categories" class="dropdown-item cliquable"
-             (click)="getProductsByCategory(c)">{{c.name}}</a>
+             [routerLink]="['/products', c.id]">{{c.name}}</a>
         </div>
       </li>
 
