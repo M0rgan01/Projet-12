@@ -75,7 +75,7 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
-    @PutMapping(value = "/userRole/productQuantity/{id}/{quantity}")
+    @PutMapping(value = "adminRole/productQuantity/{quantity}/{id}")
     public ResponseEntity<?> updateProductQuantity( @PathVariable Long id, @PathVariable int quantity) throws StockException {
 
        Product product = productBusiness.updateProductQuantity(quantity, id);

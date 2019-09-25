@@ -1,6 +1,7 @@
 package org.paniergarni.order.business;
 
 import feign.FeignException;
+import org.aspectj.weaver.ast.Or;
 import org.paniergarni.order.dao.OrderRepository;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
@@ -15,6 +16,8 @@ import org.paniergarni.order.proxy.ProductProxy;
 import org.paniergarni.order.proxy.UserProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -41,20 +44,24 @@ public class OrderBusinessImpl implements OrderBusiness {
     private int maxHoursCancelOrder;
 
     @Override
-    public synchronized Order createOrder(List<OrderProduct> orderProducts, String userName, Date reception) throws OrderException {
+    public synchronized Order createOrder(List<OrderProduct> orderProducts, String userName, Long reception) throws OrderException {
         User user = userProxy.findByUserName(userName);
         Order order = new Order();
         double totalPrice = 0;
 
         for (OrderProduct orderProduct : orderProducts) {
+
             try {
+                System.out.println("Stock commandé : " + orderProduct.getOrderQuantity());
                 Product product = productProxy.updateProductQuantity(orderProduct.getOrderQuantity(), orderProduct.getProductId());
+                System.out.println("Stock réél commandé : " + product.getOrderProductRealQuantity());
                 orderProduct.setRealQuantity(product.getOrderProductRealQuantity());
                 orderProduct.setTotalPriceRow(product.getPrice() * orderProduct.getRealQuantity());
                 totalPrice = totalPrice + orderProduct.getTotalPriceRow();
                 orderProduct.setOrder(order);
             } catch (FeignException e) {
                 orderProduct.setRealQuantity(0);
+                System.out.println(e.contentUTF8());
             }
         }
 
@@ -65,13 +72,15 @@ public class OrderBusinessImpl implements OrderBusiness {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, minHoursReception);
 
-        if (reception.before(calendar.getTime()))
+        Date receptionDate =new Date(reception);
+
+        if (receptionDate.before(calendar.getTime()))
             throw new ReceptionException("order.reception.before.min.value");
 
         calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, maxDaysReception);
 
-        if (reception.after(calendar.getTime()))
+        if (receptionDate.after(calendar.getTime()))
             throw new ReceptionException("order.reception.after.max.value");
 
         order.setOrderProducts(orderProducts);
@@ -81,7 +90,7 @@ public class OrderBusinessImpl implements OrderBusiness {
         order.setReference(addReference(order));
         order.setPaid(false);
         order.setCancel(false);
-        order.setReception(truncateTime(reception));
+        order.setReception(truncateTime(receptionDate));
         order.setTotalPrice(totalPrice);
         return orderRepository.save(order);
     }
@@ -89,6 +98,24 @@ public class OrderBusinessImpl implements OrderBusiness {
     @Override
     public Order getOrder(Long id) throws OrderException {
         return orderRepository.findById(id).orElseThrow(() -> new OrderException("order.id.incorrect"));
+    }
+
+    @Override
+    public Order getOrder(Long id, String userName) throws OrderException, FeignException {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderException("order.id.incorrect"));
+        User user = userProxy.findByUserName(userName);
+
+        if (!order.getUserId().equals(user.getId())){
+            throw new OrderException("order.id.incorrect");
+        }
+
+        return order;
+    }
+
+    @Override
+    public Page<Order> getOrders(String userName, int page, int size) throws FeignException {
+        User user = userProxy.findByUserName(userName);
+        return  orderRepository.getAllByUserIdOrderByDate(user.getId(), PageRequest.of(page, size));
     }
 
     @Override

@@ -5,6 +5,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {HttpEventType, HttpResponse} from '@angular/common/http';
 import {Product} from '../../model/product.model';
+import {CaddyService} from '../../services/caddy.service';
 
 @Component({
   selector: 'app-edit-product',
@@ -30,34 +31,38 @@ export class ProductComponent implements OnInit {
   public progress = 0;
   // https://www.youtube.com/watch?v=sWX-PAyxphU&t=1197s
   public timeStamp = 0;
+  public paramProductId: string;
+  public modification: boolean;
 
   constructor(public authService: AuthenticationService,
               public api: APIService,
               public router: Router,
               public activeRoute: ActivatedRoute,
-              public formBuilder: FormBuilder) {
+              public formBuilder: FormBuilder,
+              public caddyService: CaddyService) {
   }
 
   ngOnInit() {
-    if (!this.authService.isAdmin()) {
-      this.router.navigateByUrl('/404');
-    } else {
 
-      // on récupère l'url du produit et on le decode
-      // let url = atob(this.activeRoute.snapshot.params.url);
-      const id = this.activeRoute.snapshot.params.url;
-      // on récupère le produit
-      this.api.getRessources<Product>('/p12-stock/public/product/' + id).subscribe(dataProduct => {
-        this.product = dataProduct;
-        this.productForm = this.formBuilder.group(dataProduct);
-      }, error1 => {
-        this.router.navigateByUrl('/error');
-      });
+    this.paramProductId = undefined;
+    this.activeRoute.url.subscribe(() => {
+      if (this.activeRoute.snapshot.firstChild) {
+        if (this.activeRoute.snapshot.firstChild.paramMap.get('productId')) {
+          this.paramProductId = this.activeRoute.snapshot.firstChild.paramMap.get('productId');
+        }
+      }
+    });
+    // on récupère le produit
+    this.api.getRessources<Product>('/p12-stock/public/product/' + this.paramProductId).subscribe(dataProduct => {
+      this.product = dataProduct;
+      this.productForm = this.formBuilder.group(dataProduct);
+    }, error1 => {
+      this.router.navigateByUrl('/error');
+    });
 
-    }
   }
 
-  // formulaire de modification
+// formulaire de modification
   onSubmitProduct() {
     this.successUpdate = false;
     this.api.putRessources('/edit/products', this.productForm.value).subscribe(data => {
@@ -68,7 +73,7 @@ export class ProductComponent implements OnInit {
     });
   }
 
-  // récupération de la photo
+// récupération de la photo
   onSelectedFile(event) {
     // selectedFile devient une liste de fichier
     this.selectedFile = event.target.files;

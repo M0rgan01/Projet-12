@@ -1,0 +1,26 @@
+<div *ngIf="order">
+  <div class="table-responsive my-3">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Nom</th>
+        <th class="text-right">Quantité commandé</th>
+        <th class="text-right">Quantité réel commandé</th>
+        <th class="text-right">Prix total</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let orderProducts of order.orderProducts">
+        <td *ngIf="orderProducts.product">{{orderProducts.product.name}}</td>
+        <td class="text-right">{{orderProducts.orderQuantity}}</td>
+        <td class="text-right">{{orderProducts.realQuantity}}</td>
+        <td class="text-right">{{orderProducts.totalPriceRow | number:'0.2'}}</td>
+        <td class="text-right">
+          <button [routerLink]="['/product', orderProducts.productId]" class="btn btn-info">Détails</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

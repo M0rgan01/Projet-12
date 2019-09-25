@@ -1,40 +1,48 @@
-<div *ngIf="caddyService.getSize() != 0">
-  <table class="table">
-    <thead>
-    <tr>
-      <th>Name</th>
-      <th>Quantity</th>
-      <th>Unit price</th>
-      <th>Price</th>
-      <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let pi of caddyService.caddy.items|keyvalue">
-      <td>{{pi.value.product.name}}</td>
-      <td>{{pi.value.orderQuantity}}</td>
-      <td *ngIf="!pi.value.product.promotion">{{pi.value.product.price |number:'0.2'}}</td>
-      <td *ngIf="pi.value.product.promotion">{{pi.value.product.promotionPrice |number:'0.2'}}</td>
-      <td>{{pi.value.totalPriceRow | number:'0.2'}}</td>
-      <td>
-        <button class="btn btn-danger" (click)="caddyService.removeProductToCaddy(pi.value.product)">Remove product
-        </button>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="3">Total</td>
-      <td>{{caddyService.getTotalPrice() |number:'0.2'}}</td>
-      <td></td>
-    </tr>
-    </tbody>
-  </table>
 
+<div class="text-center">
+  <h3>Mon panier</h3>
+</div>
+
+<div *ngIf="caddyService.getSize() != 0">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Quantity</th>
+        <th>Unit price</th>
+        <th>Price</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let pi of caddyService.caddy.items|keyvalue">
+        <td>{{pi.value.product.name}}</td>
+        <td>{{pi.value.orderQuantity}}</td>
+        <td *ngIf="!pi.value.product.promotion">{{pi.value.product.price |number:'0.2'}}</td>
+        <td *ngIf="pi.value.product.promotion">{{pi.value.product.promotionPrice |number:'0.2'}}</td>
+        <td>{{pi.value.totalPriceRow | number:'0.2'}}</td>
+        <td>
+          <button class="btn btn-danger" (click)="caddyService.removeProductToCaddy(pi.value.product)">Remove product
+          </button>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">Total</td>
+        <td>{{caddyService.getTotalPrice() |number:'0.2'}}</td>
+        <td></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
   <div *ngIf="authenticationService.isAuth()">
     <select class="form-control" [(ngModel)]="date">
       <option disabled selected [value]="undefined">Choisir une date de réception</option>
-      <option *ngFor="let opt of listDate" [value]="opt">{{opt | date: 'dd/MM/yyyy'}}</option>
+      <option *ngFor="let opt of listDate" [value]="opt.getTime()">{{opt | date: 'dd/MM/yyyy'}}</option>
     </select>
-    <button class="btn btn-primary mt-2" [disabled]="date == undefined" type="submit" (click)="onSubmitOrder(date)">Commander</button>
+    <button class="btn btn-primary mt-2" [disabled]="date == undefined" type="submit" (click)="onSubmitOrder()">
+      Commander
+    </button>
   </div>
 
   <div *ngIf="!authenticationService.isAuth()">
@@ -45,4 +53,11 @@
   </div>
 </div>
 
-<div *ngIf="caddyService.getSize() == 0">Your caddy is empty</div>
+<div *ngIf="caddyService.getSize() == 0">
+  <div class="row justify-content-center font-weight-bold mt-5">
+  <p>Votre panier est vide !</p>
+  </div>
+  <div class="row justify-content-center font-weight-bold">
+    <button routerLink="/" class="btn btn-primary">Voir les produits en promotion</button>
+  </div>
+</div>

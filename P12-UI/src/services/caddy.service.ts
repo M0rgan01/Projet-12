@@ -29,10 +29,12 @@ export class CaddyService {
     localStorage.setItem('myCaddies', JSON.stringify(this.caddy));
   }
 
-  addProductToCaddy(product: Product) {
+  removeCaddy() {
+    localStorage.removeItem('myCaddies');
+  }
 
+  addProductToCaddy(product: Product) {
     let orderProduct = this.caddy.items[product.id];
-    console.log(product.orderQuantity);
     if (orderProduct === undefined) {
       orderProduct = new OrderProduct();
       orderProduct.productId = product.id;
@@ -48,22 +50,22 @@ export class CaddyService {
     this.saveCaddies();
   }
 
-
   removeProductToCaddy(product: Product) {
     if (this.caddy.items[product.id]) {
       delete this.caddy.items[product.id];
       this.saveCaddies();
+    }
+    if (this.getSize() === 0) {
+      this.removeCaddy();
     }
   }
 
   getTotalPriceRow(orderProduct: OrderProduct): number {
     let total: number;
     if (orderProduct.product.promotion) {
-      total = orderProduct.product.price * orderProduct.orderQuantity;
-      console.log(total + 'en promo');
-    } else {
       total = orderProduct.product.promotionPrice * orderProduct.orderQuantity;
-      console.log(total + 'pas promo');
+    } else {
+      total = orderProduct.product.price * orderProduct.orderQuantity;
     }
     return total;
   }

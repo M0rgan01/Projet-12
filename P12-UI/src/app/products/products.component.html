@@ -1,21 +1,21 @@
-<div *ngIf="products && products.totalElements != 0">
+<div class="text-center">
+  <h3>{{title}}</h3>
+</div>
 
-  <div class="text-center">
-    <h3>{{title}}</h3>
-  </div>
-
-  <!-- ------PHILTRE------- -->
-  <form #f="ngForm" (ngSubmit)="onSearchByPhiltre(f.value)">
-    <div class="form-row">
-      <div class="form-group col-md-4">
-        <label for="inputState">Size</label>
-        <select id="inputState" class="form-control" name="size" [ngModel]="size">
-          <option *ngFor="let s of listSize" [ngValue]="s" [selected]="size == s">{{s}}</option>
-        </select>
-      </div>
+<!-- ------PHILTRE------- -->
+<form #f="ngForm" (ngSubmit)="onSearchByPhiltre(f.value)">
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="inputState">Size</label>
+      <select id="inputState" class="form-control" name="size" [ngModel]="size">
+        <option *ngFor="let s of listSize" [ngValue]="s" [selected]="size == s">{{s}}</option>
+      </select>
     </div>
-    <button type="submit" class="btn btn-primary">Search</button>
-  </form>
+  </div>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<div *ngIf="products && products.totalElements != 0">
 
   <!-- ------PRODUCTS DISPLAY------- -->
 
@@ -27,22 +27,40 @@
           <div class="text-center">
             <img height="100" [src]="this.api.host + '/p12-stock/public/product/photo/' + p.id" alt="">
           </div>
-          <p class="card-text m-0">Price: {{p.price | number:'0.2'}}</p>
-          <p *ngIf="p.available" class="card-text m-0">En stock !</p>
-          <p *ngIf="!p.available" class="card-text m-0">Produit indisponible</p>
-          <p class="card-text m-0">Categorie: {{p.category.name}}</p>
-          <p *ngIf="p.promotion" class="card-text m-0">En promotion !</p>
 
-          <form #f="ngForm" (ngSubmit)="onAddProductToCaddy(p)">
-            <div class="form-group">
-              <label>Quantité : </label>
-              <input type="number" required class="form-control" min="1" max="10" [(ngModel)]="p.orderQuantity"
-                     name="orderQuantity">
+          <div class="row">
+            <div class="col-sm-6">
+              <h6 class="card-subtitle text-muted mt-1">Prix</h6>
+              <p class="card-text m-2" *ngIf="!p.promotion">{{p.price | number:'0.2'}}</p>
+              <p class="card-text m-2" *ngIf="p.promotion">
+                <del>{{p.price | number:'0.2'}}</del>
+                <span class="mx-2">{{p.promotionPrice | number:'0.2'}}</span><span class="badge badge-success">En promotion !</span></p>
+              <h6 class="card-subtitle text-muted mt-1">Disponibilité</h6>
+              <p *ngIf="p.available" class="card-text m-2"><span class="badge badge-success">En stock !</span></p>
+              <p *ngIf="!p.available" class="card-text m-2"><span
+                class="badge badge-warning">Produit indisponible</span>
+              </p>
+              <h6 class="card-subtitle text-muted mt-1">Categorie</h6>
+              <p class="card-text m-2">{{p.category.name}}</p>
+              <a [routerLink]="['/product', p.id]" class="btn btn-info text-white cliquable mt-1">Détails</a>
             </div>
-            <button type="submit" [disabled]="f.invalid" class="btn btn-primary">Commander</button>
-            <a *ngIf="authService.isAuth() && authService.isAdmin()" class="btn btn-success text-white cliquable ml-1"
-               (click)="onEditProduct(p)">Modifier</a>
-          </form>
+
+            <div class="col-sm-6 mt-2 mt-sm-0">
+              <div *ngIf="p.available">
+                <h5 class="card-title mt-1">Ajouté au panier</h5>
+                <form #f="ngForm" (ngSubmit)="caddyService.addProductToCaddy(p)">
+                  <div class="form-group">
+                    <label>Quantité : </label>
+                    <input type="number" required class="form-control" min="1" max="10" [(ngModel)]="p.orderQuantity"
+                           name="orderQuantity">
+                  </div>
+                  <button type="submit" [disabled]="f.invalid" class="btn btn-primary">Commander</button>
+
+                </form>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     </div>

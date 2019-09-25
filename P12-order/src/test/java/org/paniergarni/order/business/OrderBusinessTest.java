@@ -103,7 +103,7 @@ public class OrderBusinessTest {
         Mockito.when(productProxy.updateProductQuantity(orderProduct3.getOrderQuantity(), product3.getId())).thenReturn(product3);
         Mockito.when(orderRepository.save(Mockito.any(Order.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        order = orderBusiness.createOrder(orderProducts, user.getUserName(), calendar.getTime());
+        order = orderBusiness.createOrder(orderProducts, user.getUserName(), calendar.getTimeInMillis());
 
         for (OrderProduct orderProduct: order.getOrderProducts()) {
             if (orderProduct.getRealQuantity() == 0) {
@@ -124,7 +124,7 @@ public class OrderBusinessTest {
         Mockito.when(productProxy.updateProductQuantity(orderProduct2.getOrderQuantity(), product2.getId())).thenReturn(product2);
         Mockito.when(productProxy.updateProductQuantity(orderProduct3.getOrderQuantity(), product3.getId())).thenReturn(product3);
 
-         orderBusiness.createOrder(orderProducts, user.getUserName(), new Date());
+         orderBusiness.createOrder(orderProducts, user.getUserName(), new Date().getTime());
 
     }
 
@@ -138,7 +138,7 @@ public class OrderBusinessTest {
         Mockito.when(productProxy.updateProductQuantity(orderProduct2.getOrderQuantity(), product2.getId())).thenReturn(product2);
         Mockito.when(productProxy.updateProductQuantity(orderProduct3.getOrderQuantity(), product3.getId())).thenReturn(product3);
 
-        orderBusiness.createOrder(orderProducts, user.getUserName(), calendar.getTime());
+        orderBusiness.createOrder(orderProducts, user.getUserName(), calendar.getTimeInMillis());
     }
 
     @Test(expected = ReceptionException.class)
@@ -150,7 +150,7 @@ public class OrderBusinessTest {
         Mockito.when(productProxy.updateProductQuantity(orderProduct2.getOrderQuantity(), product2.getId())).thenReturn(product2);
         Mockito.when(productProxy.updateProductQuantity(orderProduct3.getOrderQuantity(), product3.getId())).thenReturn(product3);
 
-        orderBusiness.createOrder(orderProducts, user.getUserName(), calendar.getTime());
+        orderBusiness.createOrder(orderProducts, user.getUserName(), calendar.getTimeInMillis());
     }
 
     @Test

@@ -22,12 +22,20 @@ import {TokenInterceptor} from '../interceptor/interceptor';
 import {JwtModule, JwtModuleOptions} from '@auth0/angular-jwt';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import { OrdersComponent } from './orders/orders.component';
+import { OrderComponent } from './order/order.component';
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, children: [{path: ':redirect', component: LoginComponent}]},
   {path: 'register', component: RegistrationComponent},
   {path: 'products', component: ProductsComponent, children: [{path: ':categoryId', component: ProductsComponent}]},
-  {path: 'edit-product/:url', canActivate: [AuthGuardService], component: ProductComponent},
+  {
+    path: 'product',
+    component: ProductComponent,
+    children: [{path: ':productId', component: ProductComponent}]
+  },
+  {path: 'orders', canActivate: [AuthGuardService], component: OrdersComponent},
+  {path: 'order/:id', canActivate: [AuthGuardService], component: OrderComponent},
   {path: 'caddies', component: CaddiesComponent},
   {path: '', redirectTo: 'products', pathMatch: 'full'},
   {path: 'error', component: ErrorComponent},
@@ -59,7 +67,9 @@ export function createTranslateLoader(http: HttpClient) {
     ErrorComponent,
     ProductsComponent,
     ProductComponent,
-    CaddiesComponent
+    CaddiesComponent,
+    OrdersComponent,
+    OrderComponent
   ],
   imports: [
     BrowserModule,
@@ -83,4 +93,5 @@ export function createTranslateLoader(http: HttpClient) {
   }],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

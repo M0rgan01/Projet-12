@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {APIService} from '../../services/api.service';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
-import {AuthenticationService} from '../../services/authentification.service';
-import {Product} from '../../model/product.model';
 import {CaddyService} from '../../services/caddy.service';
-import {PageProduct} from '../../model/page-product.model';
 import {Category} from '../../model/category.model';
+import {Page} from '../../model/page.model';
+import {Product} from '../../model/product.model';
 
 @Component({
   selector: 'app-product',
@@ -17,14 +16,13 @@ export class ProductsComponent implements OnInit {
   public title;
   public size = 8;
   public page = 0;
-  public products: PageProduct;
+  public products: Page<Product>;
   public listSize: Array<number> = [4, 8, 12];
   public paramCategoryId: string;
 
   constructor(public api: APIService,
               public router: Router,
               public activeRoute: ActivatedRoute,
-              public authService: AuthenticationService,
               public caddyService: CaddyService) {
   }
 
@@ -56,36 +54,26 @@ export class ProductsComponent implements OnInit {
   }
 
   private getProduct(url) {
-    this.api.getRessources<PageProduct>(url).subscribe(data => {
+    this.api.getRessources<Page<Product>>(url).subscribe(data => {
       this.products = data;
     });
   }
 
   checkProductsHome(page, size) {
-     if (this.paramCategoryId) {
-         this.api.getRessources<Category>('/p12-stock/public/category/' + this.paramCategoryId).subscribe(cat => {
-           if (cat) {
-             this.title = 'Produit de la catégorie ' + cat.name;
-             this.getProduct('/p12-stock/public/productsByCategoryId/' + this.paramCategoryId + '/' + page + '/' + size);
-           }
-         });
+    if (this.paramCategoryId) {
+      this.api.getRessources<Category>('/p12-stock/public/category/' + this.paramCategoryId).subscribe(cat => {
+        if (cat) {
+          this.title = 'Produit de la catégorie ' + cat.name;
+          this.getProduct('/p12-stock/public/productsByCategoryId/' + this.paramCategoryId + '/' + page + '/' + size);
+        }
+      }, error1 => {
+      });
     } else {
-       this.title = 'Produit en promotion';
-       this.getProduct('/p12-stock/public/productsByPromotion/' + page + '/' + size);
-     }
+      this.title = 'Produit en promotion';
+      this.getProduct('/p12-stock/public/productsByPromotion/' + page + '/' + size);
+    }
 
   }
-
-  onEditProduct(p: Product) {
-    // on encode en base64url pour un test
-    // let url = btoa(p._links.product.href);
-    this.router.navigateByUrl('/edit-product/' + p.id);
-  }
-
-  onAddProductToCaddy(p: Product) {
-    this.caddyService.addProductToCaddy(p);
-  }
-
 
   onSearchByPhiltre(data) {
     this.size = data.size;

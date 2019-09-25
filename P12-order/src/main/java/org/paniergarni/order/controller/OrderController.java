@@ -6,6 +6,7 @@ import org.paniergarni.order.entities.OrderProduct;
 import org.paniergarni.order.exception.OrderException;
 import org.paniergarni.order.exception.SequenceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +19,30 @@ public class OrderController {
     @Autowired
     private OrderBusiness orderBusiness;
 
-    @GetMapping(value = "/userRole/order/{id}")
+    @GetMapping(value = "/adminRole/order/{id}")
     public ResponseEntity<?> getOrderById(@PathVariable(name = "id") Long id) throws OrderException {
 
         Order order = orderBusiness.getOrder(id);
 
         return ResponseEntity.ok().body(order);
+    }
+
+    @GetMapping(value = "/userRole/order/{id}/{userName}")
+    public ResponseEntity<?> getOrderById(@PathVariable(name = "id") Long id, @PathVariable(name = "userName") String userName) throws OrderException {
+
+        Order order = orderBusiness.getOrder(id, userName);
+
+        return ResponseEntity.ok().body(order);
+    }
+
+    @GetMapping(value = "/userRole/orders/{userName}/{page}/{size}")
+    public ResponseEntity<?> getOrdersByUserName(@PathVariable(name = "userName") String userName,
+                                                 @PathVariable(name = "page") int page,
+                                                 @PathVariable(name = "size") int size) throws OrderException {
+
+        Page<Order> orders = orderBusiness.getOrders(userName, page, size);
+
+        return ResponseEntity.ok().body(orders);
     }
 
     @GetMapping(value = "/adminRole/receptionOrders")
@@ -51,7 +70,7 @@ public class OrderController {
     }
 
     @PostMapping(value = "/userRole/order/{userName}/{reception}")
-    public ResponseEntity<?> createOrder(@PathVariable(name = "userName") String userName, @PathVariable(name = "reception") Date reception, @RequestBody List<OrderProduct> orderProducts) throws OrderException {
+    public ResponseEntity<?> createOrder(@PathVariable(name = "userName") String userName, @PathVariable(name = "reception") Long reception, @RequestBody List<OrderProduct> orderProducts) throws OrderException {
 
         Order order = orderBusiness.createOrder(orderProducts, userName, reception);
 
