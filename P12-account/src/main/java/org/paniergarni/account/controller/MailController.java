@@ -14,7 +14,7 @@ public class MailController {
     @Autowired
     private MailBusiness mailBusiness;
 
-    @PostMapping (value = "/mail")
+    @PostMapping (value = "/userRole/mail")
     public ResponseEntity<?> updateMail(@RequestBody @Valid Mail mail){
 
         mail = mailBusiness.updateMail(mail);
@@ -22,7 +22,7 @@ public class MailController {
         return ResponseEntity.ok().body(mail);
     }
 
-    @GetMapping(value = "/mailByEmail/{email}")
+    @GetMapping(value = "/userRole/mailByEmail/{email}")
     public ResponseEntity<?> getMailByEmail(@PathVariable String email){
 
         Mail mail = mailBusiness.getMailByEmail(email);
@@ -30,7 +30,7 @@ public class MailController {
         return ResponseEntity.ok().body(mail);
     }
 
-    @GetMapping(value = "/mailById/{id}")
+    @GetMapping(value = "/userRole/mailById/{id}")
     public ResponseEntity<?> getMailById(@PathVariable Long id){
 
         Mail mail = mailBusiness.getMailById(id);

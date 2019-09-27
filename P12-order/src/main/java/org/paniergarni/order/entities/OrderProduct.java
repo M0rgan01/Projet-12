@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.paniergarni.order.object.Product;
 
 import javax.persistence.*;
 
@@ -25,5 +26,6 @@ public class OrderProduct {
     private int orderQuantity;
     private int realQuantity;
     private double totalPriceRow;
-
+    @Transient
+    private Product product;
 }

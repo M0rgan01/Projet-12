@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RibbonClient(name = "P12-stock")
 public interface ProductProxy {
 
-    @GetMapping(value = "/product/{id}")
+    @GetMapping(value = "/public/product/{id}")
     Product findById(@PathVariable Long id);
 
-    @PutMapping(value = "/productQuantity/{quantity}/{id}")
+    @PutMapping(value = "/adminRole/productQuantity/{quantity}/{id}")
     Product updateProductQuantity(@PathVariable int quantity, @PathVariable Long id);
 }

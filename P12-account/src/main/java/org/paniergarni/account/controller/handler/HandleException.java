@@ -24,8 +24,6 @@ public class HandleException {
         return ErrorResponse.of(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody

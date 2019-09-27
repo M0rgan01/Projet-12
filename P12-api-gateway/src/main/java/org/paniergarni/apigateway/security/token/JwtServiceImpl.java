@@ -92,6 +92,7 @@ public class JwtServiceImpl implements JwtService {
             if (e1 instanceof RetryableException)
                 throw new AuthenticationServiceException("internal.error");
             throw new UsernameNotFoundException("user.not.found");
+            // entre le temps ou le proxy est indisponible et est toujours sur eureka
         } catch (Exception e) {
             throw new ProxyException("internal.error");
         }

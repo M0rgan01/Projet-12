@@ -1,0 +1,133 @@
+<div class="row" *ngIf="authService.isAuth() && authService.isAdmin()">
+  <div class="col-12 text-center mb-3">
+    <button *ngIf="!modification" class="btn btn-info" (click)="modification = true">Modification</button>
+    <button *ngIf="modification" class="btn btn-info" (click)="modification = false">Détails</button>
+  </div>
+</div>
+
+<div class="row">
+
+  <div class="col-6 offset-3" *ngIf="modification">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Edit product</h5>
+        <form *ngIf="productForm" [formGroup]="productForm" (ngSubmit)="onSubmitProduct()">
+
+          <div *ngIf="errorUpdate != null" class="alert alert-danger">
+            <span>{{errorUpdate}}</span>
+          </div>
+
+          <div *ngIf="successUpdate" class="alert alert-success">
+            <span>Mise à jour réussi !</span>
+          </div>
+
+          <div class="form-group">
+            <label>Product Name : </label>
+            <input type="text" required class="form-control" formControlName="name">
+          </div>
+
+          <div class="form-group">
+            <label>Product price : </label>
+            <input type="number" required class="form-control" formControlName="price">
+          </div>
+
+          <div class="form-group">
+            <label>Product promotionPrice : </label>
+            <input type="number" required class="form-control" formControlName="promotionPrice">
+          </div>
+
+          <div class="form-group">
+            <label>Product stock : </label>
+            <input type="number" required class="form-control" formControlName="quantity">
+          </div>
+
+          <div class="form-group">
+            <label>Product capacity : </label>
+            <input type="number" required class="form-control" formControlName="capacity">
+          </div>
+
+          <button class="btn btn-primary mt-2" [disabled]="productForm.invalid" type="submit">Save</button>
+        </form>
+      </div>
+    </div>
+
+    <div *ngIf="product" class="card mt-5">
+      <div class="card-body">
+        <h5 class="card-title">Edit product photo</h5>
+
+        <div *ngIf="errorUpload != null" class="alert alert-danger">
+          <span>{{errorUpload}}</span>
+        </div>
+
+        <div *ngIf="successUpload" class="alert alert-success">
+          <span>Mise à jour réussi !</span>
+        </div>
+
+        <div class="text-center">
+          <img height="100"
+               src="{{this.api.host + '/p12-stock/public/product/photo/' + product.id + '?ts=' + timeStamp}}" alt=""
+               class="mb-3">
+        </div>
+
+        <div class="custom-file overflow-hidden">
+          <input type="file" class="custom-file-input" id="exampleInputFile" (change)="onSelectedFile($event)">
+          <label class="custom-file-label" for="exampleInputFile">
+            <span *ngIf="currentFileUpload == null">Choisir un fichier...</span>
+            <span *ngIf="currentFileUpload != null">{{currentFileUpload.name}}</span>
+          </label>
+        </div>
+
+        <div class="progress mt-2" *ngIf="progress != 0">
+          <div [ngStyle]="{'width': progress + '%'}" class="progress-bar" role="progressbar"
+               attr.aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100">{{progress}} %
+          </div>
+        </div>
+
+        <button class="btn btn-primary mt-4" (click)="uploadPhoto()">Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 offset-3" *ngIf="!modification && product">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Détails du produit</h5>
+        <div class="text-center">
+          <img height="300" [src]="this.api.host + '/p12-stock/public/product/photo/' + product.id" alt="">
+        </div>
+        <h6 class="card-subtitle text-muted mt-1">Nom du produit</h6>
+        <p class="card-text m-2">{{product.name}}</p>
+        <h6 class="card-subtitle text-muted mt-1">Capacité</h6>
+        <p class="card-text m-2">{{product.capacity | number:'0.0-2'}} {{product.measure}}</p>
+        <h6 class="card-subtitle text-muted mt-1">Description du produit</h6>
+        <p class="card-text m-2">{{product.description}}</p>
+        <h6 class="card-subtitle text-muted mt-1">Prix</h6>
+        <p class="card-text m-2" *ngIf="!product.promotion">{{product.price | number:'0.2'}}</p>
+        <p class="card-text m-2" *ngIf="product.promotion">
+          <del>{{product.price | number:'0.2'}}</del>
+          {{product.promotionPrice | number:'0.2'}} <span class="badge badge-success m-1">En promotion !</span></p>
+        <h6 class="card-subtitle text-muted mt-1">Disponibilité</h6>
+        <p *ngIf="product.available" class="card-text m-2"><span class="badge badge-success">En stock !</span></p>
+        <p *ngIf="!product.available" class="card-text m-2"><span
+          class="badge badge-warning">Produit indisponible</span></p>
+        <h6 class="card-subtitle text-muted mt-1">Categorie</h6>
+        <p class="card-text m-2">{{product.category.name}}</p>
+
+        <div *ngIf="product.available">
+          <h5 class="card-title">Ajouté au panier</h5>
+          <form #f="ngForm" (ngSubmit)="caddyService.addProductToCaddy(product)">
+            <div class="form-group">
+              <label>Quantité : </label>
+              <input type="number" required class="form-control" min="1" max="10" [(ngModel)]="product.orderQuantity"
+                     name="orderQuantity">
+            </div>
+            <button type="submit" [disabled]="f.invalid" class="btn btn-primary">Commander</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

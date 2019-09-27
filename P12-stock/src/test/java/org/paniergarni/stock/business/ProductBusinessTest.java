@@ -39,7 +39,7 @@ public class ProductBusinessTest {
     }
 
     @Test
-    public void testUpdateProductQuantityWithSameProductQuantity() {
+    public void testUpdateProductQuantityWithSameProductQuantity() throws StockException {
 
         Mockito.when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
         Mockito.when(productRepository.save(product)).thenReturn(product);
@@ -53,7 +53,7 @@ public class ProductBusinessTest {
     }
 
     @Test
-    public void testUpdateProductQuantityWithTooManyQuantity() {
+    public void testUpdateProductQuantityWithTooManyQuantity() throws StockException {
 
         Mockito.when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
         Mockito.when(productRepository.save(product)).thenReturn(product);
@@ -66,7 +66,7 @@ public class ProductBusinessTest {
     }
 
     @Test
-    public void testUpdateProductQuantityWithGoodQuantity() {
+    public void testUpdateProductQuantityWithGoodQuantity() throws StockException {
         product.setQuantity(25);
         Mockito.when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
         Mockito.when(productRepository.save(product)).thenReturn(product);
@@ -79,7 +79,7 @@ public class ProductBusinessTest {
     }
 
     @Test(expected = StockException.class)
-    public void testUpdateProductQuantityWithNotAvailableProduct() {
+    public void testUpdateProductQuantityWithNotAvailableProduct() throws StockException {
         product.setQuantity(25);
         product.setAvailable(false);
         Mockito.when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));

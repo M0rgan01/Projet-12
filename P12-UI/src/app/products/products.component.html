@@ -1,0 +1,113 @@
+<div class="text-center">
+  <h3>{{title}}</h3>
+</div>
+
+<!-- ------PHILTRE------- -->
+<form #f="ngForm" (ngSubmit)="onSearchByPhiltre(f.value)">
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="inputState">Size</label>
+      <select id="inputState" class="form-control" name="size" [ngModel]="size">
+        <option *ngFor="let s of listSize" [ngValue]="s" [selected]="size == s">{{s}}</option>
+      </select>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<div *ngIf="products && products.totalElements != 0">
+
+  <!-- ------PRODUCTS DISPLAY------- -->
+
+  <div class="row">
+    <div class="col-md-6" *ngFor="let p of products.content">
+      <div class="card my-3">
+        <div class="card-header">{{p.name}} - {{p.capacity | number:'0.0-2'}} {{p.measure}}</div>
+        <div class="card-body">
+          <div class="text-center">
+            <img height="100" [src]="this.api.host + '/p12-stock/public/product/photo/' + p.id" alt="">
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <h6 class="card-subtitle text-muted mt-1">Prix</h6>
+              <p class="card-text m-2" *ngIf="!p.promotion">{{p.price | number:'0.2'}}</p>
+              <p class="card-text m-2" *ngIf="p.promotion">
+                <del>{{p.price | number:'0.2'}}</del>
+                <span class="mx-2">{{p.promotionPrice | number:'0.2'}}</span><span class="badge badge-success">En promotion !</span></p>
+              <h6 class="card-subtitle text-muted mt-1">Disponibilité</h6>
+              <p *ngIf="p.available" class="card-text m-2"><span class="badge badge-success">En stock !</span></p>
+              <p *ngIf="!p.available" class="card-text m-2"><span
+                class="badge badge-warning">Produit indisponible</span>
+              </p>
+              <h6 class="card-subtitle text-muted mt-1">Categorie</h6>
+              <p class="card-text m-2">{{p.category.name}}</p>
+              <a [routerLink]="['/product', p.id]" class="btn btn-info text-white cliquable mt-1">Détails</a>
+            </div>
+
+            <div class="col-sm-6 mt-2 mt-sm-0">
+              <div *ngIf="p.available">
+                <h5 class="card-title mt-1">Ajouté au panier</h5>
+                <form #f="ngForm" (ngSubmit)="caddyService.addProductToCaddy(p)">
+                  <div class="form-group">
+                    <label>Quantité : </label>
+                    <input type="number" required class="form-control" min="1" max="10" [(ngModel)]="p.orderQuantity"
+                           name="orderQuantity">
+                  </div>
+                  <button type="submit" [disabled]="f.invalid" class="btn btn-primary">Commander</button>
+
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ------PAGINATION------- -->
+
+
+  <div *ngIf="products.totalPages > 1">
+    <ul class="pagination justify-content-center">
+
+      <li class="page-item"
+          [ngClass]="products.number == 0 ? 'disabled' : ''"><a
+        class="page-link cliquable"
+        (click)="checkProductsHome(0, size)">«</a></li>
+
+      <li class="page-item"
+          [ngClass]="products.number == 0 ? 'disabled' : ''"><a
+        class="page-link cliquable"
+        (click)="checkProductsHome(products.number - 1, size)">←</a></li>
+
+      <li class="page-item" *ngFor="let item of [].constructor(products.totalPages); let i = index"
+          [ngClass]="products.number == i ? 'active' : ''">
+        <a class="page-link cliquable"
+           (click)="checkProductsHome( i, size)">{{i + 1}}</a>
+      </li>
+
+      <li class="page-item"
+          [ngClass]="products.number + 1 == products.totalPages ? 'disabled' : ''">
+        <a class="page-link cliquable"
+           (click)="checkProductsHome(products.number + 1, size)">→</a>
+      </li>
+
+      <li class="page-item"
+          [ngClass]="products.number + 1 == products.totalPages ? 'disabled' : ''">
+        <a class="page-link cliquable"
+           (click)="checkProductsHome(products.totalPages - 1, size)">»</a>
+      </li>
+
+    </ul>
+  </div>
+
+</div>
+<!-- ------PRODUCTS EMPTY------- -->
+
+<div *ngIf="!products || products.totalElements == 0"
+     class="justify-content-center row mt-5 font-weight-bold">
+  <p>Votre recherche n'à donnée aucun résultat !</p>
+</div>
