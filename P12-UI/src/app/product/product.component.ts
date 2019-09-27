@@ -31,7 +31,6 @@ export class ProductComponent implements OnInit {
   public progress = 0;
   // https://www.youtube.com/watch?v=sWX-PAyxphU&t=1197s
   public timeStamp = 0;
-  public paramProductId: string;
   public modification: boolean;
 
   constructor(public authService: AuthenticationService,
@@ -43,17 +42,9 @@ export class ProductComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    this.paramProductId = undefined;
-    this.activeRoute.url.subscribe(() => {
-      if (this.activeRoute.snapshot.firstChild) {
-        if (this.activeRoute.snapshot.firstChild.paramMap.get('productId')) {
-          this.paramProductId = this.activeRoute.snapshot.firstChild.paramMap.get('productId');
-        }
-      }
-    });
+    const paramProductId = this.activeRoute.snapshot.paramMap.get('id');
     // on récupère le produit
-    this.api.getRessources<Product>('/p12-stock/public/product/' + this.paramProductId).subscribe(dataProduct => {
+    this.api.getRessources<Product>('/p12-stock/public/product/' + paramProductId).subscribe(dataProduct => {
       this.product = dataProduct;
       this.productForm = this.formBuilder.group(dataProduct);
     }, error1 => {

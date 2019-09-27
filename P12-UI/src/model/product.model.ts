@@ -13,4 +13,5 @@ export class Product {
   photo: string;
   category: Category;
   orderQuantity: number;
+  measure: string;
 }

@@ -52,16 +52,13 @@ public class OrderBusinessImpl implements OrderBusiness {
         for (OrderProduct orderProduct : orderProducts) {
 
             try {
-                System.out.println("Stock commandé : " + orderProduct.getOrderQuantity());
                 Product product = productProxy.updateProductQuantity(orderProduct.getOrderQuantity(), orderProduct.getProductId());
-                System.out.println("Stock réél commandé : " + product.getOrderProductRealQuantity());
                 orderProduct.setRealQuantity(product.getOrderProductRealQuantity());
                 orderProduct.setTotalPriceRow(product.getPrice() * orderProduct.getRealQuantity());
                 totalPrice = totalPrice + orderProduct.getTotalPriceRow();
                 orderProduct.setOrder(order);
             } catch (FeignException e) {
                 orderProduct.setRealQuantity(0);
-                System.out.println(e.contentUTF8());
             }
         }
 
@@ -72,13 +69,13 @@ public class OrderBusinessImpl implements OrderBusiness {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, minHoursReception);
 
-        Date receptionDate =new Date(reception);
+        Date receptionDate = new Date(reception);
+        receptionDate = truncateTime(receptionDate);
 
-        if (receptionDate.before(calendar.getTime()))
+        if (receptionDate.before(truncateTime(calendar.getTime())))
             throw new ReceptionException("order.reception.before.min.value");
 
-        calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, maxDaysReception);
+        calendar.setTime(getListDateReception().get(getListDateReception().size() - 1));
 
         if (receptionDate.after(calendar.getTime()))
             throw new ReceptionException("order.reception.after.max.value");
@@ -90,7 +87,7 @@ public class OrderBusinessImpl implements OrderBusiness {
         order.setReference(addReference(order));
         order.setPaid(false);
         order.setCancel(false);
-        order.setReception(truncateTime(receptionDate));
+        order.setReception(receptionDate);
         order.setTotalPrice(totalPrice);
         return orderRepository.save(order);
     }
@@ -119,8 +116,22 @@ public class OrderBusinessImpl implements OrderBusiness {
     }
 
     @Override
-    public void cancelOrder(Long id) throws OrderException {
+    public Order cancelOrder(Long id) throws OrderException {
         Order order = getOrder(id);
+        return validateCancelOrder(order);
+    }
+
+    @Override
+    public Order cancelOrder(Long id, String userName) throws OrderException, FeignException  {
+        Order order = getOrder(id, userName);
+
+       return validateCancelOrder(order);
+    }
+
+    private Order validateCancelOrder(Order order) throws CancelException{
+
+        if (order.getCancel())
+            throw new CancelException("order.already.cancel");
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(order.getDate());
@@ -130,15 +141,15 @@ public class OrderBusinessImpl implements OrderBusiness {
             throw new CancelException("order.cancel.after.max.value");
 
         order.setCancel(true);
-        orderRepository.save(order);
+       return orderRepository.save(order);
     }
 
     @Override
-    public void paidOrder(Long id) throws OrderException, SequenceException {
+    public Order paidOrder(Long id) throws OrderException, SequenceException {
         Order order = getOrder(id);
         sequenceBusiness.addSaleNumber(order.getDate());
         order.setPaid(true);
-        orderRepository.save(order);
+       return orderRepository.save(order);
     }
 
     @Override
@@ -181,6 +192,16 @@ public class OrderBusinessImpl implements OrderBusiness {
         }
 
         return dateList;
+    }
+
+    @Override
+    public int getMaxDaysReception() {
+        return maxDaysReception;
+    }
+
+    @Override
+    public int getMaxHoursCancelOrder() {
+        return maxHoursCancelOrder;
     }
 
 

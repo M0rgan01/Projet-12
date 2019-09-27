@@ -1,5 +1,6 @@
 package org.paniergarni.order.controller;
 
+import feign.FeignException;
 import org.paniergarni.order.business.OrderBusiness;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
@@ -69,20 +70,47 @@ public class OrderController {
         return ResponseEntity.ok().body(dateList);
     }
 
+    @GetMapping(value = "/public/maxDaysReception")
+    public ResponseEntity<?> getMaxDaysReception() {
+
+        int a = orderBusiness.getMaxDaysReception();
+
+        return ResponseEntity.ok().body(a);
+    }
+
+    @GetMapping(value = "/public/maxHoursCancelOrder")
+    public ResponseEntity<?> getMaxHoursCancelOrder() {
+
+        int a = orderBusiness.getMaxHoursCancelOrder();
+
+        return ResponseEntity.ok().body(a);
+    }
+
     @PostMapping(value = "/userRole/order/{userName}/{reception}")
-    public ResponseEntity<?> createOrder(@PathVariable(name = "userName") String userName, @PathVariable(name = "reception") Long reception, @RequestBody List<OrderProduct> orderProducts) throws OrderException {
+    public ResponseEntity<?> createOrder(@PathVariable(name = "userName") String userName,
+                                         @PathVariable(name = "reception") Long reception,
+                                         @RequestBody List<OrderProduct> orderProducts) throws OrderException {
 
         Order order = orderBusiness.createOrder(orderProducts, userName, reception);
 
         return ResponseEntity.ok().body(order);
     }
 
-    @PutMapping(value = "/userRole/cancelOrder/{id}")
-    public ResponseEntity<?> cancelOrder(@PathVariable(name = "id") Long id) throws OrderException {
+    @PutMapping(value = "/userRole/cancelOrder/{id}/{userName}")
+    public ResponseEntity<?> cancelOrder(@PathVariable(name = "id") Long id,
+                                         @PathVariable(name = "userName") String userName) throws OrderException, FeignException {
 
-        orderBusiness.cancelOrder(id);
+        Order order = orderBusiness.cancelOrder(id, userName);
 
-        return ResponseEntity.ok().body(null);
+        return ResponseEntity.ok().body(order);
+    }
+
+    @PutMapping(value = "/adminRole/cancelOrder/{id}")
+    public ResponseEntity<?> cancelOrder(@PathVariable(name = "id") Long id) throws OrderException, FeignException {
+
+        Order order = orderBusiness.cancelOrder(id);
+
+        return ResponseEntity.ok().body(order);
     }
 
     @PutMapping(value = "/adminRole/paidOrder/{id}")

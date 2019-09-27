@@ -42,4 +42,6 @@ public class SequenceBusinessImpl implements SequenceBusiness {
         sequence.setSaleNumber(sequence.getSaleNumber() + 1);
         sequenceRepository.save(sequence);
     }
+
+
 }

@@ -29,11 +29,7 @@ const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, children: [{path: ':redirect', component: LoginComponent}]},
   {path: 'register', component: RegistrationComponent},
   {path: 'products', component: ProductsComponent, children: [{path: ':categoryId', component: ProductsComponent}]},
-  {
-    path: 'product',
-    component: ProductComponent,
-    children: [{path: ':productId', component: ProductComponent}]
-  },
+  {path: 'product/:id', component: ProductComponent},
   {path: 'orders', canActivate: [AuthGuardService], component: OrdersComponent},
   {path: 'order/:id', canActivate: [AuthGuardService], component: OrderComponent},
   {path: 'caddies', component: CaddiesComponent},

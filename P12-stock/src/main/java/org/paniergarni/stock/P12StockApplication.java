@@ -72,6 +72,7 @@ public class P12StockApplication implements CommandLineRunner {
                 Product p = new Product();
                 p.setName(RandomString.make(18));
                 p.setPrice(100 + rm.nextInt(1000));
+                p.setCapacity(100 + rm.nextDouble());
                 p.setQuantity(rm.nextInt(50));
                 p.setAvailable(rm.nextBoolean());
                 p.setPromotion(rm.nextBoolean());
