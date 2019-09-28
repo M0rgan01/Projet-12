@@ -10,7 +10,7 @@
           </div>
 
           <div *ngIf="errors != null" class="alert alert-danger">
-            <p *ngFor="let err of errors">{{err.message}}</p>
+            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message}}</p>
           </div>
 
           <form #f="ngForm" (ngSubmit)="onRegister(f.value)">

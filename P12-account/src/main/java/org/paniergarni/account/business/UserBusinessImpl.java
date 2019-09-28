@@ -1,12 +1,16 @@
 package org.paniergarni.account.business;
 
 import org.paniergarni.account.dao.UserRepository;
+import org.paniergarni.account.entities.Mail;
 import org.paniergarni.account.entities.Role;
 import org.paniergarni.account.entities.User;
+import org.paniergarni.account.entities.dto.UserRecoveryDTO;
 import org.paniergarni.account.exception.AccountException;
 import org.paniergarni.account.exception.BadCredencialException;
 import org.paniergarni.account.exception.ExpirationException;
 import org.paniergarni.account.exception.PassWordException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,15 +31,17 @@ public class UserBusinessImpl implements UserBusiness{
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Value("${max.try.incorrect.login}")
     private int tryIncorrectLogin;
-    @Value("${waiting.minutes.for.max.try.login}")
+    @Value("${waiting.for.max.try.login.inMinutes}")
     private int waitingMinutes;
+
+    private final Logger logger = LoggerFactory.getLogger(UserBusinessImpl.class);
 
     @Override
     public User createUser(User user) throws AccountException {
         checkUserNameExist(user.getUserName());
         mailBusiness.checkEmailExist(user.getMail().getEmail());
         user.setActive(true);
-        checkPassWordConfirm(user);
+        checkPassWordConfirm(user.getPassWord(), user.getPassWordConfirm());
         String hashPW = bCryptPasswordEncoder.encode(user.getPassWord());
         user.setPassWord(hashPW);
 
@@ -59,7 +65,7 @@ public class UserBusinessImpl implements UserBusiness{
             mailBusiness.checkEmailExist(user.getMail().getEmail());
         }else if (!bCryptPasswordEncoder.matches(user.getPassWord(), user1.getPassWord())){
             checkOldPassWord(user, user1.getPassWord());
-            checkPassWordConfirm(user);
+            checkPassWordConfirm(user.getPassWord(), user.getPassWordConfirm());
         }
 
         return userRepository.save(user);
@@ -122,10 +128,10 @@ public class UserBusinessImpl implements UserBusiness{
     }
 
 
-    public void checkPassWordConfirm(User user) throws PassWordException {
-        if (user.getPassWordConfirm() == null || user.getPassWordConfirm().isEmpty())
+    public void checkPassWordConfirm(String passWord, String passWordConfirm) throws PassWordException {
+        if (passWordConfirm == null || passWordConfirm.isEmpty())
             throw new PassWordException("user.password.confirm.empty");
-        if (!user.getPassWord().equals(user.getPassWordConfirm()))
+        if (!passWord.equals(passWordConfirm))
             throw new PassWordException("user.incorrect.password.confirm");
     }
 
@@ -140,5 +146,26 @@ public class UserBusinessImpl implements UserBusiness{
         if (userRepository.findByUserName(userName).isPresent()){
             throw new AccountException("user.username.already.exist");
         }
+    }
+
+    @Override
+    public void editPassWordByRecovery(String email, UserRecoveryDTO user) throws AccountException {
+        // récupération du mail
+        User user2 = getUserByEmail(email);
+        if (!user2.getMail().isAvailablePasswordRecovery()){
+            throw new AccountException("user.mail.not.available.recovery");
+        } else if (user2.getMail().getExpiryPasswordRecovery().before(new Date())){
+            user2.getMail().setAvailablePasswordRecovery(false);
+            user2.getMail().setExpiryPasswordRecovery(null);
+            userRepository.save(user2);
+            throw new ExpirationException("user.passWord.recovery.expiry");
+        }
+
+        // on vérifie
+        checkPassWordConfirm(user.getPassWord(), user.getPassWordConfirm());
+        user2.setPassWord(bCryptPasswordEncoder.encode(user.getPassWord()));
+
+        userRepository.save(user2);
+        logger.info("Update password by recovery for user " + user2.getId());
     }
 }

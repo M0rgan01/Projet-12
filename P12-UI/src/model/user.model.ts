@@ -1,10 +1,6 @@
 export class User {
 
-  constructor(username, password, confirm){
-    this.userName = username;
-    this.passWord = password;
-    this.passWordConfirm = confirm;
-  }
+  constructor(){ }
 
   id: number;
   userName: string;

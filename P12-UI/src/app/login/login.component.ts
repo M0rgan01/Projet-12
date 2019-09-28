@@ -14,7 +14,8 @@ export class LoginComponent implements OnInit {
   public paramRedirect: string;
 
   constructor(public authService: AuthenticationService,
-              public api: APIService, public router: Router,
+              public api: APIService,
+              public router: Router,
               public activeRoute: ActivatedRoute) {
   }
 
@@ -45,8 +46,6 @@ export class LoginComponent implements OnInit {
       if (this.paramRedirect) {
         if (this.paramRedirect === 'returnCaddy') {
           this.router.navigateByUrl('/caddies');
-        } else {
-          this.router.navigateByUrl('/404');
         }
       } else {
         this.router.navigateByUrl('/');

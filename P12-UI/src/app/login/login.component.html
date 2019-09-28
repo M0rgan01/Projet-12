@@ -8,6 +8,11 @@
             <span>{{error | translate}}</span>
           </div>
 
+          <div *ngIf="paramRedirect != null && paramRedirect === 'returnRecovery'" class="alert alert-success">
+            <span>Mise à jour du mot de passe effectué avec succès</span>
+          </div>
+
+
           <form #f="ngForm" (ngSubmit)="onLogin(f.value)">
             <div class="form-group">
               <label>Username:</label>
@@ -19,6 +24,8 @@
             </div>
             <button type="submit" class="btn btn-primary mr-1 mt-1" [disabled]="f.invalid">Login</button>
             <button type="button" routerLink="/register" routerLinkActive="active" class="btn btn-success mt-1">Register
+            </button>
+            <button type="button" routerLink="/recovery" class="btn btn-warning mt-1 text-right">Mot de passe oublié ?
             </button>
           </form>
         </div>

@@ -37,7 +37,7 @@
     </table>
   </div>
 
-  <div class="row justify-content-center my-3">
+  <div *ngIf="!order.cancel" class="row justify-content-center my-3">
     <p>Vous disposez d'une durée de {{maxHourCancel}} heures pour annulé une commande.</p>
   </div>
 

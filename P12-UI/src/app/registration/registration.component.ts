@@ -34,7 +34,6 @@ export class RegistrationComponent implements OnInit {
       // on redirige vers l'url tasks
       this.router.navigateByUrl('/');
     }, err => {
-      console.log(err);
       if (err.error.error) {
         this.error = err.error.error;
       }

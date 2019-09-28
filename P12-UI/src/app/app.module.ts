@@ -24,9 +24,11 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import { OrdersComponent } from './orders/orders.component';
 import { OrderComponent } from './order/order.component';
+import { RecoveryComponent } from './recovery/recovery.component';
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, children: [{path: ':redirect', component: LoginComponent}]},
+  {path: 'recovery', component: RecoveryComponent},
   {path: 'register', component: RegistrationComponent},
   {path: 'products', component: ProductsComponent, children: [{path: ':categoryId', component: ProductsComponent}]},
   {path: 'product/:id', component: ProductComponent},
@@ -65,7 +67,8 @@ export function createTranslateLoader(http: HttpClient) {
     ProductComponent,
     CaddiesComponent,
     OrdersComponent,
-    OrderComponent
+    OrderComponent,
+    RecoveryComponent
   ],
   imports: [
     BrowserModule,

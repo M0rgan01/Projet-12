@@ -4,3 +4,8 @@ spring:
   cloud:
     config:
       uri: http://localhost:9101
+
+
+ribbon:
+  ConnectTimeout: 10000
+  ReadTimeout: 10000

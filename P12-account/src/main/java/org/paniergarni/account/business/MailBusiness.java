@@ -10,6 +10,6 @@ public interface MailBusiness {
     Mail getMailById(Long id) throws AccountException;
     Mail getMailByEmail(String email) throws AccountException;
     void checkEmailExist(String email) throws AccountException;
-    void sendTokenForRecovery(String email) throws AccountException ;
-    void validateToken(String token, String email)  throws AccountException;
+    Mail sendTokenForRecovery(String email) throws AccountException ;
+    Mail validateToken(String token, String email)  throws AccountException;
 }

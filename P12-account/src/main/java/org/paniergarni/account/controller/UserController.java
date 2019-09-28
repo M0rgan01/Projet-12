@@ -2,6 +2,7 @@ package org.paniergarni.account.controller;
 
 import org.paniergarni.account.business.UserBusiness;
 import org.paniergarni.account.entities.User;
+import org.paniergarni.account.entities.dto.UserRecoveryDTO;
 import org.paniergarni.account.exception.AccountException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -57,10 +58,18 @@ public class UserController {
     }
 
     @GetMapping(value = "/adminRole/userConnection/{username}/{password}")
-    public ResponseEntity<?> getUserById(@PathVariable String username, @PathVariable String password) throws AccountException {
+    public ResponseEntity<?> userConnection(@PathVariable String username, @PathVariable String password) throws AccountException {
 
         User user = userBusiness.doConnection(username, password);
 
         return ResponseEntity.ok().body(user);
+    }
+
+    @PutMapping(value = "/public/editPassWordByRecovery/{email}")
+    public ResponseEntity<?> editPassWordByRecovery(@PathVariable String email,@Valid @RequestBody UserRecoveryDTO userRecoveryDTO) throws AccountException {
+
+        userBusiness.editPassWordByRecovery(email, userRecoveryDTO);
+
+        return ResponseEntity.ok().body(null);
     }
 }
