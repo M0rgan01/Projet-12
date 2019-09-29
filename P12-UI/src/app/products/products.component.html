@@ -24,10 +24,12 @@
       <div class="card my-3">
         <div class="card-header">{{p.name}} - {{p.capacity | number:'0.0-2'}} {{p.measure}}</div>
         <div class="card-body">
-          <div class="text-center">
-            <img height="100" [src]="this.api.host + '/p12-stock/public/product/photo/' + p.id" alt="">
+          <div *ngIf="p.photo" class="text-center mb-3">
+            <img height="200" [src]="this.api.host + '/p12-stock/public/product/photo/' + p.id" alt="">
           </div>
-
+          <div *ngIf="!p.photo" class="text-center mb-3">
+            <img height="200" src="../../assets/img/340719-200.png" alt="">
+          </div>
           <div class="row">
             <div class="col-sm-6">
               <h6 class="card-subtitle text-muted mt-1">Prix</h6>

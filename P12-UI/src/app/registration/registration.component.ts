@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AuthenticationService} from 'src/services/authentification.service';
 import {Router} from '@angular/router';
 import {APIService} from 'src/services/api.service';
+import {User} from '../../model/user.model';
 
 @Component({
   selector: 'app-registration',
@@ -12,6 +13,7 @@ export class RegistrationComponent implements OnInit {
 
   public error: string = null;
   public errors: Array<any> = null;
+  public user: User = new User();
 
   constructor(public authService: AuthenticationService, public router: Router, public api: APIService) {
   }
@@ -19,7 +21,9 @@ export class RegistrationComponent implements OnInit {
   ngOnInit() {
   }
 
-  onRegister(contactDTO) {
+  onRegister(contactDTO: User) {
+    this.error = null;
+    this.errors = null;
     // si on est déja connecté, alors on reset les token
     if (this.authService.isAuth()) {
       this.authService.removeToken();

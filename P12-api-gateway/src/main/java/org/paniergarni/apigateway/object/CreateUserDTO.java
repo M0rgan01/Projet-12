@@ -1,4 +1,4 @@
-package org.paniergarni.account.entities.dto;
+package org.paniergarni.apigateway.object;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -6,16 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserRecoveryDTO {
-    @NotBlank(message ="user.password.blank")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$", message = "user.password.not.true")
+public class CreateUserDTO {
     private String passWord;
-    @NotBlank(message ="user.passwordConfirm.blank")
     private String passWordConfirm;
+    private String userName;
+    private String email;
 }

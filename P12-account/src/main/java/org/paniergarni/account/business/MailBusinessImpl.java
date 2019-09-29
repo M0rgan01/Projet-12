@@ -3,10 +3,7 @@ package org.paniergarni.account.business;
 import org.paniergarni.account.dao.MailRepository;
 import org.paniergarni.account.entities.Mail;
 import org.paniergarni.account.entities.User;
-import org.paniergarni.account.exception.AccountException;
-import org.paniergarni.account.exception.BadCredencialException;
-import org.paniergarni.account.exception.ExpirationException;
-import org.paniergarni.account.exception.RecoveryException;
+import org.paniergarni.account.exception.*;
 import org.paniergarni.account.service.SendMail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +52,19 @@ public class MailBusinessImpl implements MailBusiness {
     }
 
     @Override
-    public Mail updateMail(Mail mail) {
+    public Mail updateMail(Mail mail) throws AccountException {
+        return mailRepository.save(mail);
+    }
+
+    @Override
+    public Mail updateMail(Long id, String email) throws AccountException {
+        Mail mail = getMailById(id);
+        if (mail.getEmail().equals(email)) {
+            throw new AccountException("mail.email.same.value");
+        }
+        checkEmailExist(email);
+        mail.setEmail(email);
+
         return mailRepository.save(mail);
     }
 
@@ -80,9 +89,8 @@ public class MailBusinessImpl implements MailBusiness {
 
         User user = userBusiness.getUserByEmail(email);
 
-        if (!user.isActive()) {
-            throw new AccountException("user.not.active");
-        }
+        if (!user.isActive())
+            throw new UserNotActiveException("user.not.active");
 
         // generation du token
         String token = generateToken();

@@ -3,6 +3,7 @@ package org.paniergarni.apigateway.controller;
 import feign.FeignException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.paniergarni.apigateway.object.CreateUserDTO;
 import org.paniergarni.apigateway.object.Role;
 import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.proxy.UserProxy;
@@ -41,9 +42,9 @@ public class AuthController {
     }
 
     @PostMapping(value = "/api/auth/register")
-    public ResponseEntity<?> register(@RequestBody User user) throws IllegalArgumentException, FeignException {
+    public ResponseEntity<?> register(@RequestBody CreateUserDTO createUserDTO) throws IllegalArgumentException, FeignException {
 
-        user = userProxy.createUser(user);
+        User user = userProxy.createUser(createUserDTO);
         // on créer un token JWT
         String jwt = jwtService.createAuthToken(UserContext.create(user.getUserName(), Role.getListAuthorities(user.getRoles())));
         String jwtRefresh = jwtService.createRefreshToken(UserContext.create(user.getUserName(), null));

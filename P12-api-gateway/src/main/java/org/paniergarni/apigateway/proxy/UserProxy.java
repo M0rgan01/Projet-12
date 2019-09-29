@@ -1,5 +1,6 @@
 package org.paniergarni.apigateway.proxy;
 
+import org.paniergarni.apigateway.object.CreateUserDTO;
 import org.paniergarni.apigateway.object.User;
 import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -16,7 +17,7 @@ public interface UserProxy {
     User findByEmail(@PathVariable String email);
 
     @PostMapping(value = "/adminRole/user")
-    User createUser(@RequestBody User user);
+    User createUser(@RequestBody CreateUserDTO createUserDTO);
 
     @GetMapping(value = "/adminRole/userConnection/{username}/{password}")
     User userConnection(@PathVariable String username, @PathVariable String password);

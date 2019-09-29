@@ -2,7 +2,9 @@ package org.paniergarni.account.controller;
 
 import org.paniergarni.account.business.UserBusiness;
 import org.paniergarni.account.entities.User;
+import org.paniergarni.account.entities.dto.CreateUserDTO;
 import org.paniergarni.account.entities.dto.UserRecoveryDTO;
+import org.paniergarni.account.entities.dto.UserUpdatePassWordDTO;
 import org.paniergarni.account.exception.AccountException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,19 +20,35 @@ public class UserController {
 
 
     @PostMapping(value = "/adminRole/user")
-    public ResponseEntity<?> createUser(@RequestBody @Valid User user) throws AccountException {
+    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDTO createUserDTO) throws AccountException {
 
-        user = userBusiness.createUser(user);
+        User user = userBusiness.createUser(createUserDTO);
 
         return ResponseEntity.ok().body(user);
     }
 
-    @PutMapping(value = "/userRole/updateUser/{userName}")
-    public ResponseEntity<?> updateUser(@PathVariable String userName, @RequestBody @Valid User user) throws AccountException {
+    @PutMapping(value = "/adminRole/updateUser/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) throws AccountException {
 
-        user = userBusiness.updateUser(user);
+        user = userBusiness.updateUser(id, user);
 
         return ResponseEntity.ok().body(user);
+    }
+
+    @PutMapping(value = "/userRole/updateUserName/{id}/{userName}")
+    public ResponseEntity<?> updateUser(@PathVariable String userName, @PathVariable Long id) throws AccountException {
+
+        User user = userBusiness.updateUserName(id, userName);
+
+        return ResponseEntity.ok().body(user);
+    }
+
+    @PutMapping(value = "/userRole/updatePassWord/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserUpdatePassWordDTO user) throws AccountException {
+
+        userBusiness.updatePassWord(id, user);
+
+        return ResponseEntity.ok().body(null);
     }
 
     @GetMapping(value = "/userRole/userByUserName/{userName}")

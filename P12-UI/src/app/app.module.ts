@@ -25,11 +25,13 @@ import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import { OrdersComponent } from './orders/orders.component';
 import { OrderComponent } from './order/order.component';
 import { RecoveryComponent } from './recovery/recovery.component';
+import { AccountUpdateComponent } from './account-update/account-update.component';
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, children: [{path: ':redirect', component: LoginComponent}]},
   {path: 'recovery', component: RecoveryComponent},
   {path: 'register', component: RegistrationComponent},
+  {path: 'account', component: AccountUpdateComponent , canActivate: [AuthGuardService]},
   {path: 'products', component: ProductsComponent, children: [{path: ':categoryId', component: ProductsComponent}]},
   {path: 'product/:id', component: ProductComponent},
   {path: 'orders', canActivate: [AuthGuardService], component: OrdersComponent},
@@ -68,7 +70,8 @@ export function createTranslateLoader(http: HttpClient) {
     CaddiesComponent,
     OrdersComponent,
     OrderComponent,
-    RecoveryComponent
+    RecoveryComponent,
+    AccountUpdateComponent
   ],
   imports: [
     BrowserModule,

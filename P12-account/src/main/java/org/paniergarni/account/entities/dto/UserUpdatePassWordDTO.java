@@ -12,10 +12,12 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserRecoveryDTO {
+public class UserUpdatePassWordDTO {
     @NotBlank(message ="user.password.blank")
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$", message = "user.password.not.true")
     private String passWord;
     @NotBlank(message ="user.passwordConfirm.blank")
     private String passWordConfirm;
+    @NotBlank(message ="user.oldPassWord.blank")
+    private String oldPassWord;
 }

@@ -7,6 +7,7 @@ public interface MailBusiness {
 
     Mail createMail(Mail mail) throws AccountException;
     Mail updateMail(Mail mail);
+    Mail updateMail(Long id, String email);
     Mail getMailById(Long id) throws AccountException;
     Mail getMailByEmail(String email) throws AccountException;
     void checkEmailExist(String email) throws AccountException;

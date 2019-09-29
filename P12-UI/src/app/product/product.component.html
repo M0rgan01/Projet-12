@@ -63,10 +63,11 @@
           <span>Mise à jour réussi !</span>
         </div>
 
-        <div class="text-center">
-          <img height="100"
-               src="{{this.api.host + '/p12-stock/public/product/photo/' + product.id + '?ts=' + timeStamp}}" alt=""
-               class="mb-3">
+        <div *ngIf="product.photo" class="text-center mb-3">
+          <img height="200" [src]="this.api.host + '/p12-stock/public/product/photo/' + product.id" alt="">
+        </div>
+        <div *ngIf="!product.photo" class="text-center mb-3">
+          <img height="200" src="../../assets/img/340719-200.png" alt="">
         </div>
 
         <div class="custom-file overflow-hidden">
@@ -92,8 +93,11 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Détails du produit</h5>
-        <div class="text-center">
-          <img height="300" [src]="this.api.host + '/p12-stock/public/product/photo/' + product.id" alt="">
+        <div *ngIf="product.photo" class="text-center mb-3">
+          <img height="200" [src]="this.api.host + '/p12-stock/public/product/photo/' + product.id" alt="">
+        </div>
+        <div *ngIf="!product.photo" class="text-center mb-3">
+          <img height="200" src="../../assets/img/340719-200.png" alt="">
         </div>
         <h6 class="card-subtitle text-muted mt-1">Nom du produit</h6>
         <p class="card-text m-2">{{product.name}}</p>

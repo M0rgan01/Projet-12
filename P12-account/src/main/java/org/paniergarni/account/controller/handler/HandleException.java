@@ -1,6 +1,7 @@
 package org.paniergarni.account.controller.handler;
 
 import org.paniergarni.account.exception.AccountException;
+import org.paniergarni.account.exception.UserNotActiveException;
 import org.paniergarni.account.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -40,6 +41,13 @@ public class HandleException {
         }
 
         return ErrorResponse.of(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserNotActiveException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
+    public ErrorResponse handleException(UserNotActiveException ex) {
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

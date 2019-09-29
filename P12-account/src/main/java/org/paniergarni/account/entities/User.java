@@ -31,12 +31,9 @@ public class User {
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$", message = "user.password.not.true")
     private String passWord;
     private String passWordConfirm;
-    @Transient
-    private String oldPassWord;
     private boolean active;
     private int tryConnection;
     private Date expiryConnection;
-    @Valid
     @OneToOne(cascade = CascadeType.ALL)
     private Mail mail;
     @ManyToMany
@@ -45,10 +42,6 @@ public class User {
     @JsonIgnore
     public String getPassWordConfirm() {
         return passWordConfirm;
-    }
-    @JsonIgnore
-    public String getOldPassWord() {
-        return oldPassWord;
     }
     @JsonIgnore
     public String getPassWord() {
@@ -62,9 +55,5 @@ public class User {
     public void setPassWordConfirm(String passWordConfirm) {
         this.passWordConfirm = passWordConfirm;
     }
-    @JsonProperty
-    public void setOldPassWord(String oldPassWord) {
-        this.oldPassWord = oldPassWord;
-    }
-
+    
 }

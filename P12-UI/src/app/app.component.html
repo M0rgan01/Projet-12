@@ -34,7 +34,7 @@
           Mon compte
         </a>
         <div class="dropdown-menu" aria-labelledby="smallerscreenmenu">
-          <a class="dropdown-item" href="#">Modifier mon compte</a>
+          <a class="dropdown-item" routerLink="/account">Modifier mon compte</a>
           <a *ngIf="authService.isAuth()" (click)="onLogout()"
              class="dropdown-item">Logout
           </a>
@@ -83,7 +83,7 @@
       </a>
       <!-- Submenu content -->
       <div id="submenu1" class="collapse">
-        <a href="#" class="list-group-item list-group-item-action text-white text-center border-0 bg-dark">
+        <a routerLink="/account" class="list-group-item list-group-item-action text-white text-center border-0 bg-dark">
           <span class="menu-collapsed">Modifier mon compte</span>
         </a>
         <a *ngIf="authService.isAuth()" (click)="onLogout()"

@@ -15,10 +15,18 @@ public class MailController {
     @Autowired
     private MailBusiness mailBusiness;
 
-    @PostMapping (value = "/userRole/mail")
-    public ResponseEntity<?> updateMail(@RequestBody @Valid Mail mail) throws AccountException {
+    @PutMapping(value = "/adminRole/mail")
+    public ResponseEntity<?> updateMail(@RequestBody Mail mail) throws AccountException {
 
         mail = mailBusiness.updateMail(mail);
+
+        return ResponseEntity.ok().body(mail);
+    }
+
+    @PutMapping(value = "/userRole/mail/{id}/{email}")
+    public ResponseEntity<?> updateMail(@PathVariable Long id, @PathVariable String email) throws AccountException {
+
+        Mail mail = mailBusiness.updateMail(id, email);
 
         return ResponseEntity.ok().body(mail);
     }

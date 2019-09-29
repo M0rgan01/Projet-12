@@ -11,6 +11,7 @@ import org.paniergarni.account.entities.User;
 import org.paniergarni.account.exception.AccountException;
 import org.paniergarni.account.exception.BadCredencialException;
 import org.paniergarni.account.exception.ExpirationException;
+import org.paniergarni.account.exception.RecoveryException;
 import org.paniergarni.account.service.SendMail;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -132,7 +133,7 @@ public class MailBusinessTest {
         //si la méthode ne lève aucune erreur c'est bon
         try {
             mailBusiness.validateToken("Bla", mail.getEmail());
-        } catch (BadCredencialException e) {
+        } catch (RecoveryException e) {
             ArgumentCaptor<Mail> argument = ArgumentCaptor.forClass(Mail.class);
             verify(mailRepository).save(argument.capture());
             assertEquals(argument.getValue().getTryToken(), 1);
