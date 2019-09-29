@@ -1,0 +1,48 @@
+<div *ngIf="order">
+
+  <div class="row justify-content-center my-3">
+    <h3>Commande {{order.reference}}</h3>
+  </div>
+
+  <div *ngIf="cancel" class="row justify-content-center">
+    <span class="alert alert-success">Mise à jour réussi !</span>
+  </div>
+
+  <div *ngIf="order.cancel" class="row justify-content-center">
+    <span class="alert alert-danger">Cette commande à été annulé</span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Nom</th>
+        <th class="text-right">Quantité commandé</th>
+        <th class="text-right">Quantité réel commandé</th>
+        <th class="text-right">Prix total</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let orderProducts of order.orderProducts">
+        <td class="align-middle font-weight-bold" *ngIf="orderProducts.product">{{orderProducts.product.name}}</td>
+        <td class="text-right align-middle">{{orderProducts.orderQuantity}}</td>
+        <td class="text-right align-middle">{{orderProducts.realQuantity}}</td>
+        <td class="text-right align-middle">{{orderProducts.totalPriceRow | number:'0.2'}}</td>
+        <td class="text-right align-middle">
+          <button [routerLink]="['/product', orderProducts.productId]" class="btn btn-info">Détails</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!order.cancel" class="row justify-content-center my-3">
+    <p>Vous disposez d'une durée de {{maxHourCancel}} heures pour annulé une commande.</p>
+  </div>
+
+  <div class="row justify-content-center">
+    <button (click)="onCancelOrder()" *ngIf="maxHourCancel && checkCancelOrder() && !order.cancel" class="btn btn-danger m-1">Annuler la commande</button>
+    <button routerLink="/orders" class="btn btn-primary m-1">Revenir au commandes</button>
+  </div>
+</div>

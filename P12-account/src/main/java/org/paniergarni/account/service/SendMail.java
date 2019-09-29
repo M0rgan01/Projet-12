@@ -22,18 +22,14 @@ public class SendMail {
 
     /**
      * Envoie un email
-     * @param from
-     * adresse qui envoyer le mail
-     * @param pass
-     * mot de passe de l'adresse qui envoyer le mail
-     * @param to
-     * tableau contenant les email de destination
-     * @param subject
-     * Object du mail
-     * @param body
-     * contenu du mail
+     *
+     * @param from    adresse qui envoyer le mail
+     * @param pass    mot de passe de l'adresse qui envoyer le mail
+     * @param to      tableau contenant les email de destination
+     * @param subject Object du mail
+     * @param body    contenu du mail
      */
-    public void sendFromGMail(String from, String pass, String[] to, String subject, String body) {
+    public void sendFromGMail(String from, String pass, String[] to, String subject, String body) throws MessagingException, AddressException {
         Properties props = System.getProperties();
         String host = "smtp.gmail.com";
         props.put("mail.smtp.starttls.enable", "true");
@@ -46,34 +42,29 @@ public class SendMail {
         Session session = Session.getDefaultInstance(props);
         MimeMessage message = new MimeMessage(session);
 
-        try {
-            message.setFrom(new InternetAddress(from));
-            InternetAddress[] toAddress = new InternetAddress[to.length];
+        message.setFrom(new InternetAddress(from));
+        InternetAddress[] toAddress = new InternetAddress[to.length];
 
-            // To get the array of addresses
-            for (int i = 0; i < to.length; i++) {
-                toAddress[i] = new InternetAddress(to[i]);
-            }
-
-            for (int i = 0; i < toAddress.length; i++) {
-                message.addRecipient(Message.RecipientType.TO, toAddress[i]);
-            }
-
-            //attribution du sujet
-            message.setSubject(subject);
-            //attribution du corp de l'email
-            message.setText(body);
-            Transport transport = session.getTransport("smtp");
-            //connexion
-            transport.connect(host, from, pass);
-            //envoi du mail
-            transport.sendMessage(message, message.getAllRecipients());
-
-            transport.close();
-        } catch (AddressException ae) {
-            ae.printStackTrace();
-        } catch (MessagingException me) {
-            me.printStackTrace();
+        // To get the array of addresses
+        for (int i = 0; i < to.length; i++) {
+            toAddress[i] = new InternetAddress(to[i]);
         }
+
+        for (int i = 0; i < toAddress.length; i++) {
+            message.addRecipient(Message.RecipientType.TO, toAddress[i]);
+        }
+
+        //attribution du sujet
+        message.setSubject(subject);
+        //attribution du corp de l'email
+        message.setText(body);
+        Transport transport = session.getTransport("smtp");
+        //connexion
+        transport.connect(host, from, pass);
+        //envoi du mail
+        transport.sendMessage(message, message.getAllRecipients());
+
+        transport.close();
+
     }
-    }
+}

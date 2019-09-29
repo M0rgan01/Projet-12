@@ -1,5 +1,7 @@
 package org.paniergarni.account.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,10 +23,22 @@ import java.util.Date;
 public class Mail {
     @Id@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
-    @Pattern(regexp = "^[^\\W][a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)*\\@[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)*\\.[a-zA-Z]{2,4}$")
+    @NotNull(message = "mail.email.null")
+    @Pattern(regexp = "^[^\\W][a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)*\\@[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)*\\.[a-zA-Z]{2,4}$", message = "mail.email.not.true")
     private String email;
     private String token;
     private int tryToken;
     private Date expiryToken;
+    private boolean availablePasswordRecovery;
+    private Date expiryPasswordRecovery;
+
+
+    @JsonIgnore
+    public String getToken() {
+        return token;
+    }
+    @JsonProperty
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

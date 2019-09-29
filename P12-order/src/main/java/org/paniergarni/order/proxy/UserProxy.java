@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RibbonClient(name = "P12-account")
 public interface UserProxy {
 
-    @GetMapping(value = "/userByUserName/{userName}")
+    @GetMapping(value = "/userRole/userByUserName/{userName}")
     User findByUserName(@PathVariable String userName);
 
 }

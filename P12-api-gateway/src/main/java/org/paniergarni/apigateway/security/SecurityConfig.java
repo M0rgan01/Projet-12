@@ -63,6 +63,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Value("#{'${security.authorized.url}'.split(',')}")
 	private List<String> authorizedUrl;
+	@Value("#{'${security.admin.role.url}'.split(',')}")
+	private List<String> adminRoleUrl;
 	@Value("${security.authentication.url}")
 	private String authenticationUrl;
 	@Value("${security.api.root.url}")
@@ -129,14 +131,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		// desacive la creation de session par spring
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-			
+
 		// requete ne nécésitant aucune authentification
 		http.authorizeRequests().antMatchers(authorizedUrl.toArray(new String[authorizedUrl.size()]))
 				.permitAll();
 		
 		// requete nécésitant un Role particulier
-		http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/edit/products/photo/**").hasAnyAuthority("ROLE_ADMIN");
-		
+		http.authorizeRequests().antMatchers(adminRoleUrl.toArray(new String[adminRoleUrl.size()])).hasAuthority("ROLE_ADMIN");
+
 		// requete nécésitant une authentification
 		http.authorizeRequests().anyRequest().authenticated();
 

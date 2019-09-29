@@ -3,9 +3,7 @@ package org.paniergarni.account.business;
 import org.paniergarni.account.dao.MailRepository;
 import org.paniergarni.account.entities.Mail;
 import org.paniergarni.account.entities.User;
-import org.paniergarni.account.exception.AccountException;
-import org.paniergarni.account.exception.BadCredencialException;
-import org.paniergarni.account.exception.ExpirationException;
+import org.paniergarni.account.exception.*;
 import org.paniergarni.account.service.SendMail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.mail.AuthenticationFailedException;
+import javax.mail.MessagingException;
 import javax.validation.constraints.NotNull;
 import java.security.SecureRandom;
 import java.text.MessageFormat;
@@ -40,8 +40,10 @@ public class MailBusinessImpl implements MailBusiness {
     @Value("${mail.body.recovery}")
     private String bodyRecovery;
 
-    @Value("${mail.expirationToken}")
+    @Value("${mail.expirationToken.inMinutes}")
     private int expirationToken;
+    @Value("${mail.expirationRecovery.inMinutes}")
+    private int expirationRecovery;
 
     @Override
     public Mail createMail(Mail mail) throws AccountException {
@@ -50,7 +52,19 @@ public class MailBusinessImpl implements MailBusiness {
     }
 
     @Override
-    public Mail updateMail(Mail mail) {
+    public Mail updateMail(Mail mail) throws AccountException {
+        return mailRepository.save(mail);
+    }
+
+    @Override
+    public Mail updateMail(Long id, String email) throws AccountException {
+        Mail mail = getMailById(id);
+        if (mail.getEmail().equals(email)) {
+            throw new AccountException("mail.email.same.value");
+        }
+        checkEmailExist(email);
+        mail.setEmail(email);
+
         return mailRepository.save(mail);
     }
 
@@ -71,36 +85,41 @@ public class MailBusinessImpl implements MailBusiness {
     }
 
     @Override
-    public void sendTokenForRecovery(String email) {
+    public Mail sendTokenForRecovery(String email) throws AccountException {
 
         User user = userBusiness.getUserByEmail(email);
 
-        if (!user.isActive()) {
-            throw new AccountException("user.not.active");
-        }
+        if (!user.isActive())
+            throw new UserNotActiveException("user.not.active");
 
         // generation du token
         String token = generateToken();
         // assignation au mail
         user.getMail().setToken(token);
         user.getMail().setTryToken(0);
-        // creation d'une date d'expiration
+        user.getMail().setAvailablePasswordRecovery(false);
+        user.getMail().setExpiryPasswordRecovery(null);
+        // creation d'une date d'expiration pour le token
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.MINUTE, expirationToken);
         user.getMail().setExpiryToken(cal.getTime());
 
-        String body = MessageFormat.format(bodyRecovery,  user.getMail().getToken());
+        String body = MessageFormat.format(bodyRecovery, user.getMail().getToken());
 
-        String[] tableau_email = {  user.getMail().getEmail() };
+        String[] tableau_email = {user.getMail().getEmail()};
+        try {
+            sendMail.sendFromGMail(emailUsers, emailPassword, tableau_email, objectRecovery, body);
+        } catch (Exception e) {
+            throw new RecoveryException("internal.error");
+        }
 
-        sendMail.sendFromGMail(emailUsers, emailPassword, tableau_email, objectRecovery, body);
-        logger.info("Send token to the email " +  user.getMail().getEmail());
-        mailRepository.save( user.getMail());
-        logger.info("Update mail " +  user.getMail().getId());
+        logger.info("Send token to the email " + user.getMail().getEmail());
+        logger.info("Update mail " + user.getMail().getId());
+        return mailRepository.save(user.getMail());
     }
 
     @Override
-    public void validateToken(String token, String email) {
+    public Mail validateToken(String token, String email) throws AccountException {
 
         Mail mail = getMailByEmail(email);
 
@@ -108,25 +127,28 @@ public class MailBusinessImpl implements MailBusiness {
         // d'essais
         // et plus petit que 3
         if (token.equals(mail.getToken()) && mail.getTryToken() < 3) {
-
             // on vérifie la date
             if (!new Date().before(mail.getExpiryToken())) {
                 logger.error("Token for email " + mail.getId() + " expiry");
                 throw new ExpirationException("mail.token.expiry");
             }
+            mail.setAvailablePasswordRecovery(true);
+            // creation d'une date d'expiration pour le token
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MINUTE, expirationRecovery);
+            mail.setExpiryPasswordRecovery(cal.getTime());
+            return mailRepository.save(mail);
             // sinon on incrémente le nombre d'essais
         } else {
-
             // si le nombre d'essais est supérieur ou égal à 2
             if (mail.getTryToken() >= 2) {
                 logger.error("Number of tests for token exceeded for mail " + mail.getId());
-                throw new AccountException("mail.token.try.out");
+                throw new RecoveryException("mail.token.try.out");
             }
-
             mail.setTryToken(mail.getTryToken() + 1);
             mailRepository.save(mail);
             logger.info("Increment tryToken for Mail " + mail.getId() + " and update");
-            throw new BadCredencialException("mail.token.not.correct");
+            throw new RecoveryException("mail.token.not.correct");
         }
     }
 

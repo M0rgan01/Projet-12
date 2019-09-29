@@ -1,17 +1,21 @@
 package org.paniergarni.apigateway.controller;
 
+import feign.FeignException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.paniergarni.apigateway.object.CreateUserDTO;
 import org.paniergarni.apigateway.object.Role;
 import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.proxy.UserProxy;
 import org.paniergarni.apigateway.security.auth.model.UserContext;
+import org.paniergarni.apigateway.security.exception.ProxyException;
 import org.paniergarni.apigateway.security.token.JwtService;
 import org.paniergarni.apigateway.security.token.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,8 +35,6 @@ public class AuthController {
     @Autowired
     private JwtService jwtService;
 
-
-
     @ApiOperation("Login.")
     @PostMapping("/api/auth/login")
     public void fakeLogin(@ApiParam("User") @RequestParam String userName, @ApiParam("Password") @RequestParam String passWord) {
@@ -40,9 +42,9 @@ public class AuthController {
     }
 
     @PostMapping(value = "/api/auth/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody CreateUserDTO createUserDTO) throws IllegalArgumentException, FeignException {
 
-        user = userProxy.createUser(user);
+        User user = userProxy.createUser(createUserDTO);
         // on créer un token JWT
         String jwt = jwtService.createAuthToken(UserContext.create(user.getUserName(), Role.getListAuthorities(user.getRoles())));
         String jwtRefresh = jwtService.createRefreshToken(UserContext.create(user.getUserName(), null));
@@ -56,7 +58,7 @@ public class AuthController {
     }
 
     @GetMapping(value = "/api/auth/token")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+    public ResponseEntity<?> refreshToken(HttpServletRequest request) throws IllegalArgumentException, AuthenticationException {
 
         JwtToken token = new JwtToken(jwtService.extract(request.getHeader(headerRefresh)));
 

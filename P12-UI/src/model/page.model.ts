@@ -1,7 +1,5 @@
-import {Product} from "./product.model";
-
-export class PageProduct {
-  content:Array<Product>;
+export class Page<T> {
+  content: Array<T>;
   totalPages: number;
   totalElements: number;
   number: number;
