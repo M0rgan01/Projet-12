@@ -16,15 +16,6 @@
           <p class="p-1 m-0">Mise à jour éffectué</p>
         </div>
 
-        <form (ngSubmit)="onUpdateUserName(user)">
-          <div class="form-group">
-            <label>Username:</label>
-            <input class="form-control" [(ngModel)]="user.userName" type="text" name="userName">
-          </div>
-          <button type="submit" class="btn btn-primary mb-2" [disabled]="!user.userName">Modifier</button>
-        </form>
-
-
         <form (ngSubmit)="onUpdateEmail(user)">
           <div class="form-group">
             <label>Email:</label>

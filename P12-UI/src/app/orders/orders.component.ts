@@ -15,7 +15,7 @@ export class OrdersComponent implements OnInit {
   constructor(public api: APIService, public authService: AuthenticationService, public router: Router) {
   }
 
-  public size = 16;
+  public size = 8;
   public page = 0;
   public orders: Page<Order>;
   public listSize: Array<number> = [8, 16, 32];

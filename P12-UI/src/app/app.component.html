@@ -28,16 +28,22 @@
 
       <!-- This menu is hidden in bigger devices with d-sm-none.
            The sidebar isn't proper for smaller screens imo, so this dropdown menu can keep all the useful sidebar itens exclusively for smaller screens  -->
-      <li *ngIf="authService.isAuth()" class="nav-item dropdown d-sm-block d-md-none">
+      <li class="nav-item dropdown d-sm-block d-md-none">
         <a class="nav-link dropdown-toggle" href="#" id="smallerscreenmenu" data-toggle="dropdown" aria-haspopup="true"
            aria-expanded="false">
           Mon compte
         </a>
         <div class="dropdown-menu" aria-labelledby="smallerscreenmenu">
+          <div *ngIf="authService.isAuth()">
           <a class="dropdown-item" routerLink="/account">Modifier mon compte</a>
-          <a *ngIf="authService.isAuth()" (click)="onLogout()"
+          <a (click)="onLogout()"
              class="dropdown-item">Logout
           </a>
+          </div>
+          <div *ngIf="!authService.isAuth()">
+            <a class="dropdown-item" routerLink="/login">Login</a>
+            <a class="dropdown-item" routerLink="/register">Register</a>
+          </div>
         </div>
       </li>
 
@@ -82,15 +88,14 @@
         </div>
       </a>
       <!-- Submenu content -->
-      <div id="submenu1" class="collapse">
+      <div  *ngIf="authService.isAuth()" id="submenu1" class="collapse">
         <a routerLink="/account" class="list-group-item list-group-item-action text-white text-center border-0 bg-dark">
           <span class="menu-collapsed">Modifier mon compte</span>
         </a>
-        <a *ngIf="authService.isAuth()" (click)="onLogout()"
+        <a (click)="onLogout()"
            class="list-group-item list-group-item-action text-white text-center border-0 bg-dark cliquable">
           <span class="menu-collapsed">Logout</span>
         </a>
-
       </div>
 
     </ul>

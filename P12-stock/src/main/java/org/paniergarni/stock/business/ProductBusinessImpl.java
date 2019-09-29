@@ -52,25 +52,35 @@ public class ProductBusinessImpl implements ProductBusiness {
     }
 
     @Override
-    public Product updateProductQuantity(int quantity, Long id) throws StockException {
+    public Product updateProductQuantity(int quantity, Long id, boolean cancel) throws StockException {
         Product product = getProduct(id);
-        if (product.isAvailable()) {
+        if (!cancel) {
+            if (product.isAvailable()) {
 
-            if (product.getQuantity() < quantity)
-                quantity = product.getQuantity();
+                if (product.getQuantity() < quantity)
+                    quantity = product.getQuantity();
 
-            product.setQuantity(product.getQuantity() - quantity);
+                product.setQuantity(product.getQuantity() - quantity);
 
-            if (product.getQuantity() == 0) {
-                product.setOrderProductRealQuantity(quantity);
-                product.setAvailable(false);
+                if (product.getQuantity() == 0) {
+                    product.setOrderProductRealQuantity(quantity);
+                    product.setAvailable(false);
+                } else {
+                    product.setOrderProductRealQuantity(quantity);
+                }
+                productRepository.save(product);
+                return product;
             } else {
-                product.setOrderProductRealQuantity(quantity);
+                throw new StockException("product.not.available");
             }
+        } else {
+            product.setQuantity(product.getQuantity() + quantity);
+
+            if (product.getQuantity() != 0 && !product.isAvailable())
+                product.setAvailable(true);
+
             productRepository.save(product);
             return product;
-        } else {
-            throw new StockException("product.not.available");
         }
     }
 }

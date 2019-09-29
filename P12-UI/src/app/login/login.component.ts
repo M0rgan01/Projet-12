@@ -46,6 +46,8 @@ export class LoginComponent implements OnInit {
       if (this.paramRedirect) {
         if (this.paramRedirect === 'returnCaddy') {
           this.router.navigateByUrl('/caddies');
+        } else {
+          this.router.navigateByUrl('/');
         }
       } else {
         this.router.navigateByUrl('/');

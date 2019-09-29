@@ -33,23 +33,6 @@ export class AccountUpdateComponent implements OnInit {
     });
   }
 
-  onUpdateUserName(user: User) {
-    this.error = null;
-    this.errors = null;
-    this.update = false;
-    this.api.putRessources<User>('/p12-account/userRole/updateUserName/' + user.id + '/' + user.userName, null).subscribe(value => {
-      this.user = value;
-      this.update = true;
-    }, error1 => {
-      if (error1.status === 400) {
-        if (error1.error.error) {
-          this.error = error1.error.error;
-        }
-      } else {
-        this.error = 'Une erreur est survenue, veuillez réesayer plus tard';
-      }
-    });
-  }
 
   onUpdateEmail(user: User) {
     this.error = null;

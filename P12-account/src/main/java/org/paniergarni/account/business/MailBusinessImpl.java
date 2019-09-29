@@ -122,7 +122,7 @@ public class MailBusinessImpl implements MailBusiness {
     public Mail validateToken(String token, String email) throws AccountException {
 
         Mail mail = getMailByEmail(email);
-
+        System.out.println(mail.getTryToken());
         // si les jetons correspondes et si le nombre
         // d'essais
         // et plus petit que 3
@@ -141,12 +141,17 @@ public class MailBusinessImpl implements MailBusiness {
             // sinon on incrémente le nombre d'essais
         } else {
             // si le nombre d'essais est supérieur ou égal à 2
-            if (mail.getTryToken() >= 2) {
+            if (mail.getTryToken() >= 3) {
                 logger.error("Number of tests for token exceeded for mail " + mail.getId());
                 throw new RecoveryException("mail.token.try.out");
             }
             mail.setTryToken(mail.getTryToken() + 1);
+            System.out.println(mail.getTryToken());
             mailRepository.save(mail);
+            if (mail.getTryToken() == 3) {
+                logger.error("Number of tests for token exceeded for mail " + mail.getId());
+                throw new RecoveryException("mail.token.try.out");
+            }
             logger.info("Increment tryToken for Mail " + mail.getId() + " and update");
             throw new RecoveryException("mail.token.not.correct");
         }

@@ -12,5 +12,5 @@ public interface ProductBusiness {
     Page<Product> getPageProductsByName(int page, int size, String name);
     Page<Product> getPageProductsByPromotion(int page, int size);
     Page<Product> getPageProductsByCategory(int page, int size, Long categoryId);
-    Product updateProductQuantity(int quantity, Long id) throws StockException;
+    Product updateProductQuantity(int quantity, Long id, boolean cancel) throws StockException;
 }

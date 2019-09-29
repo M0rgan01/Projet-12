@@ -75,10 +75,10 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
-    @PutMapping(value = "adminRole/productQuantity/{quantity}/{id}")
-    public ResponseEntity<?> updateProductQuantity( @PathVariable Long id, @PathVariable int quantity) throws StockException {
+    @PutMapping(value = "adminRole/productQuantity/{quantity}/{id}/{cancel}")
+    public ResponseEntity<?> updateProductQuantity( @PathVariable Long id, @PathVariable int quantity, @PathVariable boolean cancel) throws StockException {
 
-       Product product = productBusiness.updateProductQuantity(quantity, id);
+       Product product = productBusiness.updateProductQuantity(quantity, id, cancel);
 
         return ResponseEntity.ok().body(product);
     }
