@@ -1,15 +1,12 @@
 package org.paniergarni.order.business;
 
 import feign.FeignException;
-import org.aspectj.weaver.ast.Or;
 import org.paniergarni.order.dao.OrderRepository;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
-import org.paniergarni.order.entities.Sequence;
 import org.paniergarni.order.exception.CancelException;
 import org.paniergarni.order.exception.OrderException;
 import org.paniergarni.order.exception.ReceptionException;
-import org.paniergarni.order.exception.SequenceException;
 import org.paniergarni.order.object.Product;
 import org.paniergarni.order.object.User;
 import org.paniergarni.order.proxy.ProductProxy;
@@ -31,8 +28,6 @@ public class OrderBusinessImpl implements OrderBusiness {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
-    private SequenceBusiness sequenceBusiness;
-    @Autowired
     private UserProxy userProxy;
     @Autowired
     private ProductProxy productProxy;
@@ -52,9 +47,13 @@ public class OrderBusinessImpl implements OrderBusiness {
         for (OrderProduct orderProduct : orderProducts) {
 
             try {
-                Product product = productProxy.updateProductQuantity(orderProduct.getOrderQuantity(), orderProduct.getProductId());
+                Product product = productProxy.updateProductQuantity(orderProduct.getOrderQuantity(), orderProduct.getProductId(), false);
                 orderProduct.setRealQuantity(product.getOrderProductRealQuantity());
-                orderProduct.setTotalPriceRow(product.getPrice() * orderProduct.getRealQuantity());
+                if (!product.isPromotion()) {
+                    orderProduct.setTotalPriceRow(product.getPrice() * orderProduct.getRealQuantity());
+                } else {
+                    orderProduct.setTotalPriceRow(product.getPromotionPrice() * orderProduct.getRealQuantity());
+                }
                 totalPrice = totalPrice + orderProduct.getTotalPriceRow();
                 orderProduct.setOrder(order);
             } catch (FeignException e) {
@@ -102,7 +101,7 @@ public class OrderBusinessImpl implements OrderBusiness {
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderException("order.id.incorrect"));
         User user = userProxy.findByUserName(userName);
 
-        if (!order.getUserId().equals(user.getId())){
+        if (!order.getUserId().equals(user.getId())) {
             throw new OrderException("order.id.incorrect");
         }
 
@@ -112,7 +111,7 @@ public class OrderBusinessImpl implements OrderBusiness {
     @Override
     public Page<Order> getOrders(String userName, int page, int size) throws FeignException {
         User user = userProxy.findByUserName(userName);
-        return  orderRepository.getAllByUserIdOrderByDate(user.getId(), PageRequest.of(page, size));
+        return orderRepository.getAllByUserIdOrderByDate(user.getId(), PageRequest.of(page, size));
     }
 
     @Override
@@ -122,13 +121,12 @@ public class OrderBusinessImpl implements OrderBusiness {
     }
 
     @Override
-    public Order cancelOrder(Long id, String userName) throws OrderException, FeignException  {
+    public Order cancelOrder(Long id, String userName) throws OrderException, FeignException {
         Order order = getOrder(id, userName);
-
-       return validateCancelOrder(order);
+        return validateCancelOrder(order);
     }
 
-    private Order validateCancelOrder(Order order) throws CancelException{
+    private Order validateCancelOrder(Order order) throws CancelException {
 
         if (order.getCancel())
             throw new CancelException("order.already.cancel");
@@ -141,15 +139,19 @@ public class OrderBusinessImpl implements OrderBusiness {
             throw new CancelException("order.cancel.after.max.value");
 
         order.setCancel(true);
-       return orderRepository.save(order);
+
+        for (OrderProduct orderProduct: order.getOrderProducts()) {
+            productProxy.updateProductQuantity(orderProduct.getRealQuantity(), orderProduct.getProductId(), true);
+        }
+
+        return orderRepository.save(order);
     }
 
     @Override
-    public Order paidOrder(Long id) throws OrderException, SequenceException {
+    public Order paidOrder(Long id) throws OrderException {
         Order order = getOrder(id);
-        sequenceBusiness.addSaleNumber(order.getDate());
         order.setPaid(true);
-       return orderRepository.save(order);
+        return orderRepository.save(order);
     }
 
     @Override
@@ -165,14 +167,14 @@ public class OrderBusinessImpl implements OrderBusiness {
     @Override
     public String addReference(Order order) {
 
-        Sequence sequence;
-        try {
-            sequence = sequenceBusiness.getByDate(order.getDate());
-        } catch (SequenceException e) {
-            sequence = sequenceBusiness.createSequence();
-        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(order.getDate());
 
-        return sequence.getDate() + "-" + sequence.getSequence();
+        String sequence = String.format("%05d", orderRepository.getCountOrderByMount(calendar.get(Calendar.MONTH) + 1))
+                + '-' + (calendar.get(Calendar.MONTH) + 1) + '/'
+                + calendar.get(Calendar.DATE);
+
+        return sequence;
     }
 
     @Override

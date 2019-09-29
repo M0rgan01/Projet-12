@@ -32,6 +32,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("select o from Order o where o.reception = :y and o.paid = false")
     List<Order> getListOrderReception(@Param("y") Date now);
 
+    @Query("select COUNT(o.id) from Order o where MONTH(o.date) = :y")
+    int getCountOrderByMount(@Param("y") int mouth);
 
     Page<Order> getAllByUserIdOrderByDate(Long id, Pageable pageable);
 }
