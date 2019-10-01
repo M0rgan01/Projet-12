@@ -45,7 +45,7 @@ public class JwtTokenAuthenticationProcessingFilter extends AbstractAuthenticati
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException, IOException, ServletException {
+            throws AuthenticationException {
 
     	//on récupère le token
         String tokenPayload = request.getHeader(headerAuth);

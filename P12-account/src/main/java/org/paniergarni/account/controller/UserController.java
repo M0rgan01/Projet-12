@@ -84,13 +84,6 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @GetMapping(value = "/adminRole/usersId/{username}")
-    public ResponseEntity<?> getUsersByUserNameContains(@PathVariable String username) throws AccountException {
-
-        List<Long> usersId = userBusiness.findAllByUserNameContains(username);
-
-        return ResponseEntity.ok().body(usersId);
-    }
 
     @PutMapping(value = "/public/editPassWordByRecovery/{email}")
     public ResponseEntity<?> editPassWordByRecovery(@PathVariable String email,@Valid @RequestBody UserRecoveryDTO userRecoveryDTO) throws AccountException {

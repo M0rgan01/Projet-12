@@ -113,7 +113,7 @@ public class OrderBusinessImpl implements OrderBusiness {
     }
 
     @Override
-    public Page<Order> searchProduct(String userName, int page, int size, List<SearchCriteria> searchCriteriaList) throws FeignException {
+    public Page<Order> searchProduct(String userName, int page, int size, List<SearchCriteria> searchCriteriaList) throws FeignException, CriteriaException {
         User user = userProxy.findByUserName(userName);
         if (searchCriteriaList == null)
             searchCriteriaList = new ArrayList<>();
@@ -191,11 +191,9 @@ public class OrderBusinessImpl implements OrderBusiness {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(order.getDate());
 
-        String sequence = String.format("%05d", orderRepository.getCountOrderByMount(calendar.get(Calendar.MONTH) + 1))
+        return String.format("%05d", orderRepository.getCountOrderByMount(calendar.get(Calendar.MONTH) + 1))
                 + '-' + (calendar.get(Calendar.MONTH) + 1) + '/'
                 + calendar.get(Calendar.DATE);
-
-        return sequence;
     }
 
     @Override

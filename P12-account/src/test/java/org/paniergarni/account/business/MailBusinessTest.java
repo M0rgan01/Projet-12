@@ -8,10 +8,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.paniergarni.account.dao.MailRepository;
 import org.paniergarni.account.entities.Mail;
 import org.paniergarni.account.entities.User;
-import org.paniergarni.account.exception.AccountException;
-import org.paniergarni.account.exception.BadCredencialException;
-import org.paniergarni.account.exception.ExpirationException;
-import org.paniergarni.account.exception.RecoveryException;
+import org.paniergarni.account.exception.*;
 import org.paniergarni.account.service.SendMail;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -54,7 +51,7 @@ public class MailBusinessTest {
     }
 
     @Test
-    public void testSendTokenForRecovery() throws AccountException {
+    public void testSendTokenForRecovery() throws AccountException, SendMailException {
         mail.setTryToken(3);
 
         Mockito.when(userBusiness.getUserByEmail(mail.getEmail())).thenReturn(user);
@@ -71,14 +68,14 @@ public class MailBusinessTest {
     }
 
     @Test(expected = AccountException.class)
-    public void testSendTokenForRecoveryWithBadEmail() throws AccountException {
+    public void testSendTokenForRecoveryWithBadEmail() throws AccountException, SendMailException {
         Mockito.when(userBusiness.getUserByEmail(mail.getEmail())).thenThrow(new AccountException(""));
 
         mailBusiness.sendTokenForRecovery(mail.getEmail());
     }
 
     @Test(expected = AccountException.class)
-    public void testSendTokenForRecoveryWithUserNotActive() throws AccountException {
+    public void testSendTokenForRecoveryWithUserNotActive() throws AccountException, SendMailException {
         user.setActive(false);
         Mockito.when(userBusiness.getUserByEmail(mail.getEmail())).thenReturn(user);
 

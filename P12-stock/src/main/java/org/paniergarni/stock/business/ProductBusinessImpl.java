@@ -4,6 +4,7 @@ import org.paniergarni.stock.dao.ProductRepository;
 import org.paniergarni.stock.dao.specification.ProductSpecificationBuilder;
 import org.paniergarni.stock.dao.specification.SearchCriteria;
 import org.paniergarni.stock.entities.Product;
+import org.paniergarni.stock.exception.CriteriaException;
 import org.paniergarni.stock.exception.StockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,10 +24,8 @@ public class ProductBusinessImpl implements ProductBusiness {
 
 
     @Override
-    public Product createProduct(Product product) throws StockException {
+    public Product createProduct(Product product) {
 
-        if (productRepository.findByName(product.getName()).isPresent())
-            throw new StockException("product.name.already.exist");
         if (product.getQuantity() == 0)
             product.setAvailable(false);
 
@@ -44,7 +43,7 @@ public class ProductBusinessImpl implements ProductBusiness {
     }
 
     @Override
-    public Page<Product> searchProduct(int page, int size, List<SearchCriteria> searchCriteriaList) {
+    public Page<Product> searchProduct(int page, int size, List<SearchCriteria> searchCriteriaList) throws CriteriaException {
         ProductSpecificationBuilder builder = new ProductSpecificationBuilder(searchCriteriaList);
         Specification<Product> spec = builder.build();
         return productRepository.findAll(spec, PageRequest.of(page, size));

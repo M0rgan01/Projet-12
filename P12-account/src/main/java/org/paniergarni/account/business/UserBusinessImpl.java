@@ -60,7 +60,7 @@ public class UserBusinessImpl implements UserBusiness {
     public User updateUser(Long id, User user) throws AccountException {
 
         User user1 = getUserById(user.getId());
-
+        user = user1;
         return userRepository.save(user);
     }
 
@@ -191,8 +191,4 @@ public class UserBusinessImpl implements UserBusiness {
         logger.info("Update passWord by recovery for user " + user2.getId());
     }
 
-    @Override
-    public List<Long> findAllByUserNameContains(String userName) {
-        return userRepository.findIdByUserNameContains(userName);
-    }
 }

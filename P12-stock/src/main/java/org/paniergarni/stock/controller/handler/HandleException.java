@@ -1,6 +1,7 @@
 package org.paniergarni.stock.controller.handler;
 
 
+import org.paniergarni.stock.exception.CriteriaException;
 import org.paniergarni.stock.exception.StockException;
 import org.paniergarni.stock.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -62,5 +63,12 @@ public class HandleException {
     @ResponseBody
     public ErrorResponse handleException(HttpMessageNotReadableException ex) {
         return ErrorResponse.of("json.error", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CriteriaException.class)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    @ResponseBody
+    public ErrorResponse handleException(CriteriaException ex) {
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
 }

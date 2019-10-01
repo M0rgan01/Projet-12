@@ -4,8 +4,8 @@ import feign.FeignException;
 import org.paniergarni.order.business.OrderBusiness;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
+import org.paniergarni.order.exception.CriteriaException;
 import org.paniergarni.order.exception.OrderException;
-import org.paniergarni.order.exception.SequenceException;
 import org.paniergarni.order.dao.specification.SearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ public class OrderController {
     }
 
     @GetMapping(value = "/userRole/order/{id}/{userName}")
-    public ResponseEntity<?> getOrderById(@PathVariable(name = "id") Long id, @PathVariable(name = "userName") String userName) throws OrderException {
+    public ResponseEntity<?> getOrderById(@PathVariable(name = "id") Long id, @PathVariable(name = "userName") String userName) throws OrderException, FeignException {
 
         Order order = orderBusiness.getOrder(id, userName);
 
@@ -41,7 +41,7 @@ public class OrderController {
     public ResponseEntity<?> getOrdersByUserName(@PathVariable(name = "userName") String userName,
                                                  @PathVariable(name = "page") int page,
                                                  @PathVariable(name = "size") int size,
-                                                 @RequestBody(required=false) List<SearchCriteria> searchCriteriaList) throws OrderException {
+                                                 @RequestBody(required=false) List<SearchCriteria> searchCriteriaList) throws CriteriaException, FeignException {
 
         Page<Order> orders = orderBusiness.searchProduct(userName, page, size, searchCriteriaList);
 
@@ -51,7 +51,7 @@ public class OrderController {
     @GetMapping(value = "/adminRole/orders/{page}/{size}")
     public ResponseEntity<?> getOrders( @PathVariable(name = "page") int page,
                                         @PathVariable(name = "size") int size,
-                                        @RequestBody(required=false) List<SearchCriteria> searchCriteriaList) throws OrderException {
+                                        @RequestBody(required=false) List<SearchCriteria> searchCriteriaList) throws CriteriaException {
 
         Page<Order> orders = orderBusiness.searchProduct(page, size, searchCriteriaList);
 
@@ -120,7 +120,7 @@ public class OrderController {
     }
 
     @PutMapping(value = "/adminRole/cancelOrder/{id}")
-    public ResponseEntity<?> cancelOrder(@PathVariable(name = "id") Long id) throws OrderException, FeignException {
+    public ResponseEntity<?> cancelOrder(@PathVariable(name = "id") Long id) throws OrderException {
 
         Order order = orderBusiness.cancelOrder(id);
 
@@ -128,7 +128,7 @@ public class OrderController {
     }
 
     @PutMapping(value = "/adminRole/paidOrder/{id}")
-    public ResponseEntity<?> paidOrder(@PathVariable(name = "id") Long id) throws SequenceException, OrderException {
+    public ResponseEntity<?> paidOrder(@PathVariable(name = "id") Long id) throws OrderException {
 
         orderBusiness.paidOrder(id);
 

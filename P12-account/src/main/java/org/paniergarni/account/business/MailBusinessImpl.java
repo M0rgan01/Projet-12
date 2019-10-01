@@ -45,16 +45,6 @@ public class MailBusinessImpl implements MailBusiness {
     @Value("${mail.expirationRecovery.inMinutes}")
     private int expirationRecovery;
 
-    @Override
-    public Mail createMail(Mail mail) throws AccountException {
-        checkEmailExist(mail.getEmail());
-        return mailRepository.save(mail);
-    }
-
-    @Override
-    public Mail updateMail(Mail mail) throws AccountException {
-        return mailRepository.save(mail);
-    }
 
     @Override
     public Mail updateMail(Long id, String email) throws AccountException {
@@ -85,7 +75,7 @@ public class MailBusinessImpl implements MailBusiness {
     }
 
     @Override
-    public Mail sendTokenForRecovery(String email) throws AccountException {
+    public Mail sendTokenForRecovery(String email) throws AccountException, SendMailException {
 
         User user = userBusiness.getUserByEmail(email);
 
@@ -110,7 +100,7 @@ public class MailBusinessImpl implements MailBusiness {
         try {
             sendMail.sendFromGMail(emailUsers, emailPassword, tableau_email, objectRecovery, body);
         } catch (Exception e) {
-            throw new RecoveryException("internal.error");
+            throw new SendMailException("internal.error");
         }
 
         logger.info("Send token to the email " + user.getMail().getEmail());
@@ -122,7 +112,7 @@ public class MailBusinessImpl implements MailBusiness {
     public Mail validateToken(String token, String email) throws AccountException {
 
         Mail mail = getMailByEmail(email);
-        System.out.println(mail.getTryToken());
+
         // si les jetons correspondes et si le nombre
         // d'essais
         // et plus petit que 3

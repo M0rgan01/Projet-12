@@ -38,10 +38,10 @@ public class HandleException {
     }
 
     @ExceptionHandler(RetryableException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     @ResponseBody
     public ErrorResponse handleException(RetryableException ex) {
-        return ErrorResponse.of("internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
+        return ErrorResponse.of("internal.error", HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -78,10 +78,10 @@ public class HandleException {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
     @ResponseBody
     public ErrorResponse handleException(HttpMessageNotReadableException ex) {
-        return ErrorResponse.of("json.error", HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of("json.error", HttpStatus.PRECONDITION_FAILED);
     }
 
     @ExceptionHandler(CriteriaException.class)

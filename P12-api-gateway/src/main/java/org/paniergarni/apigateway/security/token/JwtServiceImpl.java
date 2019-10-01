@@ -2,7 +2,6 @@ package org.paniergarni.apigateway.security.token;
 
 
 import feign.FeignException;
-import feign.RetryableException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -10,14 +9,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.paniergarni.apigateway.object.Role;
 import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.proxy.UserProxy;
-import org.paniergarni.apigateway.security.auth.model.UserContext;
-import org.paniergarni.apigateway.security.exception.ProxyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -48,15 +44,15 @@ public class JwtServiceImpl implements JwtService {
     private String activePrefix;
 
     @Override
-    public String createAuthToken(UserContext userContext) {
-        if (userContext.getUsername() == null || userContext.getUsername().isEmpty())
+    public String createAuthToken(User userContext) throws IllegalArgumentException {
+        if (userContext.getUserName() == null || userContext.getUserName().isEmpty())
             throw new IllegalArgumentException("jwt.auth.username.null");
 
         if (userContext.getAuthorities() == null || userContext.getAuthorities().isEmpty())
             throw new IllegalArgumentException("jwt.auth.authorities.null");
 
         // construction du Json web token
-        return Jwts.builder().setSubject(userContext.getUsername()) // ajout de username
+        return Jwts.builder().setSubject(userContext.getUserName()) // ajout de username
                 .setExpiration(new Date(System.currentTimeMillis() + authTokenExpiration)) // ajout d'une date d'expiration
                 .signWith(SignatureAlgorithm.HS256, secret) // partie secrete servant de clé, avec un algorithme de type HS 256
                 .claim(authoritiesPrefix, userContext.getAuthorities().stream().map(s -> s.toString()).collect(Collectors.toList())) // ajout personnalisé --> on ajoute les roles
@@ -64,13 +60,13 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String createRefreshToken(UserContext userContext) {
+    public String createRefreshToken(User userContext) throws IllegalArgumentException{
 
-        if (userContext.getUsername() == null || userContext.getUsername().isEmpty())
+        if (userContext.getUserName() == null || userContext.getUserName().isEmpty())
             throw new IllegalArgumentException("jwt.refresh.username.null");
 
         // construction du Json web token
-        return Jwts.builder().setSubject(userContext.getUsername()) // ajout de username
+        return Jwts.builder().setSubject(userContext.getUserName()) // ajout de username
                 .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration)) // ajout d'une date d'expiration
                 .signWith(SignatureAlgorithm.HS256, secret) // partie secrete servant de clé, avec un algorithme de type HS 256
                 .claim(activePrefix, true) // ajout de vérification pour le rafraichissement
@@ -79,33 +75,25 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public UserContext validateRefreshToken(JwtToken token) {
+    public User validateRefreshToken(JwtToken token) throws AuthenticationException, FeignException {
 
         // vérification du token
         Jws<Claims> claims = token.parseClaims(token.getToken(), secret);
 
         // on recupere le contact pour comparaison
-        User contact;
-        try {
-            contact = userProxy.findByUserName(claims.getBody().getSubject());
-        } catch (FeignException e1) {
-            if (e1 instanceof RetryableException)
-                throw new AuthenticationServiceException("internal.error");
-            throw new UsernameNotFoundException("user.not.found");
-            // entre le temps ou le proxy est indisponible et est toujours sur eureka
-        } catch (Exception e) {
-            throw new ProxyException("internal.error");
-        }
+        User contact = userProxy.findByUserName(claims.getBody().getSubject());
 
         // si le contact est toujours bon, alors le token est toujours valide
         if (contact.isActive() != (boolean) claims.getBody().get(activePrefix))
             throw new DisabledException("contact.not.active");
 
-        return UserContext.create(claims.getBody().getSubject(), Role.getListAuthorities(contact.getRoles()));
+        contact.setAuthorities(Role.getListAuthorities(contact.getRoles()));
+
+        return contact;
     }
 
     @Override
-    public String extract(String header) {
+    public String extract(String header) throws BadCredentialsException {
 
         if (header == null || header.isEmpty()) {
             throw new BadCredentialsException("authorization.header.blank");
