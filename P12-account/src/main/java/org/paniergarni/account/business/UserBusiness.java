@@ -7,6 +7,8 @@ import org.paniergarni.account.entities.dto.UserUpdatePassWordDTO;
 import org.paniergarni.account.exception.AccountException;
 import org.paniergarni.account.exception.PassWordException;
 
+import java.util.List;
+
 public interface UserBusiness {
 
     User createUser(CreateUserDTO user) throws AccountException;
@@ -18,4 +20,5 @@ public interface UserBusiness {
     User getUserByEmail(String email) throws AccountException;
     User doConnection(String userName, String passWord) throws AccountException;
     void editPassWordByRecovery(String email, UserRecoveryDTO user);
+    List<Long> findAllByUserNameContains(String userName);
 }

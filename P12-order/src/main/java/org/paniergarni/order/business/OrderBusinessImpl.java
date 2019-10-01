@@ -2,12 +2,15 @@ package org.paniergarni.order.business;
 
 import feign.FeignException;
 import org.paniergarni.order.dao.OrderRepository;
+import org.paniergarni.order.dao.specification.OrderSpecificationBuilder;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
 import org.paniergarni.order.exception.CancelException;
+import org.paniergarni.order.exception.CriteriaException;
 import org.paniergarni.order.exception.OrderException;
 import org.paniergarni.order.exception.ReceptionException;
 import org.paniergarni.order.object.Product;
+import org.paniergarni.order.dao.specification.SearchCriteria;
 import org.paniergarni.order.object.User;
 import org.paniergarni.order.proxy.ProductProxy;
 import org.paniergarni.order.proxy.UserProxy;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -109,9 +113,42 @@ public class OrderBusinessImpl implements OrderBusiness {
     }
 
     @Override
-    public Page<Order> getOrders(String userName, int page, int size) throws FeignException {
+    public Page<Order> searchProduct(String userName, int page, int size, List<SearchCriteria> searchCriteriaList) throws FeignException {
         User user = userProxy.findByUserName(userName);
-        return orderRepository.getAllByUserIdOrderByDate(user.getId(), PageRequest.of(page, size));
+        if (searchCriteriaList == null)
+            searchCriteriaList = new ArrayList<>();
+        searchCriteriaList.add(new SearchCriteria("userId", ":", user.getId()));
+        OrderSpecificationBuilder builder = new OrderSpecificationBuilder(searchCriteriaList);
+        Specification<Order> spec = builder.build();
+        return orderRepository.findAll(spec, PageRequest.of(page, size));
+    }
+
+    @Override
+    public Page<Order> searchProduct(int page, int size, List<SearchCriteria> searchCriteriaList) throws CriteriaException {
+        if (searchCriteriaList == null)
+            searchCriteriaList = new ArrayList<>();
+        searchCriteriaList.add(new SearchCriteria("reception", "<", new Date().getTime()));
+        OrderSpecificationBuilder builder = new OrderSpecificationBuilder(searchCriteriaList);
+        Specification<Order> spec = builder.build();
+        return orderRepository.findAll(spec, PageRequest.of(page, size));
+    }
+
+    @Override
+    public List<Order> getListOrderLate() {
+        return orderRepository.getListOrderLate(truncateTime(new Date()));
+    }
+
+
+    @Override
+    public List<Order> getListOrderReception() {
+        return orderRepository.getListOrderReception(truncateTime(new Date()));
+    }
+
+    @Override
+    public Order paidOrder(Long id) throws OrderException {
+        Order order = getOrder(id);
+        order.setPaid(true);
+        return orderRepository.save(order);
     }
 
     @Override
@@ -140,29 +177,13 @@ public class OrderBusinessImpl implements OrderBusiness {
 
         order.setCancel(true);
 
-        for (OrderProduct orderProduct: order.getOrderProducts()) {
+        for (OrderProduct orderProduct : order.getOrderProducts()) {
             productProxy.updateProductQuantity(orderProduct.getRealQuantity(), orderProduct.getProductId(), true);
         }
 
         return orderRepository.save(order);
     }
 
-    @Override
-    public Order paidOrder(Long id) throws OrderException {
-        Order order = getOrder(id);
-        order.setPaid(true);
-        return orderRepository.save(order);
-    }
-
-    @Override
-    public List<Order> getListOrderLate() {
-        return orderRepository.getListOrderLate(truncateTime(new Date()));
-    }
-
-    @Override
-    public List<Order> getListOrderReception() {
-        return orderRepository.getListOrderReception(truncateTime(new Date()));
-    }
 
     @Override
     public String addReference(Order order) {

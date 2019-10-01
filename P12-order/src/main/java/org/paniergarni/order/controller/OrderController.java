@@ -6,6 +6,7 @@ import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
 import org.paniergarni.order.exception.OrderException;
 import org.paniergarni.order.exception.SequenceException;
+import org.paniergarni.order.dao.specification.SearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -39,9 +40,20 @@ public class OrderController {
     @GetMapping(value = "/userRole/orders/{userName}/{page}/{size}")
     public ResponseEntity<?> getOrdersByUserName(@PathVariable(name = "userName") String userName,
                                                  @PathVariable(name = "page") int page,
-                                                 @PathVariable(name = "size") int size) throws OrderException {
+                                                 @PathVariable(name = "size") int size,
+                                                 @RequestBody(required=false) List<SearchCriteria> searchCriteriaList) throws OrderException {
 
-        Page<Order> orders = orderBusiness.getOrders(userName, page, size);
+        Page<Order> orders = orderBusiness.searchProduct(userName, page, size, searchCriteriaList);
+
+        return ResponseEntity.ok().body(orders);
+    }
+
+    @GetMapping(value = "/adminRole/orders/{page}/{size}")
+    public ResponseEntity<?> getOrders( @PathVariable(name = "page") int page,
+                                        @PathVariable(name = "size") int size,
+                                        @RequestBody(required=false) List<SearchCriteria> searchCriteriaList) throws OrderException {
+
+        Page<Order> orders = orderBusiness.searchProduct(page, size, searchCriteriaList);
 
         return ResponseEntity.ok().body(orders);
     }
@@ -54,6 +66,7 @@ public class OrderController {
         return ResponseEntity.ok().body(orders);
     }
 
+
     @GetMapping(value = "/adminRole/lateOrders")
     public ResponseEntity<?> getListLateOrder() {
 
@@ -61,6 +74,7 @@ public class OrderController {
 
         return ResponseEntity.ok().body(orders);
     }
+
 
     @GetMapping(value = "/userRole/listDateReception")
     public ResponseEntity<?> getListDateReception() {

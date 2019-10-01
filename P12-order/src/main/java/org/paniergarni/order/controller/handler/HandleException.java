@@ -3,6 +3,7 @@ package org.paniergarni.order.controller.handler;
 
 import feign.FeignException;
 import feign.RetryableException;
+import org.paniergarni.order.exception.CriteriaException;
 import org.paniergarni.order.exception.OrderException;
 
 import org.paniergarni.order.response.ErrorResponse;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +73,7 @@ public class HandleException {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse handleException(Exception ex) {
-        System.out.println(ex.getMessage());
+        ex.printStackTrace();
         return ErrorResponse.of("internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -80,5 +82,12 @@ public class HandleException {
     @ResponseBody
     public ErrorResponse handleException(HttpMessageNotReadableException ex) {
         return ErrorResponse.of("json.error", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CriteriaException.class)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    @ResponseBody
+    public ErrorResponse handleException(CriteriaException ex) {
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
 }

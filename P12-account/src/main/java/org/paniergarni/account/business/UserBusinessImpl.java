@@ -190,4 +190,9 @@ public class UserBusinessImpl implements UserBusiness {
         userRepository.save(user2);
         logger.info("Update passWord by recovery for user " + user2.getId());
     }
+
+    @Override
+    public List<Long> findAllByUserNameContains(String userName) {
+        return userRepository.findIdByUserNameContains(userName);
+    }
 }

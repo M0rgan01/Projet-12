@@ -1,12 +1,19 @@
 package org.paniergarni.stock.business;
 
 import org.paniergarni.stock.dao.ProductRepository;
+import org.paniergarni.stock.dao.specification.ProductSpecificationBuilder;
+import org.paniergarni.stock.dao.specification.SearchCriteria;
 import org.paniergarni.stock.entities.Product;
 import org.paniergarni.stock.exception.StockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class ProductBusinessImpl implements ProductBusiness {
@@ -37,19 +44,12 @@ public class ProductBusinessImpl implements ProductBusiness {
     }
 
     @Override
-    public Page<Product> getPageProductsByName(int page, int size, String name) {
-        return productRepository.findByNameContains(name, PageRequest.of(page, size));
+    public Page<Product> searchProduct(int page, int size, List<SearchCriteria> searchCriteriaList) {
+        ProductSpecificationBuilder builder = new ProductSpecificationBuilder(searchCriteriaList);
+        Specification<Product> spec = builder.build();
+        return productRepository.findAll(spec, PageRequest.of(page, size));
     }
 
-    @Override
-    public Page<Product> getPageProductsByPromotion(int page, int size) {
-        return productRepository.findByPromotionIsTrue(PageRequest.of(page, size));
-    }
-
-    @Override
-    public Page<Product> getPageProductsByCategory(int page, int size, Long categoryId) {
-        return productRepository.findByCategoryId(categoryId, PageRequest.of(page, size));
-    }
 
     @Override
     public Product updateProductQuantity(int quantity, Long id, boolean cancel) throws StockException {
