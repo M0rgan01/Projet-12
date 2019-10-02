@@ -136,7 +136,7 @@ public class MailBusinessImpl implements MailBusiness {
                 throw new RecoveryException("mail.token.try.out");
             }
             mail.setTryToken(mail.getTryToken() + 1);
-            System.out.println(mail.getTryToken());
+
             mailRepository.save(mail);
             if (mail.getTryToken() == 3) {
                 logger.error("Number of tests for token exceeded for mail " + mail.getId());

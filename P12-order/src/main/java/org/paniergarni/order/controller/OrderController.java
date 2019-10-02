@@ -43,7 +43,7 @@ public class OrderController {
                                                  @PathVariable(name = "size") int size,
                                                  @RequestBody(required=false) List<SearchCriteria> searchCriteriaList) throws CriteriaException, FeignException {
 
-        Page<Order> orders = orderBusiness.searchProduct(userName, page, size, searchCriteriaList);
+        Page<Order> orders = orderBusiness.searchOrder(userName, page, size, searchCriteriaList);
 
         return ResponseEntity.ok().body(orders);
     }
@@ -53,7 +53,7 @@ public class OrderController {
                                         @PathVariable(name = "size") int size,
                                         @RequestBody(required=false) List<SearchCriteria> searchCriteriaList) throws CriteriaException {
 
-        Page<Order> orders = orderBusiness.searchProduct(page, size, searchCriteriaList);
+        Page<Order> orders = orderBusiness.searchOrder(page, size, searchCriteriaList);
 
         return ResponseEntity.ok().body(orders);
     }

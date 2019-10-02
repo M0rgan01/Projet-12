@@ -21,8 +21,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -63,7 +62,8 @@ public class OrderBusinessTest {
         product2 = new Product();
         product2.setId(2L);
         product2.setOrderProductRealQuantity(15);
-        product2.setPrice(300);
+        product2.setPromotion(true);
+        product2.setPromotionPrice(300);
 
         product3 = new Product();
         product3.setId(3L);
@@ -72,6 +72,7 @@ public class OrderBusinessTest {
 
         user = new User();
         user.setUserName("Test");
+        user.setId(1L);
 
         orderProduct = new OrderProduct();
         orderProduct.setProductId(1L);
@@ -89,11 +90,18 @@ public class OrderBusinessTest {
         orderProducts.add(orderProduct);
         orderProducts.add(orderProduct2);
         orderProducts.add(orderProduct3);
+
     }
 
 
     @Test
     public void testCreateOrder() throws OrderException {
+
+        double prod1 = product.getPrice() * product.getOrderProductRealQuantity();
+        double prod2 = product2.getPromotionPrice() * product2.getOrderProductRealQuantity();
+        double prod3 = product3.getPrice() * product3.getOrderProductRealQuantity();
+
+        double totalPrice = prod1 + prod2 + prod3;
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, 2);
@@ -102,6 +110,7 @@ public class OrderBusinessTest {
         Mockito.when(productProxy.updateProductQuantity(orderProduct.getOrderQuantity(), product.getId(), false)).thenReturn(product);
         Mockito.when(productProxy.updateProductQuantity(orderProduct2.getOrderQuantity(), product2.getId(), false)).thenReturn(product2);
         Mockito.when(productProxy.updateProductQuantity(orderProduct3.getOrderQuantity(), product3.getId(), false)).thenReturn(product3);
+
         Mockito.when(orderRepository.save(Mockito.any(Order.class))).thenAnswer(i -> i.getArguments()[0]);
 
         order = orderBusiness.createOrder(orderProducts, user.getUserName(), calendar.getTimeInMillis());
@@ -109,10 +118,17 @@ public class OrderBusinessTest {
         for (OrderProduct orderProduct: order.getOrderProducts()) {
             if (orderProduct.getRealQuantity() == 0) {
                 assertTrue(orderProduct.getTotalPriceRow() == 0);
-            }else {
+            } else {
                 assertTrue(orderProduct.getTotalPriceRow() != 0);
             }
         }
+        assertEquals(order.getTotalPrice(), totalPrice, 0.001);
+        assertEquals(order.getUserId(), user.getId());
+        assertNotNull(order.getReception());
+        assertNotNull(order.getReference());
+        assertNotNull(order.getDate());
+        assertFalse(order.getPaid());
+        assertFalse(order.getCancel());
     }
 
     @Test(expected = OrderException.class)
@@ -145,7 +161,7 @@ public class OrderBusinessTest {
     @Test(expected = ReceptionException.class)
     public void testCreateOrderWithBadMaxReception() throws OrderException {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, 20);
+        calendar.add(Calendar.DATE, 18);
         Mockito.when(userProxy.findByUserName(user.getUserName())).thenReturn(user);
         Mockito.when(productProxy.updateProductQuantity(orderProduct.getOrderQuantity(), product.getId(), false)).thenReturn(product);
         Mockito.when(productProxy.updateProductQuantity(orderProduct2.getOrderQuantity(), product2.getId(), false)).thenReturn(product2);
@@ -154,11 +170,13 @@ public class OrderBusinessTest {
         orderBusiness.createOrder(orderProducts, user.getUserName(), calendar.getTimeInMillis());
     }
 
-/*    @Test
+    @Test
     public void testCancelOrder() throws OrderException {
         order = new Order();
         order.setId(1L);
         order.setDate(new Date());
+        order.setCancel(false);
+        order.setOrderProducts(orderProducts);
 
         Mockito.when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
         Mockito.when(orderRepository.save(Mockito.any(Order.class))).thenAnswer(i -> i.getArguments()[0]);
@@ -176,13 +194,26 @@ public class OrderBusinessTest {
         order = new Order();
         order.setId(1L);
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -1);
+        calendar.add(Calendar.HOUR, 7);
         order.setDate(calendar.getTime());
+        order.setCancel(false);
+        order.setOrderProducts(orderProducts);
 
         Mockito.when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
 
         orderBusiness.cancelOrder(order.getId());
+    }
 
-    }*/
+    @Test(expected = CancelException.class)
+    public void testCancelOrderAlreadyCancel() throws OrderException {
+        order = new Order();
+        order.setId(1L);
+        order.setCancel(true);
+        order.setOrderProducts(orderProducts);
+
+        Mockito.when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
+
+        orderBusiness.cancelOrder(order.getId());
+    }
 
 }
