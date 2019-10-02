@@ -6,7 +6,6 @@ import feign.RetryableException;
 import org.paniergarni.apigateway.object.Role;
 import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.proxy.UserProxy;
-import org.paniergarni.apigateway.security.auth.model.UserContext;
 import org.paniergarni.apigateway.security.exception.ProxyException;
 import org.paniergarni.apigateway.security.response.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 
 /**
@@ -42,15 +40,12 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-        // vérification de l'objet authentication
-        Assert.notNull(authentication, "No authentication data provided");
-
         // récupération des information de connection
         String username = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
 
         // récupération du contact pour la comparaison
-        User contact = null;
+        User contact;
 
         try {
             contact = userProxy.userConnection(username, password);
@@ -79,10 +74,9 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
         if (contact.getRoles() == null)
             throw new InsufficientAuthenticationException("user.roles.null");
 
-        UserContext userContext = UserContext.create(contact.getUserName(),
-                Role.getListAuthorities(contact.getRoles()));
+        contact.setAuthorities(Role.getListAuthorities(contact.getRoles()));
 
-        return new UsernamePasswordAuthenticationToken(userContext, null, userContext.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(contact, null, contact.getAuthorities());
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class UserController {
@@ -82,6 +83,7 @@ public class UserController {
 
         return ResponseEntity.ok().body(user);
     }
+
 
     @PutMapping(value = "/public/editPassWordByRecovery/{email}")
     public ResponseEntity<?> editPassWordByRecovery(@PathVariable String email,@Valid @RequestBody UserRecoveryDTO userRecoveryDTO) throws AccountException {

@@ -7,8 +7,6 @@ import org.paniergarni.apigateway.object.CreateUserDTO;
 import org.paniergarni.apigateway.object.Role;
 import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.proxy.UserProxy;
-import org.paniergarni.apigateway.security.auth.model.UserContext;
-import org.paniergarni.apigateway.security.exception.ProxyException;
 import org.paniergarni.apigateway.security.token.JwtService;
 import org.paniergarni.apigateway.security.token.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +43,10 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody CreateUserDTO createUserDTO) throws IllegalArgumentException, FeignException {
 
         User user = userProxy.createUser(createUserDTO);
+        user.setAuthorities(Role.getListAuthorities(user.getRoles()));
         // on créer un token JWT
-        String jwt = jwtService.createAuthToken(UserContext.create(user.getUserName(), Role.getListAuthorities(user.getRoles())));
-        String jwtRefresh = jwtService.createRefreshToken(UserContext.create(user.getUserName(), null));
+        String jwt = jwtService.createAuthToken(user);
+        String jwtRefresh = jwtService.createRefreshToken(user);
 
         // on l'ajoute au headers de la réponse
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -58,7 +57,7 @@ public class AuthController {
     }
 
     @GetMapping(value = "/api/auth/token")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request) throws IllegalArgumentException, AuthenticationException {
+    public ResponseEntity<?> refreshToken(HttpServletRequest request) throws IllegalArgumentException, AuthenticationException, FeignException {
 
         JwtToken token = new JwtToken(jwtService.extract(request.getHeader(headerRefresh)));
 

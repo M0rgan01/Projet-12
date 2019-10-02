@@ -60,7 +60,7 @@ public class UserBusinessImpl implements UserBusiness {
     public User updateUser(Long id, User user) throws AccountException {
 
         User user1 = getUserById(user.getId());
-
+        user = user1;
         return userRepository.save(user);
     }
 
@@ -190,4 +190,5 @@ public class UserBusinessImpl implements UserBusiness {
         userRepository.save(user2);
         logger.info("Update passWord by recovery for user " + user2.getId());
     }
+
 }

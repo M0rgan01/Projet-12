@@ -1,6 +1,7 @@
 package org.paniergarni.account.controller.handler;
 
 import org.paniergarni.account.exception.AccountException;
+import org.paniergarni.account.exception.SendMailException;
 import org.paniergarni.account.exception.UserNotActiveException;
 import org.paniergarni.account.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -64,10 +65,17 @@ public class HandleException {
         return ErrorResponse.of("internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(SendMailException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    @ResponseBody
+    public ErrorResponse handleException(SendMailException ex) {
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
     @ResponseBody
     public ErrorResponse handleException(HttpMessageNotReadableException ex) {
-        return ErrorResponse.of("json.error", HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of("json.error", HttpStatus.PRECONDITION_FAILED);
     }
 }

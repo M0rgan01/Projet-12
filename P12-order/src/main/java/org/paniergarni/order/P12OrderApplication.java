@@ -41,6 +41,30 @@ public class P12OrderApplication implements CommandLineRunner {
         Order order = new Order();
 
 
+
+
+        order.setOrderProducts(orderProducts);
+        order.setUserId(user.getId());
+        order.setDate(new Date());
+        order.setPaid(false);
+        order.setReception(new Date());
+
+        order = orderRepository.save(order);
+
+        Order order1 = orderRepository.findById(order.getId()).get();
+
+        System.out.println(order1.getId());
+        System.out.println(order1.getOrderProducts().size());*/
+
+
+
+        Order order = new Order();
+        order.setReception(OrderBusinessImpl.truncateTime(new Date()));
+        order.setUserId(1L);
+        order.setDate(OrderBusinessImpl.truncateTime(new Date()));
+        order.setPaid(false);
+
+
         OrderProduct orderProduct = new OrderProduct();
         orderProduct.setProductId(1L);
         orderProduct.setOrderQuantity(1);
@@ -62,36 +86,20 @@ public class P12OrderApplication implements CommandLineRunner {
         orderProducts.add(orderProduct3);
 
         order.setOrderProducts(orderProducts);
-        order.setUserId(user.getId());
-        order.setDate(new Date());
-        order.setPaid(false);
-        order.setReception(new Date());
 
-        order = orderRepository.save(order);
-
-        Order order1 = orderRepository.findById(order.getId()).get();
-
-        System.out.println(order1.getId());
-        System.out.println(order1.getOrderProducts().size());*/
-
-        Order order = new Order();
-        order.setReception(new Date());
-        order.setUserId(1L);
-        order.setDate(OrderBusinessImpl.truncateTime(new Date()));
-        order.setPaid(false);
 
         Order order2 = new Order();
         order2.setReception(OrderBusinessImpl.truncateTime(new Date()));
-        order2.setUserId(1L);
+        order2.setUserId(2L);
         order2.setDate(new Date());
         order2.setPaid(false);
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -1);
+        calendar.add(Calendar.DATE, -2);
 
         Order order3 = new Order();
         order3.setReception(OrderBusinessImpl.truncateTime(calendar.getTime()));
-        order3.setUserId(1L);
+        order3.setUserId(2L);
         order3.setDate(new Date());
         order3.setPaid(false);
 
@@ -109,14 +117,13 @@ public class P12OrderApplication implements CommandLineRunner {
         order3 = orderRepository.save(order3);
         order4 = orderRepository.save(order4);
 
-        System.out.println(order.getReception());
-        System.out.println(order2.getReception());
-        System.out.println(order3.getReception());
-        System.out.println(order4.getReception());
+        System.out.println(order.getOrderProducts().size());
+        Order order1 = orderRepository.findById(order.getId()).get();
+        System.out.println(order1.getOrderProducts().size());
 
         List<Order> orderLate = orderBusiness.getListOrderLate();
-        System.out.println(orderLate.size());
+        System.out.println(orderLate.size() + ": orderLate");
         List<Order> orderReception = orderBusiness.getListOrderReception();
-        System.out.println(orderReception.size());
+        System.out.println(orderReception.size() + ": reception");
     }
 }

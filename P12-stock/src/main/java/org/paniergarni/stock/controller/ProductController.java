@@ -1,6 +1,7 @@
 package org.paniergarni.stock.controller;
 
 import org.paniergarni.stock.business.ProductBusiness;
+import org.paniergarni.stock.dao.specification.SearchCriteria;
 import org.paniergarni.stock.entities.Measure;
 import org.paniergarni.stock.entities.Product;
 import org.paniergarni.stock.exception.StockException;
@@ -15,6 +16,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 @RestController
 public class ProductController {
@@ -35,26 +37,13 @@ public class ProductController {
         return ResponseEntity.ok().body(Measure.getListMeasure());
     }
 
-    @GetMapping(value = "/public/productsByCategoryId/{id}/{page}/{size}")
-    public ResponseEntity<?> getPageProductByCategoryId(@PathVariable(name = "id") Long id, @PathVariable(name = "page") int page, @PathVariable(name = "size") int size) {
 
-        Page<Product> products = productBusiness.getPageProductsByCategory(page, size, id);
+    @GetMapping(value = "/public/searchProduct/{page}/{size}")
+    public ResponseEntity<?> searchProduct(@PathVariable(name = "page") int page,
+                                                        @PathVariable(name = "size") int size,
+                                                        @RequestBody(required=false) List<SearchCriteria> searchCriteriaList) {
 
-        return ResponseEntity.ok().body(products);
-    }
-
-    @GetMapping(value = "/public/productsByPromotion/{page}/{size}")
-    public ResponseEntity<?> getPageProductByCategoryId(@PathVariable(name = "page") int page, @PathVariable(name = "size") int size) {
-
-        Page<Product> products = productBusiness.getPageProductsByPromotion(page, size);
-
-        return ResponseEntity.ok().body(products);
-    }
-
-    @GetMapping(value = "/public/productsByNamesContains/{name}/{page}/{size}")
-    public ResponseEntity<?> getPageProductByCategoryId(@PathVariable(name = "page") int page, @PathVariable(name = "size") int size, @PathVariable(name = "name") String name) {
-
-        Page<Product> products = productBusiness.getPageProductsByName(page, size, name);
+        Page<Product> products = productBusiness.searchProduct(page, size, searchCriteriaList);
 
         return ResponseEntity.ok().body(products);
     }

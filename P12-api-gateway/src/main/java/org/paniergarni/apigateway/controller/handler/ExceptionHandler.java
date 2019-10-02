@@ -1,6 +1,5 @@
 package org.paniergarni.apigateway.controller.handler;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import feign.FeignException;
 import feign.RetryableException;
 import org.paniergarni.apigateway.security.response.ErrorResponse;
@@ -22,10 +21,10 @@ public class ExceptionHandler {
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(RetryableException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     @ResponseBody
     public ErrorResponse handleException(RetryableException ex) {
-        return ErrorResponse.of("internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
+        return ErrorResponse.of("internal.error", HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
@@ -37,10 +36,10 @@ public class ExceptionHandler {
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
     @ResponseBody
     public ErrorResponse handleException(HttpMessageNotReadableException ex) {
-        return ErrorResponse.of("json.error", HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of("json.error", HttpStatus.PRECONDITION_FAILED);
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
@@ -50,12 +49,11 @@ public class ExceptionHandler {
         return ErrorResponse.of(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-
     @org.springframework.web.bind.annotation.ExceptionHandler(AuthenticationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
     public ErrorResponse handleException(AuthenticationException ex) {
-        return ErrorResponse.of(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
 }

@@ -4,7 +4,7 @@ package org.paniergarni.apigateway.security.auth.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import org.paniergarni.apigateway.object.Role;
-import org.paniergarni.apigateway.security.auth.model.UserContext;
+import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.security.token.JwtAuthenticationToken;
 import org.paniergarni.apigateway.security.token.JwtToken;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,8 +46,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 		List<String> listRoles = jwsClaims.getBody().get(authoritiesPrefix, List.class);
 
         //création d'un utilisateur grace au nom à la liste de role contenu dans le token
-        UserContext context = UserContext.create(subject, Role.getListAuthorities(listRoles));
-          
+        User context = new User();
+        context.setUserName(subject);
+        context.setAuthorities(Role.getListAuthorities(listRoles));
+
         return new JwtAuthenticationToken(context, context.getAuthorities());
     }
 

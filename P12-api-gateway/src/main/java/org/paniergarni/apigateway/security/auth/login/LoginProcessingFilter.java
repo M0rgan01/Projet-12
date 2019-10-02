@@ -3,6 +3,7 @@ package org.paniergarni.apigateway.security.auth.login;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.security.exception.AuthMethodNotSupportedException;
+import org.paniergarni.apigateway.security.exception.JsonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -32,7 +33,6 @@ import java.io.IOException;
  */
 public class LoginProcessingFilter extends AbstractAuthenticationProcessingFilter {
 
-    private static Logger logger = LoggerFactory.getLogger(LoginProcessingFilter.class);
     private final AuthenticationSuccessHandler successHandler;
     private final AuthenticationFailureHandler failureHandler;
     private final ObjectMapper objectMapper;
@@ -47,28 +47,25 @@ public class LoginProcessingFilter extends AbstractAuthenticationProcessingFilte
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException, IOException, ServletException {
+            throws AuthenticationException {
 
         // vérification que la méthode soit bien POST
         if (!HttpMethod.POST.name().equals(request.getMethod())) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Authentication method not supported. Request method: " + request.getMethod());
-            }
             throw new AuthMethodNotSupportedException("Authentication method not supported");
         }
 
         //récupération du json contenu dans le corp de requete
-        User contact = null;
+        User contact;
         try {
             contact = objectMapper.readValue(request.getInputStream(), User.class);
         } catch (Exception e) {
-            throw new InsufficientAuthenticationException("json.error");
+            throw new JsonException("json.error");
         }
         // vérification de la validité de l'object
         if (contact.getUserName() == null && contact.getUserName().isEmpty())
-            throw new AuthenticationServiceException("contact.empty.mail.or.username");
+            throw new InsufficientAuthenticationException("contact.empty.mail.or.username");
         if (contact.getPassWord() == null || contact.getPassWord().isEmpty())
-            throw new AuthenticationServiceException("contact.empty.password");
+            throw new InsufficientAuthenticationException("contact.empty.password");
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(contact.getUserName(), contact.getPassWord());
 

@@ -3,6 +3,7 @@ package org.paniergarni.order.controller.handler;
 
 import feign.FeignException;
 import feign.RetryableException;
+import org.paniergarni.order.exception.CriteriaException;
 import org.paniergarni.order.exception.OrderException;
 
 import org.paniergarni.order.response.ErrorResponse;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,10 +38,10 @@ public class HandleException {
     }
 
     @ExceptionHandler(RetryableException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     @ResponseBody
     public ErrorResponse handleException(RetryableException ex) {
-        return ErrorResponse.of("internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
+        return ErrorResponse.of("internal.error", HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -71,14 +73,21 @@ public class HandleException {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse handleException(Exception ex) {
-        System.out.println(ex.getMessage());
+        ex.printStackTrace();
         return ErrorResponse.of("internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
     @ResponseBody
     public ErrorResponse handleException(HttpMessageNotReadableException ex) {
-        return ErrorResponse.of("json.error", HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of("json.error", HttpStatus.PRECONDITION_FAILED);
+    }
+
+    @ExceptionHandler(CriteriaException.class)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    @ResponseBody
+    public ErrorResponse handleException(CriteriaException ex) {
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
 }
