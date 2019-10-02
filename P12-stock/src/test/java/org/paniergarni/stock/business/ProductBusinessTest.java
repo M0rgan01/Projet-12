@@ -70,7 +70,6 @@ public class ProductBusinessTest {
         product.setQuantity(25);
         Mockito.when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
         Mockito.when(productRepository.save(product)).thenReturn(product);
-
         product = productBusiness.updateProductQuantity(15, product.getId(), false);
 
         assertEquals(product.getOrderProductRealQuantity(), 15);
@@ -85,6 +84,28 @@ public class ProductBusinessTest {
         Mockito.when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
 
        productBusiness.updateProductQuantity(15, product.getId(), false);
+    }
+
+    @Test
+    public void testUpdateProductQuantityForCancel() throws StockException {
+        Mockito.when(productRepository.save(product)).thenReturn(product);
+        Mockito.when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
+        product = productBusiness.updateProductQuantity(5, product.getId(), true);
+
+        assertEquals(product.getQuantity(), 10);
 
     }
+
+    @Test
+    public void testUpdateProductQuantityForCancelWithProductNotAvailable() throws StockException {
+        product.setAvailable(false);
+        product.setQuantity(0);
+        Mockito.when(productRepository.save(product)).thenReturn(product);
+        Mockito.when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
+        product = productBusiness.updateProductQuantity(5, product.getId(), true);
+
+        assertEquals(product.getQuantity(), 5);
+        assertTrue(product.isAvailable());
+    }
 }
+

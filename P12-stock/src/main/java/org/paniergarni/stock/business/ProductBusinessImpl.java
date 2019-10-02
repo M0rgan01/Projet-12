@@ -67,8 +67,7 @@ public class ProductBusinessImpl implements ProductBusiness {
                 } else {
                     product.setOrderProductRealQuantity(quantity);
                 }
-                productRepository.save(product);
-                return product;
+                return productRepository.save(product);
             } else {
                 throw new StockException("product.not.available");
             }
@@ -78,8 +77,7 @@ public class ProductBusinessImpl implements ProductBusiness {
             if (product.getQuantity() != 0 && !product.isAvailable())
                 product.setAvailable(true);
 
-            productRepository.save(product);
-            return product;
+            return productRepository.save(product);
         }
     }
 }
