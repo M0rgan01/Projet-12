@@ -8,21 +8,17 @@ import org.paniergarni.stock.entities.Category;
 import org.paniergarni.stock.entities.Farmer;
 import org.paniergarni.stock.entities.Measure;
 import org.paniergarni.stock.entities.Product;
-import org.paniergarni.stock.proxy.UserProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients("org.paniergarni.stock.proxy")
 public class P12StockApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
@@ -35,8 +31,7 @@ public class P12StockApplication implements CommandLineRunner {
     private CategoryRepository categoryRepository;
     @Autowired
     private FarmerRepository farmerRepository;
-    @Autowired
-    private UserProxy userProxy;
+
 
     @Override
     public void run(String... args) throws Exception {

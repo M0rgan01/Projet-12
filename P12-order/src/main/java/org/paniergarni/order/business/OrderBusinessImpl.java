@@ -113,7 +113,7 @@ public class OrderBusinessImpl implements OrderBusiness {
     }
 
     @Override
-    public Page<Order> searchProduct(String userName, int page, int size, List<SearchCriteria> searchCriteriaList) throws FeignException, CriteriaException {
+    public Page<Order> searchOrder(String userName, int page, int size, List<SearchCriteria> searchCriteriaList) throws FeignException, CriteriaException {
         User user = userProxy.findByUserName(userName);
         if (searchCriteriaList == null)
             searchCriteriaList = new ArrayList<>();
@@ -124,10 +124,7 @@ public class OrderBusinessImpl implements OrderBusiness {
     }
 
     @Override
-    public Page<Order> searchProduct(int page, int size, List<SearchCriteria> searchCriteriaList) throws CriteriaException {
-        if (searchCriteriaList == null)
-            searchCriteriaList = new ArrayList<>();
-        searchCriteriaList.add(new SearchCriteria("reception", "<", new Date().getTime()));
+    public Page<Order> searchOrder(int page, int size, List<SearchCriteria> searchCriteriaList) throws CriteriaException {
         OrderSpecificationBuilder builder = new OrderSpecificationBuilder(searchCriteriaList);
         Specification<Order> spec = builder.build();
         return orderRepository.findAll(spec, PageRequest.of(page, size));
@@ -169,10 +166,9 @@ public class OrderBusinessImpl implements OrderBusiness {
             throw new CancelException("order.already.cancel");
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(order.getDate());
         calendar.add(Calendar.HOUR, maxHoursCancelOrder);
 
-        if (new Date().after(calendar.getTime()))
+        if (order.getDate().after(calendar.getTime()))
             throw new CancelException("order.cancel.after.max.value");
 
         order.setCancel(true);

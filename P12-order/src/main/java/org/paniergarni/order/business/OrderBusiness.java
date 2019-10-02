@@ -25,8 +25,8 @@ public interface OrderBusiness {
     List<Date> getListDateReception();
     List<Order> getListOrderReception();
 
-    Page<Order> searchProduct(String userName, int page, int size, List<SearchCriteria> searchCriteriaList) throws CriteriaException, FeignException;
-    Page<Order> searchProduct(int page, int size, List<SearchCriteria> searchCriteriaList) throws CriteriaException;
+    Page<Order> searchOrder(String userName, int page, int size, List<SearchCriteria> searchCriteriaList) throws CriteriaException, FeignException;
+    Page<Order> searchOrder(int page, int size, List<SearchCriteria> searchCriteriaList) throws CriteriaException;
 
     String addReference(Order order);
 

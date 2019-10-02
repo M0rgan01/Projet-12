@@ -70,9 +70,7 @@ public class UserBusinessImpl implements UserBusiness {
         User user = getUserById(id);
         checkUserActive(user.isActive());
 
-        if (!user.isActive()) {
-            throw new UserNotActiveException("user.not.active");
-        } else if (userName == null || userName.isEmpty()) {
+         if (userName == null || userName.isEmpty()) {
             throw new AccountException("user.userName.empty");
         } else if (user.getUserName().equals(userName)) {
             throw new AccountException("user.userName.same.value");
