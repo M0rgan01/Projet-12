@@ -52,7 +52,7 @@ public class UserBusinessImpl implements UserBusiness {
         List<Role> roles = new ArrayList<>();
         roles.add(roleBusiness.getUserRole());
         user1.setRoles(roles);
-
+        logger.info("Create user : " + user.getUserName());
         return userRepository.save(user1);
     }
 
@@ -61,6 +61,7 @@ public class UserBusinessImpl implements UserBusiness {
 
         User user1 = getUserById(user.getId());
         user = user1;
+        logger.info("Update user : " + user.getUserName());
         return userRepository.save(user);
     }
 
@@ -78,6 +79,7 @@ public class UserBusinessImpl implements UserBusiness {
 
         checkUserNameExist(userName);
         user.setUserName(userName);
+        logger.info("Update userName for user ID : " + user.getId());
         return userRepository.save(user);
     }
 
@@ -88,6 +90,7 @@ public class UserBusinessImpl implements UserBusiness {
         checkPassWordConfirm(userDTO.getPassWord(), userDTO.getPassWordConfirm());
         checkOldPassWord(userDTO.getOldPassWord(), user.getPassWord());
         user.setPassWord(bCryptPasswordEncoder.encode(userDTO.getPassWord()));
+        logger.info("Update passWord for user ID : " + user.getId());
         userRepository.save(user);
     }
 
@@ -118,8 +121,10 @@ public class UserBusinessImpl implements UserBusiness {
 
         if (contact.getExpiryConnection() != null) {
             if (contact.getExpiryConnection().after(new Date())) {
+                logger.debug("Expiry connection error for user ID : " + contact.getId());
                 throw new ExpirationException("user.expiryConnection.after.date");
             } else {
+                logger.debug("Expiry connection finish for user ID : " + contact.getId());
                 contact.setTryConnection(0);
                 contact.setExpiryConnection(null);
                 userRepository.save(contact);
@@ -137,9 +142,11 @@ public class UserBusinessImpl implements UserBusiness {
                 contact.setExpiryConnection(date.getTime());
 
                 userRepository.save(contact);
+                logger.debug("Set expiry connection for user ID : " + contact.getId());
                 throw new AccountException("user.tryConnection.out");
             }
             userRepository.save(contact);
+            logger.debug("Bad passWord for user ID : " + contact.getId());
             throw new BadCredencialException("user.passWord.not.valid");
         }
 
@@ -173,11 +180,13 @@ public class UserBusinessImpl implements UserBusiness {
         // récupération du mail
         User user2 = getUserByEmail(email);
         if (!user2.getMail().isAvailablePasswordRecovery()) {
+            logger.debug("User passWord recovery not available for user ID : " + user2.getId());
             throw new AccountException("user.mail.not.available.recovery");
         } else if (user2.getMail().getExpiryPasswordRecovery().before(new Date())) {
             user2.getMail().setAvailablePasswordRecovery(false);
             user2.getMail().setExpiryPasswordRecovery(null);
             userRepository.save(user2);
+            logger.debug("User passWord recovery expiry for user ID : " + user2.getId());
             throw new ExpirationException("user.passWord.recovery.expiry");
         }
 

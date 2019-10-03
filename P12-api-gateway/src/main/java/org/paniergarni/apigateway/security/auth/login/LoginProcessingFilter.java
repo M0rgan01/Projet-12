@@ -33,6 +33,7 @@ import java.io.IOException;
  */
 public class LoginProcessingFilter extends AbstractAuthenticationProcessingFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(LoginProcessingFilter.class);
     private final AuthenticationSuccessHandler successHandler;
     private final AuthenticationFailureHandler failureHandler;
     private final ObjectMapper objectMapper;
@@ -51,6 +52,7 @@ public class LoginProcessingFilter extends AbstractAuthenticationProcessingFilte
 
         // vérification que la méthode soit bien POST
         if (!HttpMethod.POST.name().equals(request.getMethod())) {
+            logger.info("Method not supported");
             throw new AuthMethodNotSupportedException("Authentication method not supported");
         }
 
@@ -59,6 +61,7 @@ public class LoginProcessingFilter extends AbstractAuthenticationProcessingFilte
         try {
             contact = objectMapper.readValue(request.getInputStream(), User.class);
         } catch (Exception e) {
+            logger.debug("Json error for get UserName and passWord");
             throw new JsonException("json.error");
         }
         // vérification de la validité de l'object

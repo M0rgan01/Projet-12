@@ -9,6 +9,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.paniergarni.apigateway.object.Role;
 import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.proxy.UserProxy;
+import org.paniergarni.apigateway.security.auth.jwt.JwtTokenAuthenticationProcessingFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -27,6 +30,7 @@ import java.util.stream.Collectors;
 @Service
 public class JwtServiceImpl implements JwtService {
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenAuthenticationProcessingFilter.class);
     @Autowired
     private UserProxy userProxy;
 
@@ -51,6 +55,7 @@ public class JwtServiceImpl implements JwtService {
         if (userContext.getAuthorities() == null || userContext.getAuthorities().isEmpty())
             throw new IllegalArgumentException("jwt.auth.authorities.null");
 
+        logger.debug("Create authToken for userName " + userContext.getUserName());
         // construction du Json web token
         return Jwts.builder().setSubject(userContext.getUserName()) // ajout de username
                 .setExpiration(new Date(System.currentTimeMillis() + authTokenExpiration)) // ajout d'une date d'expiration
@@ -65,6 +70,8 @@ public class JwtServiceImpl implements JwtService {
         if (userContext.getUserName() == null || userContext.getUserName().isEmpty())
             throw new IllegalArgumentException("jwt.refresh.username.null");
 
+
+        logger.debug("Create refreshToken for userName " + userContext.getUserName());
         // construction du Json web token
         return Jwts.builder().setSubject(userContext.getUserName()) // ajout de username
                 .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration)) // ajout d'une date d'expiration
@@ -88,7 +95,7 @@ public class JwtServiceImpl implements JwtService {
             throw new DisabledException("contact.not.active");
 
         contact.setAuthorities(Role.getListAuthorities(contact.getRoles()));
-
+        logger.debug("Validate refreshToken for userName " + contact.getUserName());
         return contact;
     }
 

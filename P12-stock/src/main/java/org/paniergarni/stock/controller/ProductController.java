@@ -48,7 +48,7 @@ public class ProductController {
         return ResponseEntity.ok().body(products);
     }
 
-    @PostMapping(value = "/adminRole/createProduct")
+    @PostMapping(value = "/adminRole/product")
     public ResponseEntity<?> createProduct(@Valid @RequestBody Product product) throws StockException {
 
         product = productBusiness.createProduct(product);
@@ -56,15 +56,15 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
-    @PostMapping(value = "/adminRole/updateProduct")
-    public ResponseEntity<?> updateProduct(@Valid @RequestBody Product product) throws StockException {
+    @PutMapping(value = "/adminRole/product/{id}")
+    public ResponseEntity<?> updateProduct(@Valid @RequestBody Product product, @PathVariable(name = "id") Long id) throws StockException {
 
-        product = productBusiness.updateProduct(product);
+        product = productBusiness.updateProduct(id, product);
 
         return ResponseEntity.ok().body(product);
     }
 
-    @PutMapping(value = "adminRole/productQuantity/{quantity}/{id}/{cancel}")
+    @PutMapping(value = "adminRole/productQuantity/{id}/{quantity}/{cancel}")
     public ResponseEntity<?> updateProductQuantity( @PathVariable Long id, @PathVariable int quantity, @PathVariable boolean cancel) throws StockException {
 
        Product product = productBusiness.updateProductQuantity(quantity, id, cancel);
@@ -72,18 +72,18 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
-    @GetMapping(value = "/public/product/photo/{id}", produces = MediaType.IMAGE_PNG_VALUE)
+    @GetMapping(value = "/public/product/{id}/photo", produces = MediaType.IMAGE_PNG_VALUE)
     public byte[] getPhoto(@PathVariable(name = "id") Long id) throws IOException, StockException {
         Product p = productBusiness.getProduct(id);
         return Files.readAllBytes(Paths.get(System.getProperty("user.home") + "/Test/" + p.getPhoto()));
     }
 
-    @PostMapping(value = "/adminRole/product/photo/{id}")
+    @PostMapping(value = "/adminRole/product/{id}/photo")
     public void uploadPhotoProduct(MultipartFile file, @PathVariable(name = "id") Long id) throws IOException, StockException {
         Product p = productBusiness.getProduct(id);
         p.setPhoto(id + ".png");
         Files.write(Paths.get(System.getProperty("user.home") + "/Test/" + p.getPhoto()), file.getBytes());
-        productBusiness.updateProduct(p);
+        productBusiness.updateProduct(id, p);
     }
 
 }

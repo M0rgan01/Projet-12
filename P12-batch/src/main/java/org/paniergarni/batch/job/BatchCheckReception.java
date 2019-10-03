@@ -57,12 +57,12 @@ public class BatchCheckReception {
                 sendMail.sendFromGMail(emailUsers, emailPassword,
                         tableau_email, object, body);
 
-                logger.info("Envoie d'un email à l'utilisateur" + user.getId() + "pour le rappel de réception de la commande " + order.getReference());
+                logger.info("Send email to user ID" + user.getId() + " for reception of order ID " + order.getId());
             }
 
         }catch (Exception e){
-            logger.error("Error de lancement du batch de rappel par email");
+            logger.error("Error send mail");
         }
-        logger.info("Batch de rappel par email realise avec succes");
+        logger.info("Success complete batch reception order");
     }
 }

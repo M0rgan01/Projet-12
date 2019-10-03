@@ -4,6 +4,8 @@ package org.paniergarni.stock.controller.handler;
 import org.paniergarni.stock.exception.CriteriaException;
 import org.paniergarni.stock.exception.StockException;
 import org.paniergarni.stock.response.ErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -18,6 +20,8 @@ import java.util.List;
 
 @RestControllerAdvice
 public class HandleException {
+
+    private static final Logger logger = LoggerFactory.getLogger(HandleException.class);
 
     @ExceptionHandler(StockException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -55,6 +59,7 @@ public class HandleException {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse handleException(Exception ex) {
+        logger.error("Internal error : " + ex.getMessage());
         return ErrorResponse.of("internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

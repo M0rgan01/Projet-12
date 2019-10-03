@@ -50,11 +50,12 @@ public class MailBusinessImpl implements MailBusiness {
     public Mail updateMail(Long id, String email) throws AccountException {
         Mail mail = getMailById(id);
         if (mail.getEmail().equals(email)) {
+            logger.debug("Equals email for Mail id : " + mail.getId());
             throw new AccountException("mail.email.same.value");
         }
         checkEmailExist(email);
         mail.setEmail(email);
-
+        logger.debug("Success update email for Mail id : " + mail.getId());
         return mailRepository.save(mail);
     }
 
@@ -103,8 +104,8 @@ public class MailBusinessImpl implements MailBusiness {
             throw new SendMailException("internal.error");
         }
 
-        logger.info("Send token to the email " + user.getMail().getEmail());
-        logger.info("Update mail " + user.getMail().getId());
+        logger.debug("Send token to the email " + user.getMail().getEmail());
+        logger.debug("Update mail " + user.getMail().getId());
         return mailRepository.save(user.getMail());
     }
 
@@ -119,7 +120,7 @@ public class MailBusinessImpl implements MailBusiness {
         if (token.equals(mail.getToken()) && mail.getTryToken() < 3) {
             // on vérifie la date
             if (!new Date().before(mail.getExpiryToken())) {
-                logger.error("Token for email " + mail.getId() + " expiry");
+                logger.info("Token for email " + mail.getId() + " expiry");
                 throw new ExpirationException("mail.token.expiry");
             }
             mail.setAvailablePasswordRecovery(true);
@@ -132,17 +133,17 @@ public class MailBusinessImpl implements MailBusiness {
         } else {
             // si le nombre d'essais est supérieur ou égal à 2
             if (mail.getTryToken() >= 3) {
-                logger.error("Number of tests for token exceeded for mail " + mail.getId());
+                logger.info("Number of tests for token exceeded for mail " + mail.getId());
                 throw new RecoveryException("mail.token.try.out");
             }
             mail.setTryToken(mail.getTryToken() + 1);
 
             mailRepository.save(mail);
             if (mail.getTryToken() == 3) {
-                logger.error("Number of tests for token exceeded for mail " + mail.getId());
+                logger.info("Number of tests for token exceeded for mail " + mail.getId());
                 throw new RecoveryException("mail.token.try.out");
             }
-            logger.info("Increment tryToken for Mail " + mail.getId() + " and update");
+            logger.debug("Increment tryToken for Mail " + mail.getId() + " and update");
             throw new RecoveryException("mail.token.not.correct");
         }
     }
@@ -157,7 +158,7 @@ public class MailBusinessImpl implements MailBusiness {
         SecureRandom random = new SecureRandom();
         int longToken = Math.abs(random.nextInt());
         String randomString = Integer.toString(longToken, 16);
-        logger.info("Generate token for password recovery");
+        logger.debug("Generate token for password recovery");
         return randomString;
     }
 }
