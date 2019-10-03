@@ -1,9 +1,12 @@
 package org.paniergarni.apigateway.security.auth.jwt;
 
 
+import org.paniergarni.apigateway.security.auth.login.LoginAuthenticationProvider;
 import org.paniergarni.apigateway.security.token.JwtAuthenticationToken;
 import org.paniergarni.apigateway.security.token.JwtService;
 import org.paniergarni.apigateway.security.token.JwtToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -30,6 +33,7 @@ import java.io.IOException;
  */
 public class JwtTokenAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenAuthenticationProcessingFilter.class);
     private final AuthenticationFailureHandler failureHandler;
     private final JwtService jwtService;
     private String headerAuth;
@@ -49,7 +53,7 @@ public class JwtTokenAuthenticationProcessingFilter extends AbstractAuthenticati
 
     	//on récupère le token
         String tokenPayload = request.getHeader(headerAuth);
-               
+         logger.debug("Getting token from payload for authentication");
         // on enlève le préfixe et on créé un objet JwtToken
         JwtToken token = new JwtToken(jwtService.extract(tokenPayload));
               

@@ -14,6 +14,8 @@ import org.paniergarni.order.dao.specification.SearchCriteria;
 import org.paniergarni.order.object.User;
 import org.paniergarni.order.proxy.ProductProxy;
 import org.paniergarni.order.proxy.UserProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,8 @@ import java.util.List;
 
 @Component
 public class OrderBusinessImpl implements OrderBusiness {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderBusinessImpl.class);
 
     @Autowired
     private OrderRepository orderRepository;
@@ -66,6 +70,7 @@ public class OrderBusinessImpl implements OrderBusiness {
         }
 
         if (totalPrice == 0) {
+            logger.warn("Order product quantity null");
             throw new OrderException("order.products.quantity.null");
         }
 
@@ -75,13 +80,17 @@ public class OrderBusinessImpl implements OrderBusiness {
         Date receptionDate = new Date(reception);
         receptionDate = truncateTime(receptionDate);
 
-        if (receptionDate.before(truncateTime(calendar.getTime())))
+        if (receptionDate.before(truncateTime(calendar.getTime()))){
+            logger.warn("Order reception before min value");
             throw new ReceptionException("order.reception.before.min.value");
+        }
 
         calendar.setTime(getListDateReception().get(getListDateReception().size() - 1));
 
-        if (receptionDate.after(calendar.getTime()))
+        if (receptionDate.after(calendar.getTime())){
+            logger.warn("Order reception after max value");
             throw new ReceptionException("order.reception.after.max.value");
+        }
 
         order.setOrderProducts(orderProducts);
         order.setTotalPrice(totalPrice);
@@ -92,6 +101,7 @@ public class OrderBusinessImpl implements OrderBusiness {
         order.setCancel(false);
         order.setReception(receptionDate);
         order.setTotalPrice(totalPrice);
+        logger.info("Create order with reference " + order.getReference());
         return orderRepository.save(order);
     }
 
@@ -117,6 +127,8 @@ public class OrderBusinessImpl implements OrderBusiness {
         User user = userProxy.findByUserName(userName);
         if (searchCriteriaList == null)
             searchCriteriaList = new ArrayList<>();
+
+        logger.debug("Searching order for userName " + userName + " and list of criteria of " + searchCriteriaList.size() + "elements");
         searchCriteriaList.add(new SearchCriteria("userId", ":", user.getId()));
         OrderSpecificationBuilder builder = new OrderSpecificationBuilder(searchCriteriaList);
         Specification<Order> spec = builder.build();
@@ -125,6 +137,7 @@ public class OrderBusinessImpl implements OrderBusiness {
 
     @Override
     public Page<Order> searchOrder(int page, int size, List<SearchCriteria> searchCriteriaList) throws CriteriaException {
+        logger.debug("Admin searching order with list of criteria of " + searchCriteriaList.size() + "elements");
         OrderSpecificationBuilder builder = new OrderSpecificationBuilder(searchCriteriaList);
         Specification<Order> spec = builder.build();
         return orderRepository.findAll(spec, PageRequest.of(page, size));
@@ -143,6 +156,7 @@ public class OrderBusinessImpl implements OrderBusiness {
 
     @Override
     public Order paidOrder(Long id) throws OrderException {
+        logger.info("Paid order ID : " + id);
         Order order = getOrder(id);
         order.setPaid(true);
         return orderRepository.save(order);
@@ -150,33 +164,39 @@ public class OrderBusinessImpl implements OrderBusiness {
 
     @Override
     public Order cancelOrder(Long id) throws OrderException {
+        logger.info("Admin cancel order ID : " + id);
         Order order = getOrder(id);
         return validateCancelOrder(order);
     }
 
     @Override
     public Order cancelOrder(Long id, String userName) throws OrderException, FeignException {
+        logger.info("User cancel order ID : " + id);
         Order order = getOrder(id, userName);
         return validateCancelOrder(order);
     }
 
     private Order validateCancelOrder(Order order) throws CancelException {
 
-        if (order.getCancel())
+        if (order.getCancel()){
+            logger.info("Order already cancel for order ID : " + order.getId());
             throw new CancelException("order.already.cancel");
+        }
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, maxHoursCancelOrder);
 
-        if (order.getDate().after(calendar.getTime()))
+        if (order.getDate().after(calendar.getTime())){
+            logger.info("Order cancel after max hours for order ID : " + order.getId());
             throw new CancelException("order.cancel.after.max.value");
+        }
 
         order.setCancel(true);
 
         for (OrderProduct orderProduct : order.getOrderProducts()) {
             productProxy.updateProductQuantity(orderProduct.getRealQuantity(), orderProduct.getProductId(), true);
         }
-
+        logger.info("Success cancel order ID : " + order.getId());
         return orderRepository.save(order);
     }
 

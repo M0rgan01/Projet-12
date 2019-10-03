@@ -12,7 +12,7 @@ import java.util.List;
 public interface ProductBusiness {
 
     Product createProduct(Product product);
-    Product updateProduct(Product product);
+    Product updateProduct(Long id, Product product) throws StockException;
     Product getProduct(Long id) throws StockException;
     Page<Product> searchProduct(int page, int size, List<SearchCriteria> searchCriteria) throws CriteriaException;
     Product updateProductQuantity(int quantity, Long id, boolean cancel) throws StockException;
