@@ -1,31 +1,25 @@
 package org.paniergarni.stock.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.List;
-
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class Farmer {
+public class FarmerDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
+    @NotBlank
+    @Size(min = 4, max = 50, message = "farmer.name.incorrect.size")
     private String name;
+    @NotBlank
+    @Size(min = 10, max = 70, message = "farmer.location.incorrect.size")
     private String location;
+    @NotBlank
+    @Size(min = 10, max = 10, message = "farmer.phone.incorrect.size")
     private String phone;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "farmer")
-    private List<Product> products;
 }

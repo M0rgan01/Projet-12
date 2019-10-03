@@ -5,6 +5,8 @@ import org.paniergarni.order.dao.OrderRepository;
 import org.paniergarni.order.dao.specification.OrderSpecificationBuilder;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
+import org.paniergarni.order.entities.OrderProductDTO;
+import org.paniergarni.order.entities.WrapperOrderProductDTO;
 import org.paniergarni.order.exception.CancelException;
 import org.paniergarni.order.exception.CriteriaException;
 import org.paniergarni.order.exception.OrderException;
@@ -47,23 +49,32 @@ public class OrderBusinessImpl implements OrderBusiness {
     private int maxHoursCancelOrder;
 
     @Override
-    public synchronized Order createOrder(List<OrderProduct> orderProducts, String userName, Long reception) throws OrderException {
+    public synchronized Order createOrder(WrapperOrderProductDTO wrapperOrderProductDTO, String userName, Long reception) throws OrderException {
         User user = userProxy.findByUserName(userName);
         Order order = new Order();
+        List<OrderProduct> orderProducts = new ArrayList<>();
         double totalPrice = 0;
 
-        for (OrderProduct orderProduct : orderProducts) {
+        for (OrderProductDTO orderProductDTO : wrapperOrderProductDTO.getList()) {
+
+            OrderProduct orderProduct = new OrderProduct();
+            orderProduct.setOrder(order);
+            orderProducts.add(orderProduct);
+            orderProduct.setOrderQuantity(orderProductDTO.getOrderQuantity());
+            orderProduct.setProductId(orderProductDTO.getProductId());
 
             try {
-                Product product = productProxy.updateProductQuantity(orderProduct.getOrderQuantity(), orderProduct.getProductId(), false);
+                Product product = productProxy.updateProductQuantity(orderProductDTO.getOrderQuantity(), orderProductDTO.getProductId(), false);
+
                 orderProduct.setRealQuantity(product.getOrderProductRealQuantity());
+
                 if (!product.isPromotion()) {
                     orderProduct.setTotalPriceRow(product.getPrice() * orderProduct.getRealQuantity());
                 } else {
                     orderProduct.setTotalPriceRow(product.getPromotionPrice() * orderProduct.getRealQuantity());
                 }
                 totalPrice = totalPrice + orderProduct.getTotalPriceRow();
-                orderProduct.setOrder(order);
+
             } catch (FeignException e) {
                 orderProduct.setRealQuantity(0);
             }
@@ -80,14 +91,14 @@ public class OrderBusinessImpl implements OrderBusiness {
         Date receptionDate = new Date(reception);
         receptionDate = truncateTime(receptionDate);
 
-        if (receptionDate.before(truncateTime(calendar.getTime()))){
+        if (receptionDate.before(truncateTime(calendar.getTime()))) {
             logger.warn("Order reception before min value");
             throw new ReceptionException("order.reception.before.min.value");
         }
 
         calendar.setTime(getListDateReception().get(getListDateReception().size() - 1));
 
-        if (receptionDate.after(calendar.getTime())){
+        if (receptionDate.after(calendar.getTime())) {
             logger.warn("Order reception after max value");
             throw new ReceptionException("order.reception.after.max.value");
         }
@@ -158,6 +169,8 @@ public class OrderBusinessImpl implements OrderBusiness {
     public Order paidOrder(Long id) throws OrderException {
         logger.info("Paid order ID : " + id);
         Order order = getOrder(id);
+        if (order.getPaid())
+            throw new OrderException("order.already.paid");
         order.setPaid(true);
         return orderRepository.save(order);
     }
@@ -166,19 +179,19 @@ public class OrderBusinessImpl implements OrderBusiness {
     public Order cancelOrder(Long id) throws OrderException {
         logger.info("Admin cancel order ID : " + id);
         Order order = getOrder(id);
-        return validateCancelOrder(order);
+        return validateCancelOrder(order, true);
     }
 
     @Override
     public Order cancelOrder(Long id, String userName) throws OrderException, FeignException {
         logger.info("User cancel order ID : " + id);
         Order order = getOrder(id, userName);
-        return validateCancelOrder(order);
+        return validateCancelOrder(order, false);
     }
 
-    private Order validateCancelOrder(Order order) throws CancelException {
+    private Order validateCancelOrder(Order order, boolean admin) throws CancelException {
 
-        if (order.getCancel()){
+        if (order.getCancel()) {
             logger.info("Order already cancel for order ID : " + order.getId());
             throw new CancelException("order.already.cancel");
         }
@@ -186,7 +199,7 @@ public class OrderBusinessImpl implements OrderBusiness {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, maxHoursCancelOrder);
 
-        if (order.getDate().after(calendar.getTime())){
+        if (order.getDate().after(calendar.getTime()) && !admin) {
             logger.info("Order cancel after max hours for order ID : " + order.getId());
             throw new CancelException("order.cancel.after.max.value");
         }

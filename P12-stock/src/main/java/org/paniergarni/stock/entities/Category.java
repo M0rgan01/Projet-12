@@ -21,8 +21,6 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
-    @Size(min = 4, max = 50, message = "category.name.incorrect.size")
     private String name;
     private String photo;
     @JsonIgnore

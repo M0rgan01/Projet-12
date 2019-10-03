@@ -6,16 +6,16 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.paniergarni.account.business.UserBusiness;
 import org.paniergarni.account.entities.User;
-import org.paniergarni.account.entities.dto.CreateUserDTO;
-import org.paniergarni.account.entities.dto.UserRecoveryDTO;
-import org.paniergarni.account.entities.dto.UserUpdatePassWordDTO;
+import org.paniergarni.account.entities.CreateUserDTO;
+import org.paniergarni.account.entities.UserRecoveryDTO;
+import org.paniergarni.account.entities.UserUpdatePassWordDTO;
 import org.paniergarni.account.exception.AccountException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+
 @Api( description="API de gestion des utilisateurs")
 @RestController
 public class UserController {
@@ -28,6 +28,7 @@ public class UserController {
             @ApiResponse(code = 200, message = "Succès de la création"),
             @ApiResponse(code = 400, message = "Entitée non conforme"),
             @ApiResponse(code = 409, message = "Username ou email similaire déjà présent, passWordConfirm non correspondant"),
+            @ApiResponse(code = 412, message = "Erreur du JSON"),
             @ApiResponse(code = 500, message = "Erreur interne")
     })
     @PostMapping(value = "/adminRole/user")
@@ -71,6 +72,7 @@ public class UserController {
             @ApiResponse(code = 200, message = "Succès de la modification"),
             @ApiResponse(code = 400, message = "Entitée non conforme"),
             @ApiResponse(code = 409, message = "Aucune corresponce pour l'ID, utilisateur désactivé, confirmation ou ancien mot de passe non correspondant"),
+            @ApiResponse(code = 412, message = "Erreur du JSON"),
             @ApiResponse(code = 500, message = "Erreur interne")
     })
     @PutMapping(value = "/userRole/updatePassWord/{id}")
@@ -87,6 +89,7 @@ public class UserController {
             @ApiResponse(code = 400, message = "Entitée non conforme"),
             @ApiResponse(code = 409, message = "Aucune corresponce pour l'email, compte non valable pour modification par récupération, " +
                     "expiration de la modification, confirmation ou ancien mot de passe non correspondant"),
+            @ApiResponse(code = 412, message = "Erreur du JSON"),
             @ApiResponse(code = 500, message = "Erreur interne")
     })
     @PutMapping(value = "/public/editPassWordByRecovery/{email}")

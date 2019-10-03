@@ -31,7 +31,7 @@ public class HandleException {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleException(MethodArgumentNotValidException ex) {
 
@@ -45,7 +45,7 @@ public class HandleException {
             errorDetails.add(error);
         }
 
-        return ErrorResponse.of(errorDetails, HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of(errorDetails, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(UserNotActiveException.class)

@@ -1,13 +1,10 @@
 package org.paniergarni.account.business;
 
 import org.paniergarni.account.entities.User;
-import org.paniergarni.account.entities.dto.CreateUserDTO;
-import org.paniergarni.account.entities.dto.UserRecoveryDTO;
-import org.paniergarni.account.entities.dto.UserUpdatePassWordDTO;
+import org.paniergarni.account.entities.CreateUserDTO;
+import org.paniergarni.account.entities.UserRecoveryDTO;
+import org.paniergarni.account.entities.UserUpdatePassWordDTO;
 import org.paniergarni.account.exception.AccountException;
-import org.paniergarni.account.exception.PassWordException;
-
-import java.util.List;
 
 public interface UserBusiness {
 

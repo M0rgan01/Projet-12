@@ -48,6 +48,7 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Succès de l' inscription"),
             @ApiResponse(code = 409, message = "UserName / Email / PassWord incorrect"),
+            @ApiResponse(code = 412, message = "Erreur du JSON"),
             @ApiResponse(code = 500, message = "Erreur interne"),
             @ApiResponse(code = 503, message = "MC account indisponnible")
     })
@@ -71,7 +72,7 @@ public class AuthController {
     @ApiOperation(value = "Rafraichissement d'un token d'authentification")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Succès du rafraichissement"),
-            @ApiResponse(code = 409, message = "Token incorrect"),
+            @ApiResponse(code = 409, message = "Token incorrect, inexistant"),
             @ApiResponse(code = 500, message = "Erreur interne"),
             @ApiResponse(code = 503, message = "MC account indisponnible")
     })
