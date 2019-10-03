@@ -57,11 +57,16 @@ public class UserBusinessImpl implements UserBusiness {
     }
 
     @Override
-    public User updateUser(Long id, User user) throws AccountException {
+    public User updateUserActive(Long id, boolean active) throws AccountException {
 
-        User user1 = getUserById(user.getId());
-        user = user1;
-        logger.info("Update user : " + user.getUserName());
+        User user = getUserById(id);
+
+        if (user.isActive() == active)
+            throw new AccountException("user.active.same.value");
+
+        user.setActive(active);
+
+        logger.info("Update user : " + id+ ", set active :" + active);
         return userRepository.save(user);
     }
 
@@ -196,6 +201,25 @@ public class UserBusinessImpl implements UserBusiness {
 
         userRepository.save(user2);
         logger.info("Update passWord by recovery for user " + user2.getId());
+    }
+
+    @Override
+    public User setUserRole(Long id) throws AccountException {
+        User user = getUserById(id);
+        List<Role> roles = new ArrayList<>();
+        roles.add(roleBusiness.getUserRole());
+        user.setRoles(roles);
+        logger.info("Update user : " + id + " , set User role");
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User setAdminRole(Long id) throws AccountException {
+        User user = getUserById(id);
+        List<Role> roles = roleBusiness.getAdminRole();
+        user.setRoles(roles);
+        logger.info("Update user : " + id + " , set Admin role");
+        return userRepository.save(user);
     }
 
 }

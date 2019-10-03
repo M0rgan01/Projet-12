@@ -45,7 +45,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Authentification utilisateur")
-                .description("API to retrieve swagger apis")
+                .description("API de connection et inscription des utilisateurs")
                 .version("1.0.0")
                 .build();
     }

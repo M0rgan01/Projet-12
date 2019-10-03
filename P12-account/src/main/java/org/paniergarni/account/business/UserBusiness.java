@@ -13,7 +13,7 @@ public interface UserBusiness {
 
     User createUser(CreateUserDTO user) throws AccountException;
 
-    User updateUser(Long id, User user) throws AccountException;
+    User updateUserActive(Long id, boolean active) throws AccountException;
     User updateUserName(Long id, String userName)throws AccountException;
 
     void updatePassWord(Long id, UserUpdatePassWordDTO user)throws AccountException;
@@ -26,4 +26,6 @@ public interface UserBusiness {
 
     void editPassWordByRecovery(String email, UserRecoveryDTO user) throws AccountException;
 
+    User setUserRole(Long id) throws AccountException;
+    User setAdminRole(Long id) throws AccountException;
 }
