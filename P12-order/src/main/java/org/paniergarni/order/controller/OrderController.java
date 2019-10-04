@@ -65,7 +65,7 @@ public class OrderController {
             @ApiResponse(code = 500, message = "Erreur interne"),
             @ApiResponse(code = 503, message = "Service account indisponible")
     })
-    @GetMapping(value = "/userRole/orders/{userName}/{page}/{size}")
+    @PostMapping(value = "/userRole/orders/{userName}/{page}/{size}")
     public ResponseEntity<?> getOrdersByUserName(@PathVariable(name = "userName") String userName,
                                                  @PathVariable(name = "page") int page,
                                                  @PathVariable(name = "size") int size,
@@ -83,7 +83,7 @@ public class OrderController {
             @ApiResponse(code = 412, message = "Erreur du JSON"),
             @ApiResponse(code = 500, message = "Erreur interne")
     })
-    @GetMapping(value = "/adminRole/orders/{page}/{size}")
+    @PostMapping(value = "/adminRole/orders/{page}/{size}")
     public ResponseEntity<?> getOrders( @PathVariable(name = "page") int page,
                                         @PathVariable(name = "size") int size,
                                         @RequestBody(required=false) List<SearchCriteria> searchCriteriaList) throws CriteriaException {

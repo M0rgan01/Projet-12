@@ -4,14 +4,32 @@
 <!-- ------PHILTRE------- -->
 <form #f="ngForm" (ngSubmit)="onSearchByPhiltre(f.value)">
   <div class="form-row">
-    <div class="form-group col-md-4">
-      <label for="inputState">Size</label>
-      <select id="inputState" class="form-control" name="size" [ngModel]="size">
+    <div class="form-group col-lg-2">
+      <label for="inputState1">Taille de la page :</label>
+      <select id="inputState1" class="form-control" name="size" [ngModel]="size">
         <option *ngFor="let s of listSize" [ngValue]="s" [selected]="size == s">{{s}}</option>
       </select>
     </div>
+    <div class="form-group col-lg-2 offset-lg-1">
+      <label for="inputState2">Recherche par nom</label>
+      <input id="inputState2" type="text" name="searchByName" class="form-control">
+    </div>
+    <div class="form-group col-lg-2 offset-lg-1">
+      <label for="inputState3">Prix minimum</label>
+      <input id="inputState3" type="number" name="searchMinPrice" class="form-control">
+    </div>
+    <div class="form-group col-lg-2 offset-lg-1">
+      <label for="inputState4">Prix maximum</label>
+      <input id="inputState4" type="number" name="searchMaxPrice" class="form-control">
+    </div>
   </div>
-  <button type="submit" class="btn btn-primary">Search</button>
+  <div class="form-row ml-1">
+    <div class="form-group form-check">
+      <input type="checkbox" class="form-check-input" name="searchAvailable" id="exampleCheck1">
+      <label class="form-check-label" for="exampleCheck1">Uniquement produit disponible</label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Rechercher</button>
 </form>
 
 <div *ngIf="products && products.totalElements != 0">

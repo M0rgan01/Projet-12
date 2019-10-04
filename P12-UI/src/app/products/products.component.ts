@@ -5,6 +5,7 @@ import {CaddyService} from '../../services/caddy.service';
 import {Category} from '../../model/category.model';
 import {Page} from '../../model/page.model';
 import {Product} from '../../model/product.model';
+import {SearchCriteria} from '../../model/search-criteria.model';
 
 @Component({
   selector: 'app-product',
@@ -19,6 +20,12 @@ export class ProductsComponent implements OnInit {
   public products: Page<Product>;
   public listSize: Array<number> = [4, 8, 12];
   public paramCategoryId: string;
+  public listSearchCriteria: Array<SearchCriteria>;
+  public searchCriteria: SearchCriteria;
+  public searchByName: string;
+  public searchAvailable: boolean;
+  public searchMinPrice: number;
+  public searchMaxPrice: number;
 
   constructor(public api: APIService,
               public router: Router,
@@ -27,10 +34,12 @@ export class ProductsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.listSearchCriteria = new Array<SearchCriteria>();
     // on écoute un changement de route
     this.router.events.subscribe((val) => {
       // si la navigation arrive à terme (il y a plusieur event, donc on en garde que un pour éviter plusieur éxécution)
       if (val instanceof NavigationEnd && val.url.startsWith('/products')) {
+        this.listSearchCriteria = new Array<SearchCriteria>();
         this.setParamCategoryId();
         this.checkProductsHome(this.page, this.size);
       }
@@ -53,8 +62,8 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  private getProduct(url) {
-    this.api.getRessources<Page<Product>>(url).subscribe(data => {
+  private getProduct(page, size, object) {
+    this.api.postRessources<Page<Product>>('/p12-stock/public/searchProduct/' + page + '/' + size, object).subscribe(data => {
       this.products = data;
     });
   }
@@ -64,18 +73,44 @@ export class ProductsComponent implements OnInit {
       this.api.getRessources<Category>('/p12-stock/public/category/' + this.paramCategoryId).subscribe(cat => {
         if (cat) {
           this.title = 'Produit de la catégorie ' + cat.name;
-          this.getProduct('/p12-stock/public/productsByCategoryId/' + this.paramCategoryId + '/' + page + '/' + size);
+          this.searchCriteria = new SearchCriteria('category.id', ':', cat.id);
+          this.listSearchCriteria.push(this.searchCriteria);
+          this.getProduct(page, size, this.listSearchCriteria);
         }
       }, error1 => {
       });
     } else {
       this.title = 'Produit en promotion';
-      this.getProduct('/p12-stock/public/productsByPromotion/' + page + '/' + size);
+      this.searchCriteria = new SearchCriteria('promotion', ':', true);
+      this.listSearchCriteria.push(this.searchCriteria);
+      this.getProduct(page, size, this.listSearchCriteria);
     }
 
   }
 
   onSearchByPhiltre(data) {
+    this.listSearchCriteria = new Array<SearchCriteria>();
+
+    if (data.searchByName !== undefined) {
+      this.searchCriteria = new SearchCriteria('name', ':', data.searchByName);
+      this.listSearchCriteria.push(this.searchCriteria);
+    }
+
+    if (data.searchMinPrice !== undefined) {
+      this.searchCriteria = new SearchCriteria('price', '>', data.searchMinPrice);
+      this.listSearchCriteria.push(this.searchCriteria);
+    }
+
+    if (data.searchMaxPrice !== undefined) {
+      this.searchCriteria = new SearchCriteria('price', '<', data.searchMaxPrice);
+      this.listSearchCriteria.push(this.searchCriteria);
+    }
+
+    if (data.searchAvailable !== undefined && data.searchAvailable) {
+        this.searchCriteria = new SearchCriteria('available', ':', true);
+        this.listSearchCriteria.push(this.searchCriteria);
+    }
+
     this.size = data.size;
     this.checkProductsHome(this.page, this.size);
   }

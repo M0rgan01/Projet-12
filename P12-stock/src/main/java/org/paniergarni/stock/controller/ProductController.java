@@ -59,7 +59,7 @@ public class ProductController {
             @ApiResponse(code = 412, message = "Erreur du JSON"),
             @ApiResponse(code = 500, message = "Erreur interne")
     })
-    @GetMapping(value = "/public/searchProduct/{page}/{size}")
+    @PostMapping(value = "/public/searchProduct/{page}/{size}")
     public ResponseEntity<?> searchProduct(@PathVariable(name = "page") int page,
                                            @PathVariable(name = "size") int size,
                                            @RequestBody(required=false) List<SearchCriteria> searchCriteriaList) {
