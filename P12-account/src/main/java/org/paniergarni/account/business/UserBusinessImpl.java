@@ -1,12 +1,15 @@
 package org.paniergarni.account.business;
 
 import org.paniergarni.account.dao.UserRepository;
+import org.paniergarni.account.entities.Mail;
 import org.paniergarni.account.entities.Role;
 import org.paniergarni.account.entities.User;
-import org.paniergarni.account.exception.AccountException;
-import org.paniergarni.account.exception.BadCredencialException;
-import org.paniergarni.account.exception.ExpirationException;
-import org.paniergarni.account.exception.PassWordException;
+import org.paniergarni.account.entities.CreateUserDTO;
+import org.paniergarni.account.entities.UserRecoveryDTO;
+import org.paniergarni.account.entities.UserUpdatePassWordDTO;
+import org.paniergarni.account.exception.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,7 +18,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-public class UserBusinessImpl implements UserBusiness{
+public class UserBusinessImpl implements UserBusiness {
 
     @Autowired
     private UserRepository userRepository;
@@ -27,42 +30,73 @@ public class UserBusinessImpl implements UserBusiness{
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Value("${max.try.incorrect.login}")
     private int tryIncorrectLogin;
-    @Value("${waiting.minutes.for.max.try.login}")
+    @Value("${waiting.for.max.try.login.inMinutes}")
     private int waitingMinutes;
 
+    private final Logger logger = LoggerFactory.getLogger(UserBusinessImpl.class);
+
     @Override
-    public User createUser(User user) throws AccountException {
+    public User createUser(CreateUserDTO user) throws AccountException {
+        User user1 = new User();
+        Mail mail = new Mail();
         checkUserNameExist(user.getUserName());
-        mailBusiness.checkEmailExist(user.getMail().getEmail());
-        user.setActive(true);
-        checkPassWordConfirm(user);
-        String hashPW = bCryptPasswordEncoder.encode(user.getPassWord());
-        user.setPassWord(hashPW);
+        mailBusiness.checkEmailExist(user.getEmail());
+        checkPassWordConfirm(user.getPassWord(), user.getPassWordConfirm());
+
+        user1.setPassWord(bCryptPasswordEncoder.encode(user.getPassWord()));
+        user1.setActive(true);
+        user1.setUserName(user.getUserName());
+        user1.setMail(mail);
+        user1.getMail().setEmail(user.getEmail());
 
         List<Role> roles = new ArrayList<>();
         roles.add(roleBusiness.getUserRole());
-        user.setRoles(roles);
+        user1.setRoles(roles);
+        logger.info("Create user : " + user.getUserName());
+        return userRepository.save(user1);
+    }
 
+    @Override
+    public User updateUserActive(Long id, boolean active) throws AccountException {
+
+        User user = getUserById(id);
+
+        if (user.isActive() == active)
+            throw new AccountException("user.active.same.value");
+
+        user.setActive(active);
+
+        logger.info("Update user : " + id+ ", set active :" + active);
         return userRepository.save(user);
     }
 
     @Override
-    public User updateUser(User user) throws AccountException {
+    public User updateUserName(Long id, String userName) throws AccountException {
 
-        User user1 = getUserById(user.getId());
+        User user = getUserById(id);
+        checkUserActive(user.isActive());
 
-        if (!user1.isActive()) {
-            throw new AccountException("user.not.active");
-        }else if (!user1.getUserName().equals(user.getUserName())) {
-            checkUserNameExist(user.getUserName());
-        }else if (!user1.getMail().getEmail().equals(user.getMail().getEmail())) {
-            mailBusiness.checkEmailExist(user.getMail().getEmail());
-        }else if (!bCryptPasswordEncoder.matches(user.getPassWord(), user1.getPassWord())){
-            checkOldPassWord(user, user1.getPassWord());
-            checkPassWordConfirm(user);
+         if (userName == null || userName.isEmpty()) {
+            throw new AccountException("user.userName.empty");
+        } else if (user.getUserName().equals(userName)) {
+            throw new AccountException("user.userName.same.value");
         }
 
+        checkUserNameExist(userName);
+        user.setUserName(userName);
+        logger.info("Update userName for user ID : " + user.getId());
         return userRepository.save(user);
+    }
+
+    @Override
+    public void updatePassWord(Long id, UserUpdatePassWordDTO userDTO) throws AccountException {
+        User user = getUserById(id);
+        checkUserActive(user.isActive());
+        checkPassWordConfirm(userDTO.getPassWord(), userDTO.getPassWordConfirm());
+        checkOldPassWord(userDTO.getOldPassWord(), user.getPassWord());
+        user.setPassWord(bCryptPasswordEncoder.encode(userDTO.getPassWord()));
+        logger.info("Update passWord for user ID : " + user.getId());
+        userRepository.save(user);
     }
 
     @Override
@@ -88,13 +122,14 @@ public class UserBusinessImpl implements UserBusiness{
                 .orElseGet(() -> userRepository.findByEmail(userName)
                         .orElseThrow(() -> new AccountException("user.not.found")));
 
-        if (!contact.isActive())
-            throw new AccountException("user.not.active");
+        checkUserActive(contact.isActive());
 
         if (contact.getExpiryConnection() != null) {
             if (contact.getExpiryConnection().after(new Date())) {
+                logger.debug("Expiry connection error for user ID : " + contact.getId());
                 throw new ExpirationException("user.expiryConnection.after.date");
             } else {
+                logger.debug("Expiry connection finish for user ID : " + contact.getId());
                 contact.setTryConnection(0);
                 contact.setExpiryConnection(null);
                 userRepository.save(contact);
@@ -112,33 +147,79 @@ public class UserBusinessImpl implements UserBusiness{
                 contact.setExpiryConnection(date.getTime());
 
                 userRepository.save(contact);
+                logger.debug("Set expiry connection for user ID : " + contact.getId());
                 throw new AccountException("user.tryConnection.out");
             }
             userRepository.save(contact);
-            throw new BadCredencialException("user.password.not.valid");
+            logger.debug("Bad passWord for user ID : " + contact.getId());
+            throw new BadCredencialException("user.passWord.not.valid");
         }
 
         return contact;
     }
 
 
-    public void checkPassWordConfirm(User user) throws PassWordException {
-        if (user.getPassWordConfirm() == null || user.getPassWordConfirm().isEmpty())
-            throw new PassWordException("user.password.confirm.empty");
-        if (!user.getPassWord().equals(user.getPassWordConfirm()))
-            throw new PassWordException("user.incorrect.password.confirm");
+    private void checkPassWordConfirm(String passWord, String passWordConfirm) throws PassWordException {
+        if (!passWord.equals(passWordConfirm))
+            throw new PassWordException("user.incorrect.passWord.confirm");
     }
 
-    public void checkOldPassWord(User user, String oldPassWord) throws PassWordException {
-        if (user.getOldPassWord() == null || user.getOldPassWord().isEmpty())
-            throw new PassWordException("user.old.password.empty");
-        if (!bCryptPasswordEncoder.matches(user.getOldPassWord(), oldPassWord))
-            throw new PassWordException("user.incorrect.old.password");
+    private void checkOldPassWord(String oldPassWord, String actualPassWord) throws PassWordException {
+        if (!bCryptPasswordEncoder.matches(oldPassWord, actualPassWord))
+            throw new PassWordException("user.incorrect.old.passWord");
     }
 
-    public void checkUserNameExist(String userName) throws AccountException {
-        if (userRepository.findByUserName(userName).isPresent()){
-            throw new AccountException("user.username.already.exist");
+    private void checkUserNameExist(String userName) throws AccountException {
+        if (userRepository.findByUserName(userName).isPresent()) {
+            throw new AccountException("user.userName.already.exist");
         }
     }
+
+    private void checkUserActive(boolean b) throws UserNotActiveException {
+        if (!b)
+            throw new UserNotActiveException("user.not.active");
+    }
+
+    @Override
+    public void editPassWordByRecovery(String email, UserRecoveryDTO user) throws AccountException {
+        // récupération du mail
+        User user2 = getUserByEmail(email);
+        if (!user2.getMail().isAvailablePasswordRecovery()) {
+            logger.debug("User passWord recovery not available for user ID : " + user2.getId());
+            throw new AccountException("user.mail.not.available.recovery");
+        } else if (user2.getMail().getExpiryPasswordRecovery().before(new Date())) {
+            user2.getMail().setAvailablePasswordRecovery(false);
+            user2.getMail().setExpiryPasswordRecovery(null);
+            userRepository.save(user2);
+            logger.debug("User passWord recovery expiry for user ID : " + user2.getId());
+            throw new ExpirationException("user.passWord.recovery.expiry");
+        }
+
+        // on vérifie
+        checkPassWordConfirm(user.getPassWord(), user.getPassWordConfirm());
+        user2.setPassWord(bCryptPasswordEncoder.encode(user.getPassWord()));
+
+        userRepository.save(user2);
+        logger.info("Update passWord by recovery for user " + user2.getId());
+    }
+
+    @Override
+    public User setUserRole(Long id) throws AccountException {
+        User user = getUserById(id);
+        List<Role> roles = new ArrayList<>();
+        roles.add(roleBusiness.getUserRole());
+        user.setRoles(roles);
+        logger.info("Update user : " + id + " , set User role");
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User setAdminRole(Long id) throws AccountException {
+        User user = getUserById(id);
+        List<Role> roles = roleBusiness.getAdminRole();
+        user.setRoles(roles);
+        logger.info("Update user : " + id + " , set Admin role");
+        return userRepository.save(user);
+    }
+
 }

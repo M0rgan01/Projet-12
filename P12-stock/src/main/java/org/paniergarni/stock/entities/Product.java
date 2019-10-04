@@ -22,13 +22,9 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
-    @Size(min = 4, max = 50, message = "product.name.incorrect.size")
     private String name;
-    @Size(max = 500, message = "product.description.incorrect.size")
     private String description;
     private boolean available;
-    @Min(value = 0, message = "product.quantity.incorrect")
     private int quantity;
     @Transient
     private int orderProductRealQuantity;

@@ -1,4 +1,4 @@
-<div class="container">
+
   <div class="row">
     <div class="offset-2 col-8 offset-sm-2 col-sm-8 offset-lg-3 col-lg-6">
       <div class="card mt-5">
@@ -10,25 +10,25 @@
           </div>
 
           <div *ngIf="errors != null" class="alert alert-danger">
-            <p *ngFor="let err of errors">{{err.message}}</p>
+            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message}}</p>
           </div>
 
-          <form #f="ngForm" (ngSubmit)="onRegister(f.value)">
+          <form #f="ngForm" (ngSubmit)="onRegister(user)">
             <div class="form-group">
               <label>Username:</label>
-              <input class="form-control" ngModel="" type="text" name="userName" required>
+              <input class="form-control" [(ngModel)]="user.userName" type="text" name="userName" required>
             </div>
             <div class="form-group">
               <label>Email:</label>
-              <input class="form-control" ngModel="" type="text" name="mail" required>
+              <input class="form-control" [(ngModel)]="user.email" type="text" name="mail" required>
             </div>
             <div class="form-group">
               <label>Password:</label>
-              <input class="form-control" ngModel="" type="password" name="passWord" required>
+              <input class="form-control"[(ngModel)]="user.passWord" type="password" name="passWord" required>
             </div>
             <div class="form-group">
               <label>Password confirm:</label>
-              <input class="form-control" ngModel="" type="password" name="passWordConfirm" required>
+              <input class="form-control" [(ngModel)]="user.passWordConfirm" type="password" name="passWordConfirm" required>
             </div>
             <button type="submit" class="btn btn-primary mr-1" [disabled]="f.invalid">Register</button>
           </form>
@@ -36,4 +36,4 @@
       </div>
     </div>
   </div>
-</div>
+

@@ -31,13 +31,19 @@
       <li class="nav-item dropdown d-sm-block d-md-none">
         <a class="nav-link dropdown-toggle" href="#" id="smallerscreenmenu" data-toggle="dropdown" aria-haspopup="true"
            aria-expanded="false">
-          Menu
+          Mon compte
         </a>
         <div class="dropdown-menu" aria-labelledby="smallerscreenmenu">
-          <a class="dropdown-item" href="#">Dashboard</a>
-          <a class="dropdown-item" href="#">Profile</a>
-          <a class="dropdown-item" href="#">Tasks</a>
-          <a class="dropdown-item" href="#">Etc ...</a>
+          <div *ngIf="authService.isAuth()">
+          <a class="dropdown-item" routerLink="/account">Modifier mon compte</a>
+          <a (click)="onLogout()"
+             class="dropdown-item">Logout
+          </a>
+          </div>
+          <div *ngIf="!authService.isAuth()">
+            <a class="dropdown-item" routerLink="/login">Login</a>
+            <a class="dropdown-item" routerLink="/register">Register</a>
+          </div>
         </div>
       </li>
 
@@ -48,7 +54,8 @@
       <button class="btn btn-success my-2 my-md-0 mx-sm-2 mx-0" type="submit">Search</button>
     </form>
 
-    <button routerLink="/caddies" class="btn btn-primary">Panier <span class="badge badge-light">{{caddyService.getSize()}}</span></button>
+    <button routerLink="/caddies" class="btn btn-primary">Panier <span
+      class="badge badge-light">{{caddyService.getSize()}}</span></button>
 
   </div>
 </nav>
@@ -71,28 +78,23 @@
          class="list-group-item list-group-item-action border-0 bg-info">Login</a>
       <a *ngIf="authService.isAuth()"
          class="list-group-item list-group-item-action border-0 bg-info" routerLink="/orders">Mes commandes</a>
-      <a *ngIf="authService.isAuth()" (click)="onLogout()"
-         class="list-group-item list-group-item-action border-0 bg-info">Logout</a>
-
 
       <!-- /END Separator -->
       <!-- Menu with submenu -->
-      <a href="#submenu1" data-toggle="collapse" aria-expanded="false"
+      <a *ngIf="authService.isAuth()" href="#submenu1" data-toggle="collapse" aria-expanded="false"
          class="bg-dark font-weight-bold list-group-item list-group-item-action flex-column align-items-start border-0">
         <div class="d-flex w-100 justify-content-start align-items-center">
           <span>Mon compte</span>
         </div>
       </a>
       <!-- Submenu content -->
-      <div id="submenu1" class="collapse">
-        <a href="#" class="list-group-item list-group-item-action text-white text-center border-0 bg-dark">
-          <span class="menu-collapsed">Charts</span>
+      <div  *ngIf="authService.isAuth()" id="submenu1" class="collapse">
+        <a routerLink="/account" class="list-group-item list-group-item-action text-white text-center border-0 bg-dark">
+          <span class="menu-collapsed">Modifier mon compte</span>
         </a>
-        <a href="#" class="list-group-item list-group-item-action text-white text-center border-0 bg-dark">
-          <span class="menu-collapsed">Reports</span>
-        </a>
-        <a href="#" class="list-group-item list-group-item-action text-white text-center border-0 bg-dark">
-          <span class="menu-collapsed">Reports</span>
+        <a (click)="onLogout()"
+           class="list-group-item list-group-item-action text-white text-center border-0 bg-dark cliquable">
+          <span class="menu-collapsed">Logout</span>
         </a>
       </div>
 

@@ -1,7 +1,7 @@
 package org.paniergarni.apigateway.security.auth.handler;
 
 
-import org.paniergarni.apigateway.security.auth.model.UserContext;
+import org.paniergarni.apigateway.object.User;
 import org.paniergarni.apigateway.security.token.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,9 +44,8 @@ public class LoginAwareAuthenticationSuccessHandler implements AuthenticationSuc
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
-    		
-        UserContext userContext = (UserContext) authentication.getPrincipal();
-        
+
+        User userContext = (User) authentication.getPrincipal();
         //création des token
         String accessToken = jwtService.createAuthToken(userContext);
         String refreshToken = jwtService.createRefreshToken(userContext);

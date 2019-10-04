@@ -1,6 +1,7 @@
 package org.paniergarni.stock;
 
 import net.bytebuddy.utility.RandomString;
+import org.modelmapper.ModelMapper;
 import org.paniergarni.stock.dao.CategoryRepository;
 import org.paniergarni.stock.dao.FarmerRepository;
 import org.paniergarni.stock.dao.ProductRepository;
@@ -8,21 +9,18 @@ import org.paniergarni.stock.entities.Category;
 import org.paniergarni.stock.entities.Farmer;
 import org.paniergarni.stock.entities.Measure;
 import org.paniergarni.stock.entities.Product;
-import org.paniergarni.stock.proxy.UserProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.Bean;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients("org.paniergarni.stock.proxy")
 public class P12StockApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
@@ -35,8 +33,12 @@ public class P12StockApplication implements CommandLineRunner {
     private CategoryRepository categoryRepository;
     @Autowired
     private FarmerRepository farmerRepository;
-    @Autowired
-    private UserProxy userProxy;
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -78,7 +80,7 @@ public class P12StockApplication implements CommandLineRunner {
                 p.setPromotion(rm.nextBoolean());
                 if (p.isPromotion())
                     p.setPromotionPrice(100 + rm.nextInt(1000));
-                p.setPhoto("angular.png");
+               // p.setPhoto("angular.png");
                 p.setCategory(c);
                 p.setFarmer(farmers.get(rm.nextInt(farmers.size())));
                 p.setMeasure(measures.get(rm.nextInt(measures.size())));

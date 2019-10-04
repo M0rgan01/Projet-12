@@ -1,7 +1,7 @@
 package org.paniergarni.apigateway.security.token;
 
 
-import org.paniergarni.apigateway.security.auth.model.UserContext;
+import org.paniergarni.apigateway.object.User;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -20,7 +20,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     private static final long serialVersionUID = 2877954820905567501L;
 
     private JwtToken jwtToken;
-    private UserContext userContext;
+    private User userContext;
 
     public JwtAuthenticationToken(JwtToken unsafeToken) {
         super(null);
@@ -28,7 +28,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         this.setAuthenticated(false);
     }
 
-    public JwtAuthenticationToken(UserContext userContext, Collection<? extends GrantedAuthority> authorities) {
+    public JwtAuthenticationToken(User userContext, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.eraseCredentials();
         this.userContext = userContext;

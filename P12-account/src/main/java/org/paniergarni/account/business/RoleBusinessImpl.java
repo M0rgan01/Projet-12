@@ -3,6 +3,8 @@ package org.paniergarni.account.business;
 import org.paniergarni.account.dao.RoleRepository;
 import org.paniergarni.account.entities.Role;
 import org.paniergarni.account.exception.AccountException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +14,7 @@ import java.util.List;
 @Component
 public class RoleBusinessImpl implements RoleBusiness {
 
+    private static final Logger logger = LoggerFactory.getLogger(RoleBusinessImpl.class);
     @Autowired
     private RoleRepository roleRepository;
 
@@ -32,6 +35,7 @@ public class RoleBusinessImpl implements RoleBusiness {
 
     @Override
     public Role getUserRole() throws AccountException {
+        logger.debug("Get roles for user");
         return roleRepository.findByName("ROLE_USER").orElseThrow(() -> new AccountException("role.user.not.found"));
     }
 
@@ -45,7 +49,7 @@ public class RoleBusinessImpl implements RoleBusiness {
 
         roles.add(user);
         roles.add(admin);
-
+        logger.debug("Get roles for admin");
         return roles;
     }
 

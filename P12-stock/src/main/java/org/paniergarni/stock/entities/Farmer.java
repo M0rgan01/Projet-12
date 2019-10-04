@@ -21,8 +21,6 @@ public class Farmer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
-    @Size(min = 4, max = 50, message = "farmer.name.incorrect.size")
     private String name;
     private String location;
     private String phone;

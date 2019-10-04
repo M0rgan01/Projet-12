@@ -1,5 +1,5 @@
 
-<div class="text-center">
+<div class="row justify-content-center my-3">
   <h3>Mon panier</h3>
 </div>
 
@@ -46,7 +46,6 @@
   </div>
 
   <div *ngIf="!authenticationService.isAuth()">
-
     <p>Pour commander ce panier, veuillez vous identifier</p>
     <button type="button" routerLink="/login/returnCaddy" routerLinkActive="active" class="btn btn-success mt-1">Login
     </button>

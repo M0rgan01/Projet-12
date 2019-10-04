@@ -57,10 +57,8 @@ export class OrderComponent implements OnInit {
     const dateAfterAddMaxHours = new Date(this.order.date);
     dateAfterAddMaxHours.setHours(dateAfterAddMaxHours.getHours() + this.maxHourCancel);
     if (date.getTime() < dateAfterAddMaxHours.getTime()) {
-      console.log('true');
       return true;
     } else {
-      console.log('false');
       return false;
     }
   }

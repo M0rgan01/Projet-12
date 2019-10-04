@@ -1,76 +1,139 @@
 package org.paniergarni.stock.business;
 
+import org.modelmapper.ModelMapper;
 import org.paniergarni.stock.dao.ProductRepository;
+import org.paniergarni.stock.dao.specification.ProductSpecificationBuilder;
+import org.paniergarni.stock.dao.specification.SearchCriteria;
 import org.paniergarni.stock.entities.Product;
-import org.paniergarni.stock.exception.StockException;
+import org.paniergarni.stock.entities.ProductDTO;
+import org.paniergarni.stock.exception.CriteriaException;
+import org.paniergarni.stock.exception.ProductException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 @Component
 public class ProductBusinessImpl implements ProductBusiness {
 
+   // @Value("${product.photo.location}")
+    private String photoLocation;
+
     @Autowired
     private ProductRepository productRepository;
-
+    @Autowired
+    private ModelMapper modelMapper;
+    private static final Logger logger = LoggerFactory.getLogger(ProductBusinessImpl.class);
 
     @Override
-    public Product createProduct(Product product) throws StockException {
+    public Product createProduct(ProductDTO productDTO) throws ProductException, IOException {
+        Product product = modelMapper.map(productDTO, Product.class);
 
-        if (productRepository.findByName(product.getName()).isPresent())
-            throw new StockException("product.name.already.exist");
         if (product.getQuantity() == 0)
             product.setAvailable(false);
 
+        if (product.isPromotion())
+            checkPromotionPrice(product.getPrice(), product.getPromotionPrice());
+
+        if (productDTO.getFile() != null){
+            Product product1 = productRepository.findTopByOrderByIdDesc();
+            product.setPhoto( (product1.getId() + 1 ) + ".png");
+            setProductPhoto(product.getPhoto(), productDTO.getFile());
+        }
+
+
+         product = productRepository.save(product);
+        logger.info("create product " + product.getId());
+        return product;
+    }
+
+    @Override
+    public Product updateProduct(Long id, ProductDTO productDTO) throws ProductException, IOException {
+        Product product = modelMapper.map(productDTO, Product.class);
+        Product productCompare = getProduct(id);
+        if (product.isPromotion()){
+            checkPromotionPrice(product.getPrice(), product.getPromotionPrice());
+        }
+        if (productDTO.getFile() != null){
+            setProductPhoto(product.getPhoto(), productDTO.getFile());
+        }
+        product.setId(productCompare.getId());
+        logger.info("Update product " + product.getId());
         return productRepository.save(product);
     }
 
     @Override
-    public Product updateProduct(Product product) {
-        return productRepository.save(product);
-    }
-
-    @Override
-    public Product getProduct(Long id) throws StockException {
-        return productRepository.findById(id).orElseThrow(() -> new StockException("product.id.incorrect"));
-    }
-
-    @Override
-    public Page<Product> getPageProductsByName(int page, int size, String name) {
-        return productRepository.findByNameContains(name, PageRequest.of(page, size));
-    }
-
-    @Override
-    public Page<Product> getPageProductsByPromotion(int page, int size) {
-        return productRepository.findByPromotionIsTrue(PageRequest.of(page, size));
-    }
-
-    @Override
-    public Page<Product> getPageProductsByCategory(int page, int size, Long categoryId) {
-        return productRepository.findByCategoryId(categoryId, PageRequest.of(page, size));
-    }
-
-    @Override
-    public Product updateProductQuantity(int quantity, Long id) throws StockException {
+    public void deleteProduct(Long id) throws ProductException {
         Product product = getProduct(id);
-        if (product.isAvailable()) {
+        productRepository.delete(product);
+        logger.info("Delete product " + product.getId());
+    }
 
-            if (product.getQuantity() < quantity)
-                quantity = product.getQuantity();
+    @Override
+    public Product getProduct(Long id) throws ProductException {
+        return productRepository.findById(id).orElseThrow(() -> new ProductException("product.id.incorrect"));
+    }
 
-            product.setQuantity(product.getQuantity() - quantity);
+    @Override
+    public Page<Product> searchProduct(int page, int size, List<SearchCriteria> searchCriteriaList) throws CriteriaException {
+        ProductSpecificationBuilder builder = new ProductSpecificationBuilder(searchCriteriaList);
+        logger.debug("Searching products with list of criteria of " + searchCriteriaList.size() + "elements");
+        Specification<Product> spec = builder.build();
+        return productRepository.findAll(spec, PageRequest.of(page, size));
+    }
 
-            if (product.getQuantity() == 0) {
-                product.setOrderProductRealQuantity(quantity);
-                product.setAvailable(false);
+    @Override
+    public Product updateProductQuantity(int quantity, Long id, boolean cancel) throws ProductException {
+        Product product = getProduct(id);
+        if (!cancel) {
+            if (product.isAvailable()) {
+
+                if (product.getQuantity() < quantity)
+                    quantity = product.getQuantity();
+
+                product.setQuantity(product.getQuantity() - quantity);
+
+                if (product.getQuantity() == 0) {
+                    product.setOrderProductRealQuantity(quantity);
+                    product.setAvailable(false);
+                } else {
+                    product.setOrderProductRealQuantity(quantity);
+                }
+                logger.debug("Create order --> update product quantity for product ID : " + id);
+                return productRepository.save(product);
             } else {
-                product.setOrderProductRealQuantity(quantity);
+                throw new ProductException("product.not.available");
             }
-            productRepository.save(product);
-            return product;
         } else {
-            throw new StockException("product.not.available");
+            product.setQuantity(product.getQuantity() + quantity);
+
+            if (product.getQuantity() != 0 && !product.isAvailable())
+                product.setAvailable(true);
+            logger.debug("Cancel order --> update product quantity for product ID : " + id);
+            return productRepository.save(product);
         }
     }
+
+    private void checkPromotionPrice(double currentPrice, double promotionPrice) throws ProductException {
+        if (promotionPrice == 0){
+            throw new ProductException("product.promotion.price.null");
+        } else if (promotionPrice > currentPrice){
+            throw new ProductException("product.promotion.price.greater.than.current.price");
+        }
+    }
+
+    private void setProductPhoto(String photo, MultipartFile file) throws IOException {
+        Files.write(Paths.get(System.getProperty("user.home") + "/Test/" + photo), file.getBytes());
+    }
+
 }

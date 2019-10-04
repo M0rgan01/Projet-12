@@ -1,16 +1,22 @@
 package org.paniergarni.stock.business;
 
+import org.paniergarni.stock.dao.specification.SearchCriteria;
 import org.paniergarni.stock.entities.Product;
+import org.paniergarni.stock.entities.ProductDTO;
+import org.paniergarni.stock.exception.CriteriaException;
+import org.paniergarni.stock.exception.ProductException;
 import org.paniergarni.stock.exception.StockException;
 import org.springframework.data.domain.Page;
 
+import java.io.IOException;
+import java.util.List;
+
 public interface ProductBusiness {
 
-    Product createProduct(Product product) throws StockException;
-    Product updateProduct(Product product);
-    Product getProduct(Long id) throws StockException;
-    Page<Product> getPageProductsByName(int page, int size, String name);
-    Page<Product> getPageProductsByPromotion(int page, int size);
-    Page<Product> getPageProductsByCategory(int page, int size, Long categoryId);
-    Product updateProductQuantity(int quantity, Long id) throws StockException;
+    Product createProduct(ProductDTO productDTO) throws ProductException, IOException;
+    Product updateProduct(Long id, ProductDTO productDTO) throws ProductException, IOException;
+    void deleteProduct(Long id) throws ProductException;
+    Product getProduct(Long id) throws ProductException;
+    Page<Product> searchProduct(int page, int size, List<SearchCriteria> searchCriteria) throws CriteriaException;
+    Product updateProductQuantity(int quantity, Long id, boolean cancel) throws ProductException;
 }

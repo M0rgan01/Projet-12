@@ -8,13 +8,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.paniergarni.account.dao.MailRepository;
 import org.paniergarni.account.entities.Mail;
 import org.paniergarni.account.entities.User;
-import org.paniergarni.account.exception.AccountException;
-import org.paniergarni.account.exception.BadCredencialException;
-import org.paniergarni.account.exception.ExpirationException;
+import org.paniergarni.account.exception.*;
 import org.paniergarni.account.service.SendMail;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.mail.MessagingException;
 import java.util.Calendar;
 import java.util.Optional;
 
@@ -53,7 +52,7 @@ public class MailBusinessTest {
     }
 
     @Test
-    public void testSendTokenForRecovery() throws AccountException {
+    public void testSendTokenForRecovery() throws AccountException, SendMailException {
         mail.setTryToken(3);
 
         Mockito.when(userBusiness.getUserByEmail(mail.getEmail())).thenReturn(user);
@@ -70,19 +69,20 @@ public class MailBusinessTest {
     }
 
     @Test(expected = AccountException.class)
-    public void testSendTokenForRecoveryWithBadEmail() throws AccountException {
+    public void testSendTokenForRecoveryWithBadEmail() throws AccountException, SendMailException {
         Mockito.when(userBusiness.getUserByEmail(mail.getEmail())).thenThrow(new AccountException(""));
 
         mailBusiness.sendTokenForRecovery(mail.getEmail());
     }
 
     @Test(expected = AccountException.class)
-    public void testSendTokenForRecoveryWithUserNotActive() throws AccountException {
+    public void testSendTokenForRecoveryWithUserNotActive() throws AccountException, SendMailException {
         user.setActive(false);
         Mockito.when(userBusiness.getUserByEmail(mail.getEmail())).thenReturn(user);
 
         mailBusiness.sendTokenForRecovery(mail.getEmail());
     }
+
 
     @Test
     public void testValidateToken() throws AccountException {
@@ -112,14 +112,32 @@ public class MailBusinessTest {
         mailBusiness.validateToken(mail.getToken(), mail.getEmail());
     }
 
-    @Test(expected = AccountException.class)
+    @Test(expected = RecoveryException.class)
     public void testValidateTokenWithBadTryToken() throws AccountException {
         mail.setToken("token");
         mail.setTryToken(3);
 
         Mockito.when(mailRepository.findByEmail(mail.getEmail())).thenReturn(Optional.of(mail));
-        //si la méthode ne lève aucune erreur c'est bon
-        mailBusiness.validateToken(mail.getToken(), mail.getEmail());
+
+        mailBusiness.validateToken("Bla", mail.getEmail());
+
+    }
+
+    @Test
+    public void testValidateTokenWithBadTryToken2() throws AccountException {
+        mail.setToken("token");
+        mail.setTryToken(2);
+
+        Mockito.when(mailRepository.findByEmail(mail.getEmail())).thenReturn(Optional.of(mail));
+        Mockito.when(mailRepository.save(mail)).thenReturn(mail);
+
+        try {
+            mailBusiness.validateToken("Bla", mail.getEmail());
+        } catch (RecoveryException e) {
+            ArgumentCaptor<Mail> argument = ArgumentCaptor.forClass(Mail.class);
+            verify(mailRepository).save(argument.capture());
+            assertEquals(argument.getValue().getTryToken(), 3);
+        }
     }
 
     @Test
@@ -129,10 +147,10 @@ public class MailBusinessTest {
 
         Mockito.when(mailRepository.findByEmail(mail.getEmail())).thenReturn(Optional.of(mail));
         Mockito.when(mailRepository.save(mail)).thenReturn(mail);
-        //si la méthode ne lève aucune erreur c'est bon
+
         try {
             mailBusiness.validateToken("Bla", mail.getEmail());
-        } catch (BadCredencialException e) {
+        } catch (RecoveryException e) {
             ArgumentCaptor<Mail> argument = ArgumentCaptor.forClass(Mail.class);
             verify(mailRepository).save(argument.capture());
             assertEquals(argument.getValue().getTryToken(), 1);
