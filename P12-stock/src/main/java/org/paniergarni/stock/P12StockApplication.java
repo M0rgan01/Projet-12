@@ -1,6 +1,7 @@
 package org.paniergarni.stock;
 
 import net.bytebuddy.utility.RandomString;
+import org.modelmapper.ModelMapper;
 import org.paniergarni.stock.dao.CategoryRepository;
 import org.paniergarni.stock.dao.FarmerRepository;
 import org.paniergarni.stock.dao.ProductRepository;
@@ -13,6 +14,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 import java.util.Random;
@@ -31,6 +33,11 @@ public class P12StockApplication implements CommandLineRunner {
     private CategoryRepository categoryRepository;
     @Autowired
     private FarmerRepository farmerRepository;
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
 
 
     @Override
