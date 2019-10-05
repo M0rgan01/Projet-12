@@ -32,7 +32,7 @@
           </div>
 
           <div class="form-group">
-            <label>Product promotionPrice : </label>
+            <label>Product oldPrice : </label>
             <input type="number" required class="form-control" formControlName="promotionPrice">
           </div>
 
@@ -108,8 +108,8 @@
         <h6 class="card-subtitle text-muted mt-1">Prix</h6>
         <p class="card-text m-2" *ngIf="!product.promotion">{{product.price | number:'0.2'}}</p>
         <p class="card-text m-2" *ngIf="product.promotion">
-          <del>{{product.price | number:'0.2'}}</del>
-          {{product.promotionPrice | number:'0.2'}} <span class="badge badge-success m-1">En promotion !</span></p>
+          <del>{{product.oldPrice | number:'0.2'}}</del>
+          {{product.price | number:'0.2'}} <span class="badge badge-success m-1">En promotion !</span></p>
         <h6 class="card-subtitle text-muted mt-1">Disponibilité</h6>
         <p *ngIf="product.available" class="card-text m-2"><span class="badge badge-success">En stock !</span></p>
         <p *ngIf="!product.available" class="card-text m-2"><span

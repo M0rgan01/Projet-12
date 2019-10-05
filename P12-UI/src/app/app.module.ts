@@ -26,6 +26,7 @@ import { OrdersComponent } from './orders/orders.component';
 import { OrderComponent } from './order/order.component';
 import { RecoveryComponent } from './recovery/recovery.component';
 import { AccountUpdateComponent } from './account-update/account-update.component';
+import { CreateComponent } from './create/create.component';
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, children: [{path: ':redirect', component: LoginComponent}]},
@@ -37,6 +38,7 @@ const appRoutes: Routes = [
   {path: 'orders', canActivate: [AuthGuardService], component: OrdersComponent},
   {path: 'order/:id', canActivate: [AuthGuardService], component: OrderComponent},
   {path: 'caddies', component: CaddiesComponent},
+  {path: 'create/:object', component: CreateComponent, canActivate: [AuthGuardService]},
   {path: '', redirectTo: 'products', pathMatch: 'full'},
   {path: 'error', component: ErrorComponent},
   {path: 'not-found', component: FourHoFourComponent},
@@ -71,7 +73,8 @@ export function createTranslateLoader(http: HttpClient) {
     OrdersComponent,
     OrderComponent,
     RecoveryComponent,
-    AccountUpdateComponent
+    AccountUpdateComponent,
+    CreateComponent
   ],
   imports: [
     BrowserModule,

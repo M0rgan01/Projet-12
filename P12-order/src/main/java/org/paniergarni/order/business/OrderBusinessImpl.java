@@ -55,27 +55,22 @@ public class OrderBusinessImpl implements OrderBusiness {
         List<OrderProduct> orderProducts = new ArrayList<>();
         double totalPrice = 0;
 
-        for (OrderProductDTO orderProductDTO : wrapperOrderProductDTO.getList()) {
+        for (OrderProductDTO orderProductDTO : wrapperOrderProductDTO.getOrderProducts()) {
 
             OrderProduct orderProduct = new OrderProduct();
             orderProduct.setOrder(order);
-            orderProducts.add(orderProduct);
             orderProduct.setOrderQuantity(orderProductDTO.getOrderQuantity());
             orderProduct.setProductId(orderProductDTO.getProductId());
-
+            System.out.println(orderProductDTO.getOrderQuantity());
+            System.out.println(orderProductDTO.getProductId());
             try {
                 Product product = productProxy.updateProductQuantity(orderProductDTO.getOrderQuantity(), orderProductDTO.getProductId(), false);
-
                 orderProduct.setRealQuantity(product.getOrderProductRealQuantity());
-
-                if (!product.isPromotion()) {
-                    orderProduct.setTotalPriceRow(product.getPrice() * orderProduct.getRealQuantity());
-                } else {
-                    orderProduct.setTotalPriceRow(product.getPromotionPrice() * orderProduct.getRealQuantity());
-                }
+                orderProduct.setTotalPriceRow(product.getPrice() * orderProduct.getRealQuantity());
                 totalPrice = totalPrice + orderProduct.getTotalPriceRow();
-
+                orderProducts.add(orderProduct);
             } catch (FeignException e) {
+                System.out.println("Catch");
                 orderProduct.setRealQuantity(0);
             }
         }
@@ -89,9 +84,8 @@ public class OrderBusinessImpl implements OrderBusiness {
         calendar.add(Calendar.HOUR, minHoursReception);
 
         Date receptionDate = new Date(reception);
-        receptionDate = truncateTime(receptionDate);
 
-        if (receptionDate.before(truncateTime(calendar.getTime()))) {
+        if (receptionDate.before(calendar.getTime())) {
             logger.warn("Order reception before min value");
             throw new ReceptionException("order.reception.before.min.value");
         }
@@ -103,6 +97,7 @@ public class OrderBusinessImpl implements OrderBusiness {
             throw new ReceptionException("order.reception.after.max.value");
         }
 
+        receptionDate = truncateTime(receptionDate);
         order.setOrderProducts(orderProducts);
         order.setTotalPrice(totalPrice);
         order.setUserId(user.getId());

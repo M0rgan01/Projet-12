@@ -22,10 +22,8 @@ export class ProductsComponent implements OnInit {
   public paramCategoryId: string;
   public listSearchCriteria: Array<SearchCriteria>;
   public searchCriteria: SearchCriteria;
-  public searchByName: string;
-  public searchAvailable: boolean;
-  public searchMinPrice: number;
-  public searchMaxPrice: number;
+  public listFilter: Array<string> = ['Nom', 'Prix', 'Promotion', 'Aucun'];
+  public filter: string;
 
   constructor(public api: APIService,
               public router: Router,
@@ -90,27 +88,39 @@ export class ProductsComponent implements OnInit {
 
   onSearchByPhiltre(data) {
     this.listSearchCriteria = new Array<SearchCriteria>();
-
-    if (data.searchByName !== undefined) {
+    this.filter = data.filter;
+    if (data.searchByName !== '') {
       this.searchCriteria = new SearchCriteria('name', ':', data.searchByName);
       this.listSearchCriteria.push(this.searchCriteria);
     }
 
-    if (data.searchMinPrice !== undefined) {
+    if (data.searchMinPrice !== null && data.searchMaxPrice !== '') {
       this.searchCriteria = new SearchCriteria('price', '>', data.searchMinPrice);
       this.listSearchCriteria.push(this.searchCriteria);
     }
 
-    if (data.searchMaxPrice !== undefined) {
+    if (data.searchMaxPrice !== null && data.searchMaxPrice !== '') {
       this.searchCriteria = new SearchCriteria('price', '<', data.searchMaxPrice);
       this.listSearchCriteria.push(this.searchCriteria);
     }
 
-    if (data.searchAvailable !== undefined && data.searchAvailable) {
+    if (data.searchAvailable) {
         this.searchCriteria = new SearchCriteria('available', ':', true);
         this.listSearchCriteria.push(this.searchCriteria);
     }
 
+    if (this.filter !== null && this.filter !== 'Aucun') {
+      if (this.filter === 'Nom') {
+        this.searchCriteria = new SearchCriteria('name', 'ORDER_BY_ASC', null);
+        this.listSearchCriteria.push(this.searchCriteria);
+      } else if (this.filter === 'Prix') {
+        this.searchCriteria = new SearchCriteria('price', 'ORDER_BY_ASC', null);
+        this.listSearchCriteria.push(this.searchCriteria);
+      } else if (this.filter === 'Promotion') {
+        this.searchCriteria = new SearchCriteria('promotion', 'ORDER_BY_DESC', null);
+        this.listSearchCriteria.push(this.searchCriteria);
+      }
+    }
     this.size = data.size;
     this.checkProductsHome(this.page, this.size);
   }

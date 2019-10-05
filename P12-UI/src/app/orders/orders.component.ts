@@ -4,6 +4,7 @@ import {AuthenticationService} from '../../services/authentification.service';
 import {Router} from '@angular/router';
 import {Page} from '../../model/page.model';
 import {Order} from '../../model/order.model';
+import {SearchCriteria} from '../../model/search-criteria.model';
 
 @Component({
   selector: 'app-orders',
@@ -19,14 +20,16 @@ export class OrdersComponent implements OnInit {
   public page = 0;
   public orders: Page<Order>;
   public listSize: Array<number> = [8, 16, 32];
+  public listSearchCriteria: Array<SearchCriteria>;
+  public searchCriteria: SearchCriteria;
 
   ngOnInit() {
     this.getOrders(this.page, this.size);
   }
 
   getOrders(page, size) {
-    this.api.getRessources<Page<Order>>('/p12-order/userRole/orders/' +
-      this.authService.getUserName() + '/' + page + '/' + size).subscribe(value => {
+    this.api.postRessources<Page<Order>>('/p12-order/userRole/orders/' +
+      this.authService.getUserName() + '/' + page + '/' + size, null).subscribe(value => {
       this.orders = value;
     }, error1 => {
       this.router.navigateByUrl('/error');

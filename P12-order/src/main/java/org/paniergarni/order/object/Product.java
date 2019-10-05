@@ -15,6 +15,6 @@ public class Product {
     private int quantity;
     private double price;
     private boolean promotion;
-    private double promotionPrice;
+    private double oldPrice;
     private int orderProductRealQuantity;
 }

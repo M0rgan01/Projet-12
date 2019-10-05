@@ -48,12 +48,12 @@ public class ProductDTO {
     @Min(value = 0, message = "product.price.incorrect.min.value")
     private double price;
 
-    @ApiModelProperty(notes = "Promotion du produit", example = "true")
+    @ApiModelProperty(notes = "Promotion du produit")
     private boolean promotion;
 
-    @ApiModelProperty(notes = "Prix du produit en promotion", example = "200.50", required = true)
+    @ApiModelProperty(notes = "Prix du produit avant promotion", example = "200.50")
     @Min(value = 0, message = "product.price.incorrect.min.value")
-    private double promotionPrice;
+    private double oldPrice;
 
     @ApiModelProperty(notes = "Fichier contenant la photo du produit")
     private MultipartFile file;

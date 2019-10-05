@@ -30,7 +30,7 @@ public class OrderSpecification implements Specification<Order> {
             }
 
             if (criteria.getOperation().equalsIgnoreCase(">")) {
-                if (root.get(criteria.getKey()).getJavaType() == Date.class) {
+                if (path.getJavaType() == Date.class) {
 
                     return builder.greaterThan(path, new Date((Long) criteria.getValue()));
 
@@ -39,7 +39,7 @@ public class OrderSpecification implements Specification<Order> {
                 }
 
             } else if (criteria.getOperation().equalsIgnoreCase(">=")) {
-                if (root.get(criteria.getKey()).getJavaType() == Date.class) {
+                if (path.getJavaType() == Date.class) {
 
                     return builder.greaterThanOrEqualTo(path, new Date((Long) criteria.getValue()));
 
@@ -78,6 +78,10 @@ public class OrderSpecification implements Specification<Order> {
                 } else {
                     return builder.equal(path, criteria.getValue());
                 }
+            } else if (criteria.getOperation().equalsIgnoreCase("ORDER_BY_DESC")) {
+                query.orderBy(builder.desc(path));
+            } else if (criteria.getOperation().equalsIgnoreCase("ORDER_BY_ASC")) {
+                query.orderBy(builder.asc(path));
             }
             return null;
         } catch (Exception e) {

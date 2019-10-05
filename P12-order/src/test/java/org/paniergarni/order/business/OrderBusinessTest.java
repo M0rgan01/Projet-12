@@ -69,8 +69,7 @@ public class OrderBusinessTest {
         product2 = new Product();
         product2.setId(2L);
         product2.setOrderProductRealQuantity(15);
-        product2.setPromotion(true);
-        product2.setPromotionPrice(300);
+        product2.setPrice(300);
 
         product3 = new Product();
         product3.setId(3L);
@@ -115,7 +114,7 @@ public class OrderBusinessTest {
         listOrderProductsDTO.add(orderProductDTO2);
         listOrderProductsDTO.add(orderProductDTO3);
         wrapperOrderProductDTO = new WrapperOrderProductDTO();
-        wrapperOrderProductDTO.setList(listOrderProductsDTO);
+        wrapperOrderProductDTO.setOrderProducts(listOrderProductsDTO);
     }
 
 
@@ -123,7 +122,7 @@ public class OrderBusinessTest {
     public void testCreateOrder() throws OrderException {
 
         double prod1 = product.getPrice() * product.getOrderProductRealQuantity();
-        double prod2 = product2.getPromotionPrice() * product2.getOrderProductRealQuantity();
+        double prod2 = product2.getPrice() * product2.getOrderProductRealQuantity();
         double prod3 = product3.getPrice() * product3.getOrderProductRealQuantity();
 
         double totalPrice = prod1 + prod2 + prod3;
@@ -174,7 +173,7 @@ public class OrderBusinessTest {
     @Test(expected = ReceptionException.class)
     public void testCreateOrderWithBadMinReception() throws OrderException {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR, 2);
+        calendar.add(Calendar.HOUR, 20);
         Mockito.when(userProxy.findByUserName(user.getUserName())).thenReturn(user);
         Mockito.when(productProxy.updateProductQuantity(orderProduct.getOrderQuantity(), product.getId(), false)).thenReturn(product);
         Mockito.when(productProxy.updateProductQuantity(orderProduct2.getOrderQuantity(), product2.getId(), false)).thenReturn(product2);

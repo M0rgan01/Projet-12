@@ -79,6 +79,7 @@ public class HandleException {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse handleException(Exception ex) {
+        ex.printStackTrace();
         logger.error("Internal error : " + ex.getMessage());
         return ErrorResponse.of("internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
     }

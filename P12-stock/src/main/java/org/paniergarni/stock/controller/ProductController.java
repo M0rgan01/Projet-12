@@ -101,7 +101,7 @@ public class ProductController {
             @ApiResponse(code = 409, message = "Aucune correspondance, produit non disponible"),
             @ApiResponse(code = 500, message = "Erreur interne")
     })
-    @PutMapping(value = "adminRole/productQuantity/{id}/{quantity}/{cancel}")
+    @PutMapping(value = "/adminRole/productQuantity/{id}/{quantity}/{cancel}")
     public ResponseEntity<?> updateProductQuantity( @PathVariable Long id, @PathVariable int quantity, @PathVariable boolean cancel) throws ProductException {
        Product product = productBusiness.updateProductQuantity(quantity, id, cancel);
         return ResponseEntity.ok().body(product);

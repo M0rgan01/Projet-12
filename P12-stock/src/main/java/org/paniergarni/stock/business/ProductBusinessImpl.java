@@ -43,7 +43,7 @@ public class ProductBusinessImpl implements ProductBusiness {
             product.setAvailable(false);
 
         if (product.isPromotion())
-            checkPromotionPrice(product.getPrice(), product.getPromotionPrice());
+            checkPromotionPrice(product.getPrice(), product.getOldPrice());
 
         if (productDTO.getFile() != null){
             Product product1 = productRepository.findTopByOrderByIdDesc();
@@ -62,7 +62,7 @@ public class ProductBusinessImpl implements ProductBusiness {
         Product product = modelMapper.map(productDTO, Product.class);
         Product productCompare = getProduct(id);
         if (product.isPromotion()){
-            checkPromotionPrice(product.getPrice(), product.getPromotionPrice());
+            checkPromotionPrice(product.getPrice(), product.getOldPrice());
         }
         if (productDTO.getFile() != null){
             setProductPhoto(product.getPhoto(), productDTO.getFile());
@@ -124,11 +124,11 @@ public class ProductBusinessImpl implements ProductBusiness {
         }
     }
 
-    private void checkPromotionPrice(double currentPrice, double promotionPrice) throws ProductException {
-        if (promotionPrice == 0){
-            throw new ProductException("product.promotion.price.null");
-        } else if (promotionPrice > currentPrice){
-            throw new ProductException("product.promotion.price.greater.than.current.price");
+    private void checkPromotionPrice(double currentPrice, double oldPrice) throws ProductException {
+        if (oldPrice == 0){
+            throw new ProductException("product.old.price.null");
+        } else if (currentPrice > oldPrice){
+            throw new ProductException("product.price.greater.than.old.price");
         }
     }
 

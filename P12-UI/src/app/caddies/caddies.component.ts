@@ -4,6 +4,7 @@ import {APIService} from '../../services/api.service';
 import {AuthenticationService} from '../../services/authentification.service';
 import {Order} from '../../model/order.model';
 import {Router} from '@angular/router';
+import {OrderProductWrapper} from '../../model/order-product-wrapper.model';
 
 
 @Component({
@@ -13,8 +14,9 @@ import {Router} from '@angular/router';
 })
 export class CaddiesComponent implements OnInit {
 
-  listDate: Array<Date> = new Array<Date>();
-  date: number;
+  public listDate: Array<Date> = new Array<Date>();
+  public date: number;
+  public orderProductWrapper: OrderProductWrapper;
 
   constructor(public caddyService: CaddyService,
               public api: APIService,
@@ -34,8 +36,9 @@ export class CaddiesComponent implements OnInit {
   }
 
   onSubmitOrder() {
+    this.orderProductWrapper = new OrderProductWrapper(this.caddyService.getOrderProduct());
     this.api.postRessources<Order>('/p12-order/userRole/order/' + this.authenticationService.getUserName() + '/' + this.date,
-      this.caddyService.getOrderProduct()).subscribe(value => {
+      this.orderProductWrapper).subscribe(value => {
         this.router.navigateByUrl('/order/' + value.id);
         this.caddyService.removeCaddy();
         this.caddyService.loadCaddyFromLocalStorage();

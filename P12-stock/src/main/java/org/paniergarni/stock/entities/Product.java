@@ -31,7 +31,7 @@ public class Product {
     private double capacity;
     private double price;
     private boolean promotion;
-    private double promotionPrice;
+    private double oldPrice;
     private String photo;
     @Valid
     @ManyToOne

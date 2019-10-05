@@ -11,7 +11,8 @@ import lombok.Data;
 public class SearchCriteria {
     @ApiModelProperty(notes = "clé de l'attribut", example = "quantity", required = true)
     private String key;
-    @ApiModelProperty(notes = "Opération à éffectué, égalité -> :, supérieur ou égal -> >=, supérieur -> >, inférieur ou égal -> <=, inférieur -> <", example = ":", required = true)
+    @ApiModelProperty(notes = "Opération à éffectué, égalité -> :, supérieur ou égal -> >=, supérieur -> >, inférieur ou égal -> <=," +
+            " inférieur -> <, ordonné croissant -> ORDER_BY_ASC, ordonné décroissant -> ORDER_BY_DESC", example = ":", required = true)
     private String operation;
     @ApiModelProperty(notes = "Valeur de l'attribut", example = "12", required = true)
     private Object value;

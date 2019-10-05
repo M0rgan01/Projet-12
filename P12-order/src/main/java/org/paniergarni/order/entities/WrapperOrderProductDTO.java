@@ -9,5 +9,5 @@ import java.util.List;
 public class WrapperOrderProductDTO {
 
     @Valid
-    private List<OrderProductDTO> list;
+    private List<OrderProductDTO> orderProducts;
 }
