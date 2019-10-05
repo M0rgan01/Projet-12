@@ -20,7 +20,7 @@
         <td>{{pi.value.product.name}}</td>
         <td>{{pi.value.orderQuantity}}</td>
         <td *ngIf="!pi.value.product.promotion">{{pi.value.product.price |number:'0.2'}}</td>
-        <td *ngIf="pi.value.product.promotion">{{pi.value.product.promotionPrice |number:'0.2'}}</td>
+        <td *ngIf="pi.value.product.promotion">{{pi.value.product.price | number:'0.2'}} <del class="ml-2">{{pi.value.product.oldPrice | number:'0.2'}}</del></td>
         <td>{{pi.value.totalPriceRow | number:'0.2'}}</td>
         <td>
           <button class="btn btn-danger" (click)="caddyService.removeProductToCaddy(pi.value.product)">Remove product

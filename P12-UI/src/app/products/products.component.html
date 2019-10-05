@@ -2,41 +2,50 @@
   <h3>{{title}}</h3>
 </div>
 <!-- ------PHILTRE------- -->
-<form #f="ngForm" (ngSubmit)="onSearchByPhiltre(f.value)">
-  <div class="form-row">
-    <div class="form-group col-lg-2">
-      <label for="inputState">Taille de la page :</label>
-      <select id="inputState" class="form-control" name="size" [ngModel]="size">
-        <option *ngFor="let s of listSize" [ngValue]="s" [selected]="size == s">{{s}}</option>
-      </select>
+<div class="collapse" id="collapseFilter">
+  <form #f="ngForm" (ngSubmit)="onSearchByPhiltre(f.value)">
+    <div class="form-row">
+      <div class="form-group col-lg-2">
+        <label for="inputState">Taille de la page :</label>
+        <select id="inputState" class="form-control" name="size" [ngModel]="size">
+          <option *ngFor="let s of listSize" [ngValue]="s" [selected]="size == s">{{s}}</option>
+        </select>
+      </div>
+      <div class="form-group col-lg-2">
+        <label for="inputState1">Trié par :</label>
+        <select id="inputState1" class="form-control" name="filter" [ngModel]="filter">
+          <option *ngFor="let s of listFilter" [ngValue]="s" [selected]="filter == s">{{s}}</option>
+        </select>
+      </div>
+      <div class="form-group col-lg-2">
+        <label for="inputState2">Recherche par nom</label>
+        <input id="inputState2" type="search" ngModel name="searchByName" class="form-control">
+      </div>
+      <div class="form-group col-lg-2 col-6">
+        <label for="inputState3">Prix minimum</label>
+        <input id="inputState3" type="number" ngModel name="searchMinPrice" class="form-control">
+      </div>
+      <div class="form-group col-lg-2 col-6">
+        <label for="inputState4">Prix maximum</label>
+        <input id="inputState4" type="number" ngModel name="searchMaxPrice" class="form-control">
+      </div>
     </div>
-    <div class="form-group col-lg-2">
-      <label for="inputState1">Trié par :</label>
-      <select id="inputState1" class="form-control" name="filter" [ngModel]="filter">
-        <option *ngFor="let s of listFilter" [ngValue]="s" [selected]="filter == s">{{s}}</option>
-      </select>
+    <div class="form-row ml-1">
+      <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" ngModel name="searchAvailable" id="exampleCheck1">
+        <label class="form-check-label" for="exampleCheck1">Uniquement produit disponible</label>
+      </div>
     </div>
-    <div class="form-group col-lg-2">
-      <label for="inputState2">Recherche par nom</label>
-      <input id="inputState2" type="text" ngModel name="searchByName" class="form-control">
-    </div>
-    <div class="form-group col-lg-2 col-6">
-      <label for="inputState3">Prix minimum</label>
-      <input id="inputState3" type="number" ngModel name="searchMinPrice" class="form-control">
-    </div>
-    <div class="form-group col-lg-2 col-6">
-      <label for="inputState4">Prix maximum</label>
-      <input id="inputState4" type="number" ngModel name="searchMaxPrice" class="form-control">
-    </div>
-  </div>
-  <div class="form-row ml-1">
-    <div class="form-group form-check">
-      <input type="checkbox" class="form-check-input" ngModel name="searchAvailable" id="exampleCheck1">
-      <label class="form-check-label" for="exampleCheck1">Uniquement produit disponible</label>
-    </div>
-  </div>
-  <button type="submit" class="btn btn-primary">Rechercher</button>
-</form>
+    <button type="submit" class="btn btn-primary">Rechercher</button>
+  </form>
+</div>
+
+
+  <button class="btn btn-success mt-1" type="button" data-toggle="collapse" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+    Recherche avancée
+  </button>
+
+
 
 <div *ngIf="products && products.totalElements != 0">
 
@@ -45,13 +54,15 @@
   <div class="row">
     <div class="col-md-6" *ngFor="let p of products.content">
       <div class="card my-3">
-        <div class="card-header">{{p.name}} - {{p.capacity | number:'0.0-2'}} {{p.measure}}</div>
+        <div class="card-header"><span class="font-weight-bold">{{p.name}}</span>
+          - {{p.capacity | number:'0.0-2'}} {{p.measure}}</div>
         <div class="card-body">
           <div *ngIf="p.photo" class="text-center mb-3">
-            <img height="200" [src]="this.api.host + '/p12-stock/public/product/photo/' + p.id" alt="">
+            <img height="200" class="img-fluid rounded"
+                 [src]="this.api.host + '/p12-stock/public/product/photo/' + p.id" alt="">
           </div>
           <div *ngIf="!p.photo" class="text-center mb-3">
-            <img height="200" src="../../assets/img/340719-200.png" alt="">
+            <img height="200" class="img-fluid rounded" src="../../assets/img/340719-200.png" alt="">
           </div>
           <div class="row">
             <div class="col-sm-6">
@@ -59,7 +70,8 @@
               <p class="card-text m-2" *ngIf="!p.promotion">{{p.price | number:'0.2'}}</p>
               <p class="card-text m-2" *ngIf="p.promotion">
                 <del>{{p.oldPrice | number:'0.2'}}</del>
-                <span class="mx-2">{{p.price | number:'0.2'}}</span><span class="badge badge-success">En promotion !</span></p>
+                <span class="mx-2">{{p.price | number:'0.2'}}</span><span
+                class="badge badge-success">En promotion !</span></p>
               <h6 class="card-subtitle text-muted mt-1">Disponibilité</h6>
               <p *ngIf="p.available" class="card-text m-2"><span class="badge badge-success">En stock !</span></p>
               <p *ngIf="!p.available" class="card-text m-2"><span

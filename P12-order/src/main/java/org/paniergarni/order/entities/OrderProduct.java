@@ -24,6 +24,8 @@ public class OrderProduct {
     @JsonIgnore
     @ManyToOne
     private Order order;
+    private double productPrice;
+    private double productOldPrice;
     private int orderQuantity;
     private int realQuantity;
     private double totalPriceRow;

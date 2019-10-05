@@ -18,10 +18,11 @@ export class ProductsComponent implements OnInit {
   public size = 8;
   public page = 0;
   public products: Page<Product>;
-  public listSize: Array<number> = [4, 8, 12];
   public paramCategoryId: string;
+  public paramSearch: string;
   public listSearchCriteria: Array<SearchCriteria>;
   public searchCriteria: SearchCriteria;
+  public listSize: Array<number> = [4, 8, 12];
   public listFilter: Array<string> = ['Nom', 'Prix', 'Promotion', 'Aucun'];
   public filter: string;
 
@@ -32,33 +33,41 @@ export class ProductsComponent implements OnInit {
   }
 
   ngOnInit() {
+
     this.listSearchCriteria = new Array<SearchCriteria>();
     // on écoute un changement de route
     this.router.events.subscribe((val) => {
       // si la navigation arrive à terme (il y a plusieur event, donc on en garde que un pour éviter plusieur éxécution)
       if (val instanceof NavigationEnd && val.url.startsWith('/products')) {
         this.listSearchCriteria = new Array<SearchCriteria>();
-        this.setParamCategoryId();
+        this.setParam();
         this.checkProductsHome(this.page, this.size);
       }
     });
 
-    this.setParamCategoryId();
+    this.setParam();
     // s'il y a rafraichissement manuel de la page
     this.checkProductsHome(this.page, this.size);
 
   }
 
-  setParamCategoryId() {
-    this.paramCategoryId = undefined;
-    this.activeRoute.url.subscribe(() => {
-      if (this.activeRoute.snapshot.firstChild) {
-        if (this.activeRoute.snapshot.firstChild.paramMap.get('categoryId')) {
-          this.paramCategoryId = this.activeRoute.snapshot.firstChild.paramMap.get('categoryId');
-        }
-      }
+  setParam() {
+    this.activeRoute.queryParamMap.subscribe(params => {
+      this.paramCategoryId = params.get('category');
+      this.paramSearch = params.get('search');
     });
   }
+
+  /* setParamCategoryId() {
+     this.paramCategoryId = undefined;
+     this.activeRoute.url.subscribe(() => {
+       if (this.activeRoute.snapshot.firstChild) {
+         if (this.activeRoute.snapshot.firstChild.paramMap.get('categoryId')) {
+           this.paramCategoryId = this.activeRoute.snapshot.firstChild.paramMap.get('categoryId');
+         }
+       }
+     });
+   }*/
 
   private getProduct(page, size, object) {
     this.api.postRessources<Page<Product>>('/p12-stock/public/searchProduct/' + page + '/' + size, object).subscribe(data => {
@@ -77,13 +86,17 @@ export class ProductsComponent implements OnInit {
         }
       }, error1 => {
       });
+    } else if (this.paramSearch) {
+      this.title = 'Recherche : ' + this.paramSearch;
+      this.searchCriteria = new SearchCriteria('name', ':', this.paramSearch);
+      this.listSearchCriteria.push(this.searchCriteria);
+      this.getProduct(page, size, this.listSearchCriteria);
     } else {
       this.title = 'Produit en promotion';
       this.searchCriteria = new SearchCriteria('promotion', ':', true);
       this.listSearchCriteria.push(this.searchCriteria);
       this.getProduct(page, size, this.listSearchCriteria);
     }
-
   }
 
   onSearchByPhiltre(data) {
@@ -105,8 +118,8 @@ export class ProductsComponent implements OnInit {
     }
 
     if (data.searchAvailable) {
-        this.searchCriteria = new SearchCriteria('available', ':', true);
-        this.listSearchCriteria.push(this.searchCriteria);
+      this.searchCriteria = new SearchCriteria('available', ':', true);
+      this.listSearchCriteria.push(this.searchCriteria);
     }
 
     if (this.filter !== null && this.filter !== 'Aucun') {

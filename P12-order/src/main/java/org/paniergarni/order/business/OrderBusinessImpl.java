@@ -55,31 +55,6 @@ public class OrderBusinessImpl implements OrderBusiness {
         List<OrderProduct> orderProducts = new ArrayList<>();
         double totalPrice = 0;
 
-        for (OrderProductDTO orderProductDTO : wrapperOrderProductDTO.getOrderProducts()) {
-
-            OrderProduct orderProduct = new OrderProduct();
-            orderProduct.setOrder(order);
-            orderProduct.setOrderQuantity(orderProductDTO.getOrderQuantity());
-            orderProduct.setProductId(orderProductDTO.getProductId());
-            System.out.println(orderProductDTO.getOrderQuantity());
-            System.out.println(orderProductDTO.getProductId());
-            try {
-                Product product = productProxy.updateProductQuantity(orderProductDTO.getOrderQuantity(), orderProductDTO.getProductId(), false);
-                orderProduct.setRealQuantity(product.getOrderProductRealQuantity());
-                orderProduct.setTotalPriceRow(product.getPrice() * orderProduct.getRealQuantity());
-                totalPrice = totalPrice + orderProduct.getTotalPriceRow();
-                orderProducts.add(orderProduct);
-            } catch (FeignException e) {
-                System.out.println("Catch");
-                orderProduct.setRealQuantity(0);
-            }
-        }
-
-        if (totalPrice == 0) {
-            logger.warn("Order product quantity null");
-            throw new OrderException("order.products.quantity.null");
-        }
-
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, minHoursReception);
 
@@ -98,6 +73,33 @@ public class OrderBusinessImpl implements OrderBusiness {
         }
 
         receptionDate = truncateTime(receptionDate);
+
+        for (OrderProductDTO orderProductDTO : wrapperOrderProductDTO.getOrderProducts()) {
+
+            OrderProduct orderProduct = new OrderProduct();
+            orderProduct.setOrder(order);
+            orderProduct.setOrderQuantity(orderProductDTO.getOrderQuantity());
+            orderProduct.setProductId(orderProductDTO.getProductId());
+            try {
+                Product product = productProxy.updateProductQuantity(orderProductDTO.getOrderQuantity(), orderProductDTO.getProductId(), false);
+                orderProduct.setRealQuantity(product.getOrderProductRealQuantity());
+                orderProduct.setTotalPriceRow(product.getPrice() * orderProduct.getRealQuantity());
+                orderProduct.setProductPrice(product.getPrice());
+                if (product.isPromotion())
+                    orderProduct.setProductOldPrice(product.getOldPrice());
+                totalPrice = totalPrice + orderProduct.getTotalPriceRow();
+                orderProducts.add(orderProduct);
+            } catch (FeignException e) {
+                System.out.println("Catch");
+                orderProduct.setRealQuantity(0);
+            }
+        }
+
+        if (totalPrice == 0) {
+            logger.warn("Order product quantity null");
+            throw new OrderException("order.products.quantity.null");
+        }
+
         order.setOrderProducts(orderProducts);
         order.setTotalPrice(totalPrice);
         order.setUserId(user.getId());
@@ -134,7 +136,7 @@ public class OrderBusinessImpl implements OrderBusiness {
         if (searchCriteriaList == null)
             searchCriteriaList = new ArrayList<>();
 
-        logger.debug("Searching order for userName " + userName + " and list of criteria of " + searchCriteriaList.size() + "elements");
+        logger.debug("Searching orders for userName " + userName + " and list of criteria of " + searchCriteriaList.size() + "elements");
         searchCriteriaList.add(new SearchCriteria("userId", ":", user.getId()));
         OrderSpecificationBuilder builder = new OrderSpecificationBuilder(searchCriteriaList);
         Specification<Order> spec = builder.build();
@@ -143,7 +145,11 @@ public class OrderBusinessImpl implements OrderBusiness {
 
     @Override
     public Page<Order> searchOrder(int page, int size, List<SearchCriteria> searchCriteriaList) throws CriteriaException {
-        logger.debug("Admin searching order with list of criteria of " + searchCriteriaList.size() + "elements");
+        if (searchCriteriaList != null) {
+            logger.debug("Admin searching orders with list of criteria of " + searchCriteriaList.size() + "elements");
+        } else {
+            logger.debug("Admin searching orders");
+        }
         OrderSpecificationBuilder builder = new OrderSpecificationBuilder(searchCriteriaList);
         Specification<Order> spec = builder.build();
         return orderRepository.findAll(spec, PageRequest.of(page, size));

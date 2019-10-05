@@ -64,10 +64,10 @@
         </div>
 
         <div *ngIf="product.photo" class="text-center mb-3">
-          <img height="200" [src]="this.api.host + '/p12-stock/public/product/photo/' + product.id" alt="">
+          <img height="200" class="img-fluid rounded" [src]="this.api.host + '/p12-stock/public/product/photo/' + product.id" alt="">
         </div>
         <div *ngIf="!product.photo" class="text-center mb-3">
-          <img height="200" src="../../assets/img/340719-200.png" alt="">
+          <img height="200" class="img-fluid rounded" src="../../assets/img/340719-200.png" alt="">
         </div>
 
         <div class="custom-file overflow-hidden">
@@ -94,13 +94,13 @@
       <div class="card-body">
         <h5 class="card-title">Détails du produit</h5>
         <div *ngIf="product.photo" class="text-center mb-3">
-          <img height="200" [src]="this.api.host + '/p12-stock/public/product/photo/' + product.id" alt="">
+          <img class="img-fluid rounded" height="200" [src]="this.api.host + '/p12-stock/public/product/photo/' + product.id" alt="">
         </div>
         <div *ngIf="!product.photo" class="text-center mb-3">
-          <img height="200" src="../../assets/img/340719-200.png" alt="">
+          <img class="img-fluid rounded" height="200" src="../../assets/img/340719-200.png" alt="">
         </div>
         <h6 class="card-subtitle text-muted mt-1">Nom du produit</h6>
-        <p class="card-text m-2">{{product.name}}</p>
+        <p class="card-text m-2 font-weight-bold">{{product.name}}</p>
         <h6 class="card-subtitle text-muted mt-1">Capacité</h6>
         <p class="card-text m-2">{{product.capacity | number:'0.0-2'}} {{product.measure}}</p>
         <h6 class="card-subtitle text-muted mt-1">Description du produit</h6>

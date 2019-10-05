@@ -62,7 +62,6 @@ export class APIService {
 
     return this.http.request(rep).pipe(
       retryWhen(this.genericRetryStrategy()));
-    ;
   }
 
   /////////////////////////////// ERROR /////////////////////////////////
