@@ -58,11 +58,10 @@
           - {{p.capacity | number:'0.0-2'}} {{p.measure}}</div>
         <div class="card-body">
           <div *ngIf="p.photo" class="text-center mb-3">
-            <img height="200" class="img-fluid rounded"
-                 [src]="this.api.host + '/p12-stock/public/product/photo/' + p.id" alt="">
+            <img height="150" [src]="this.api.host + '/p12-stock/public/product/' + p.id + '/photo'" alt="">
           </div>
           <div *ngIf="!p.photo" class="text-center mb-3">
-            <img height="200" class="img-fluid rounded" src="../../assets/img/340719-200.png" alt="">
+            <img height="150" src="../../assets/img/340719-200.png" alt="">
           </div>
           <div class="row">
             <div class="col-sm-6">
@@ -79,7 +78,7 @@
               </p>
               <h6 class="card-subtitle text-muted mt-1">Categorie</h6>
               <p class="card-text m-2">{{p.category.name}}</p>
-              <a [routerLink]="['/product', p.id]" class="btn btn-info text-white cliquable mt-1">Détails</a>
+              <a [routerLink]="['/product', 'details', p.id]" class="btn btn-info text-white cliquable mt-1">Détails</a>
             </div>
 
             <div class="col-sm-6 mt-2 mt-sm-0">

@@ -57,18 +57,27 @@
       <thead>
       <tr>
         <th>Référence</th>
+        <th *ngIf="authService.isAdmin() && adminOrder">ID utilisateur</th>
         <th>Date de la commande</th>
         <th>Réception de la commande</th>
         <th>Prix total</th>
+        <th>Statut</th>
         <th></th>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let order of orders.content">
         <td class="align-middle font-weight-bold">{{order.reference}}</td>
-        <td class="align-middle">{{order.date| date: 'dd/MM/yyyy'}}</td>
-        <td class="align-middle">{{order.reception| date: 'dd/MM/yyyy'}}</td>
+        <td *ngIf="authService.isAdmin() && adminOrder" class="align-middle font-weight-bold">{{order.userId}}</td>
+        <td class="align-middle">{{order.date | date: 'dd/MM/yyyy'}}</td>
+        <td class="align-middle">{{order.reception | date: 'dd/MM/yyyy'}}</td>
         <td class="align-middle">{{order.totalPrice | number:'0.2'}}</td>
+        <td class="align-middle">
+          <span *ngIf="order.cancel" class="badge badge-warning">Annulée</span>
+          <span *ngIf="order.paid && !order.cancel" class="badge badge-success">Payée</span>
+          <span *ngIf="getDate(order.reception) < date && !order.paid && !order.cancel" class="badge badge-danger">En retard</span>
+          <span *ngIf="getDate(order.reception) > date && !order.paid && !order.cancel" class="badge badge-primary">En attente</span>
+        </td>
         <td>
           <button [routerLink]="['/order', order.id]" class="btn btn-info">Détails</button>
         </td>

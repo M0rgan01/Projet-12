@@ -1,27 +1,29 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthenticationService} from '../../services/authentification.service';
 import {APIService} from '../../services/api.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {HttpEventType, HttpResponse} from '@angular/common/http';
 import {Product} from '../../model/product.model';
 import {CaddyService} from '../../services/caddy.service';
+import {CategoryService} from '../../services/category.service';
+import {FarmerService} from '../../services/farmer.service';
+import {MeasureService} from '../../services/measure.service';
 
 @Component({
   selector: 'app-edit-product',
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css']
 })
-export class ProductComponent implements OnInit {
+export class ProductComponent implements OnInit, OnDestroy {
 
-  // object formulaire contenant un produit
-  public productForm: FormGroup;
+
   // erreur à afficher dans le cas d'un produit non conforme
-  public errorUpdate;
-  public errorUpload;
-  // booleans de confirmation de mise à jour
-  public successUpdate: boolean;
-  public successUpload: boolean;
+  public errorUpload: string;
+  public successUpload: string;
+  public error: string;
+  public errors: Array<any>;
+  // confirmation de mise à jour
+  public success: string;
   // produit récupérer par rapport à son id
   public product: Product;
   // fichier(s) séléctionné(s) par l'utilisateur
@@ -31,36 +33,108 @@ export class ProductComponent implements OnInit {
   public progress = 0;
   // https://www.youtube.com/watch?v=sWX-PAyxphU&t=1197s
   public timeStamp = 0;
-  public modification: boolean;
+  public operation: string;
+  public productId: string;
+  public events;
 
   constructor(public authService: AuthenticationService,
               public api: APIService,
               public router: Router,
               public activeRoute: ActivatedRoute,
-              public formBuilder: FormBuilder,
-              public caddyService: CaddyService) {
+              public caddyService: CaddyService,
+              public categoryService: CategoryService,
+              public farmerService: FarmerService,
+              public measureService: MeasureService) {
   }
 
   ngOnInit() {
-    const paramProductId = this.activeRoute.snapshot.paramMap.get('id');
+    this.events = this.router.events.subscribe((val) => {
+      // si la navigation arrive à terme (il y a plusieur event, donc on en garde que un pour éviter plusieur éxécution)
+      if (val instanceof NavigationEnd && val.url.startsWith('/product/')) {
+        this.setContext();
+      }
+    });
+    this.setContext();
+  }
+
+  ngOnDestroy(): void {
+    this.events.unsubscribe();
+  }
+
+  setContext() {
+    this.product = null;
+    this.setNullErrorAndSuccess();
+    // récupération de l'opération à éffectué
+    if (this.activeRoute.snapshot.paramMap.get('operation')) {
+      this.operation = this.activeRoute.snapshot.paramMap.get('operation');
+    } else {
+      this.router.navigateByUrl('/404');
+    }
+
+    // vérification de permission
+    if (this.operation === 'edit' || this.operation === 'create') {
+      if (!this.authService.isAdmin()) {
+        this.router.navigateByUrl('/404');
+      }
+    }
+
+    const a = this.activeRoute.url.subscribe(() => {
+      if (this.operation === 'edit' || this.operation === 'details') {
+        if (this.activeRoute.snapshot.firstChild && this.activeRoute.snapshot.firstChild.paramMap.get('id')) {
+          this.productId = this.activeRoute.snapshot.firstChild.paramMap.get('id');
+          this.getProduct(this.productId);
+        } else {
+          this.router.navigateByUrl('/404');
+        }
+      } else if (this.operation === 'create') {
+        this.product = new Product();
+      } else {
+        this.router.navigateByUrl('/404');
+      }
+    });
+    a.unsubscribe();
+  }
+
+  getProduct(id) {
     // on récupère le produit
-    this.api.getRessources<Product>('/p12-stock/public/product/' + paramProductId).subscribe(dataProduct => {
+    this.api.getRessources<Product>('/p12-stock/public/product/' + id).subscribe(dataProduct => {
       this.product = dataProduct;
-      this.productForm = this.formBuilder.group(dataProduct);
     }, error1 => {
       this.router.navigateByUrl('/error');
     });
-
   }
 
 // formulaire de modification
-  onSubmitProduct() {
-    this.successUpdate = false;
-    this.api.putRessources('/edit/products', this.productForm.value).subscribe(data => {
-      this.productForm = this.formBuilder.group(data);
-      this.successUpdate = true;
+  onSubmitEditProduct(data: Product) {
+    window.scroll(0, 0);
+    data.id = this.product.id;
+    this.setNullErrorAndSuccess();
+    this.api.putRessources<Product>('/p12-stock/adminRole/product/' + data.id, data).subscribe(dataProduct => {
+      this.success = 'Mise à jour réussi !';
+      this.product = dataProduct;
     }, error1 => {
-      this.errorUpdate = error1.message;
+      if (error1.error.error) {
+        this.error = error1.error.error;
+      }
+      if (error1.error.errors) {
+        this.errors = error1.error.errors;
+      }
+    });
+  }
+
+  // formulaire de création
+  onSubmitCreateProduct(data: Product) {
+    window.scroll(0, 0);
+    this.setNullErrorAndSuccess();
+    this.api.postRessources<Product>('/p12-stock/adminRole/product', data).subscribe(dataProduct => {
+     this.router.navigateByUrl('/product/details/' + dataProduct.id);
+    }, error1 => {
+      if (error1.error.error) {
+        this.error = error1.error.error;
+      }
+      if (error1.error.errors) {
+        this.errors = error1.error.errors;
+      }
     });
   }
 
@@ -74,28 +148,33 @@ export class ProductComponent implements OnInit {
 
 
   uploadPhoto() {
-
     if (this.selectedFile !== undefined) {
-
-      this.errorUpload = null;
-      this.successUpload = false;
+      this.setNullErrorAndSuccess();
       this.progress = 0;
-
-      this.api.uploadPhoto(this.currentFileUpload, '/p12-stock/adminRole/product/photo/' + this.product.id).subscribe(event => {
+      this.api.uploadPhoto(this.currentFileUpload, '/p12-stock/adminRole/product/' + this.product.id + '/photo').subscribe(event => {
         // si le type est un événement de UploadProgress
         if (event.type === HttpEventType.UploadProgress) {
           this.progress = Math.round(100 * event.loaded / event.total);
           // si c'est terminé
         } else if (event instanceof HttpResponse) {
-          this.successUpload = true;
+          this.successUpload = 'Mise à jour réussi !';
           this.timeStamp = Date.now();
+          this.product.photo = ' ';
         }
       }, error1 => {
         this.errorUpload = 'Une erreur est survenue';
-        console.log(error1.message);
       });
     } else {
       this.errorUpload = 'Fichier non défini';
     }
+  }
+
+
+  setNullErrorAndSuccess() {
+    this.success = null;
+    this.errors = null;
+    this.error = null;
+    this.errorUpload = null;
+    this.successUpload = null;
   }
 }

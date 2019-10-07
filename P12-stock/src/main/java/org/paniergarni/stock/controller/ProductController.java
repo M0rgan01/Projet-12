@@ -109,7 +109,7 @@ public class ProductController {
 
     @ApiOperation(value = "Récupération de la photo d'un produit")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Succès de la modification"),
+            @ApiResponse(code = 200, message = "Succès de la récupération"),
             @ApiResponse(code = 409, message = "Aucune correspondance"),
             @ApiResponse(code = 500, message = "Erreur interne")
     })
@@ -117,6 +117,18 @@ public class ProductController {
     public byte[] getPhoto(@PathVariable(name = "id") Long id) throws IOException, ProductException {
         Product p = productBusiness.getProduct(id);
         return Files.readAllBytes(Paths.get(System.getProperty("user.home") + "/Test/" + p.getPhoto()));
+    }
+
+    @ApiOperation(value = "Changement de la photo d'un produit")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Succès de la modification"),
+            @ApiResponse(code = 409, message = "Aucune correspondance"),
+            @ApiResponse(code = 500, message = "Erreur interne")
+    })
+    @PostMapping(value = "/adminRole/product/{id}/photo")
+    public  ResponseEntity<?> setPhoto(MultipartFile file, @PathVariable(name = "id") Long id) throws IOException, ProductException {
+        productBusiness.setProductPhoto(id, file);
+        return ResponseEntity.ok().body(null);
     }
 
 }

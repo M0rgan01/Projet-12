@@ -5,10 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -22,7 +20,7 @@ public class ProductDTO {
     private Long id;
 
     @ApiModelProperty(notes = "Nom du produit, entre 4 et 50 caractères", example = "Patate", required = true)
-    @NotBlank(message = "product.name.null")
+    @NotNull(message = "product.name.null")
     @Size(min = 4, max = 50, message = "product.name.incorrect.size")
     private String name;
 
@@ -54,9 +52,6 @@ public class ProductDTO {
     @ApiModelProperty(notes = "Prix du produit avant promotion", example = "200.50")
     @Min(value = 0, message = "product.price.incorrect.min.value")
     private double oldPrice;
-
-    @ApiModelProperty(notes = "Fichier contenant la photo du produit")
-    private MultipartFile file;
 
     @ApiModelProperty(notes = "Categorie du produit")
     @NotNull(message = "product.category.null")

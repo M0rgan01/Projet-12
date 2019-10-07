@@ -200,6 +200,7 @@ public class OrderBusinessTest {
         order.setId(1L);
         order.setDate(new Date());
         order.setCancel(false);
+        order.setPaid(false);
         order.setOrderProducts(orderProducts);
 
         Mockito.when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
@@ -218,6 +219,7 @@ public class OrderBusinessTest {
         order = new Order();
         order.setId(1L);
         order.setUserId(user.getId());
+        order.setPaid(false);
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, 7);
         order.setDate(calendar.getTime());

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {APIService} from '../../services/api.service';
 import {AuthenticationService} from '../../services/authentification.service';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
@@ -11,7 +11,7 @@ import {SearchCriteria} from '../../model/search-criteria.model';
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css']
 })
-export class OrdersComponent implements OnInit {
+export class OrdersComponent implements OnInit, OnDestroy {
 
   constructor(public api: APIService,
               public authService: AuthenticationService,
@@ -29,9 +29,11 @@ export class OrdersComponent implements OnInit {
   public filter: string;
   public listSearchCriteria: Array<SearchCriteria>;
   public searchCriteria: SearchCriteria;
+  public date: Date = new Date();
+  public events;
 
   ngOnInit() {
-    this.router.events.subscribe((val) => {
+    this.events = this.router.events.subscribe((val) => {
       // si la navigation arrive à terme (il y a plusieur event, donc on en garde que un pour éviter plusieur éxécution)
       if (val instanceof NavigationEnd && val.url.startsWith('/orders')) {
         this.adminOrder = undefined;
@@ -40,6 +42,10 @@ export class OrdersComponent implements OnInit {
       }
     });
     this.setContext();
+  }
+
+  ngOnDestroy(): void {
+    this.events.unsubscribe();
   }
 
   setContext() {
@@ -67,6 +73,7 @@ export class OrdersComponent implements OnInit {
 
 
   getOrdersByUserName(page, size, userName) {
+    window.scroll(0, 0);
     this.api.postRessources<Page<Order>>('/p12-order/userRole/orders/' +
       userName + '/' + page + '/' + size, this.listSearchCriteria).subscribe(value => {
       this.orders = value;
@@ -76,6 +83,7 @@ export class OrdersComponent implements OnInit {
   }
 
   getOrders(page, size) {
+    window.scroll(0, 0);
     this.api.postRessources<Page<Order>>('/p12-order/adminRole/orders/' + page + '/' + size, this.listSearchCriteria).subscribe(value => {
       this.orders = value;
     }, error1 => {
@@ -128,4 +136,9 @@ export class OrdersComponent implements OnInit {
       this.getOrders(this.page, this.size);
     }
   }
+
+  getDate(date): Date {
+    return new Date(date);
+  }
+
 }

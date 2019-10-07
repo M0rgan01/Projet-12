@@ -59,20 +59,19 @@ public class OrderBusinessImpl implements OrderBusiness {
         calendar.add(Calendar.HOUR, minHoursReception);
 
         Date receptionDate = new Date(reception);
+        receptionDate = truncateTime(receptionDate);
 
-        if (receptionDate.before(calendar.getTime())) {
+        if (receptionDate.before(truncateTime(calendar.getTime()))) {
             logger.warn("Order reception before min value");
             throw new ReceptionException("order.reception.before.min.value");
         }
 
         calendar.setTime(getListDateReception().get(getListDateReception().size() - 1));
 
-        if (receptionDate.after(calendar.getTime())) {
+        if (receptionDate.after(truncateTime(calendar.getTime()))) {
             logger.warn("Order reception after max value");
             throw new ReceptionException("order.reception.after.max.value");
         }
-
-        receptionDate = truncateTime(receptionDate);
 
         for (OrderProductDTO orderProductDTO : wrapperOrderProductDTO.getOrderProducts()) {
 
@@ -195,6 +194,9 @@ public class OrderBusinessImpl implements OrderBusiness {
         if (order.getCancel()) {
             logger.info("Order already cancel for order ID : " + order.getId());
             throw new CancelException("order.already.cancel");
+        } else if (order.getPaid()) {
+            logger.info("Order paid for cancek order ID : " + order.getId());
+            throw new CancelException("order.paid");
         }
 
         Calendar calendar = Calendar.getInstance();

@@ -55,9 +55,9 @@
         <div class="dropdown-menu" aria-labelledby="smallerscreenmenu2">
           <div *ngIf="authService.isAuth() && authService.isAdmin()">
             <a class="dropdown-item cliquable" routerLinkActive="active" [routerLink]="['/orders', 'admin']">Commande</a>
-            <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/create/product">Produit</a>
-            <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/create/category">Catégorie</a>
-            <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/create/farmer">Agriculteur</a>
+            <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/product/create">Produit</a>
+            <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/category/create">Catégorie</a>
+            <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/farmer/create">Agriculteur</a>
           </div>
         </div>
       </li>
@@ -124,9 +124,9 @@
       <!-- Submenu content -->
       <div  *ngIf="authService.isAuth() && authService.isAdmin()" id="submenu2" class="collapse">
         <a class="list-group-item list-group-item-action text-white bg-dark cliquable" [routerLink]="['/orders', 'admin']" ><span class="ml-2">Commande</span></a>
-        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/create/product"><span class="ml-2">Produit</span></a>
-        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/create/category"><span class="ml-2">Catégorie</span></a>
-        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/create/farmer"><span class="ml-2">Agriculteur</span></a>
+        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/product/create"><span class="ml-2">Produit</span></a>
+        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/category/create"><span class="ml-2">Catégorie</span></a>
+        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/farmer/create"><span class="ml-2">Agriculteur</span></a>
       </div>
 
     </ul>

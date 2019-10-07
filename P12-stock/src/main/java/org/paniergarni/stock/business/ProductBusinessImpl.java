@@ -36,7 +36,7 @@ public class ProductBusinessImpl implements ProductBusiness {
     private static final Logger logger = LoggerFactory.getLogger(ProductBusinessImpl.class);
 
     @Override
-    public Product createProduct(ProductDTO productDTO) throws ProductException, IOException {
+    public Product createProduct(ProductDTO productDTO) throws ProductException {
         Product product = modelMapper.map(productDTO, Product.class);
 
         if (product.getQuantity() == 0)
@@ -45,12 +45,6 @@ public class ProductBusinessImpl implements ProductBusiness {
         if (product.isPromotion())
             checkPromotionPrice(product.getPrice(), product.getOldPrice());
 
-        if (productDTO.getFile() != null){
-            Product product1 = productRepository.findTopByOrderByIdDesc();
-            product.setPhoto( (product1.getId() + 1 ) + ".png");
-            setProductPhoto(product.getPhoto(), productDTO.getFile());
-        }
-
 
          product = productRepository.save(product);
         logger.info("create product " + product.getId());
@@ -58,15 +52,13 @@ public class ProductBusinessImpl implements ProductBusiness {
     }
 
     @Override
-    public Product updateProduct(Long id, ProductDTO productDTO) throws ProductException, IOException {
+    public Product updateProduct(Long id, ProductDTO productDTO) throws ProductException {
         Product product = modelMapper.map(productDTO, Product.class);
         Product productCompare = getProduct(id);
         if (product.isPromotion()){
             checkPromotionPrice(product.getPrice(), product.getOldPrice());
         }
-        if (productDTO.getFile() != null){
-            setProductPhoto(product.getPhoto(), productDTO.getFile());
-        }
+
         product.setId(productCompare.getId());
         logger.info("Update product " + product.getId());
         return productRepository.save(product);
@@ -132,8 +124,11 @@ public class ProductBusinessImpl implements ProductBusiness {
         }
     }
 
-    private void setProductPhoto(String photo, MultipartFile file) throws IOException {
-        Files.write(Paths.get(System.getProperty("user.home") + "/Test/" + photo), file.getBytes());
+    public void setProductPhoto(Long id, MultipartFile file) throws IOException, ProductException {
+        Product product = getProduct(id);
+        product.setPhoto( product.getId() + ".png");
+        Files.write(Paths.get(System.getProperty("user.home") + "/Test/" + product.getPhoto()), file.getBytes());
+        productRepository.save(product);
     }
 
 }

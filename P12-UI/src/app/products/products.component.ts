@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {APIService} from '../../services/api.service';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {CaddyService} from '../../services/caddy.service';
@@ -12,7 +12,7 @@ import {SearchCriteria} from '../../model/search-criteria.model';
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.css']
 })
-export class ProductsComponent implements OnInit {
+export class ProductsComponent implements OnInit, OnDestroy {
 
   public title;
   public size = 8;
@@ -25,6 +25,7 @@ export class ProductsComponent implements OnInit {
   public listSize: Array<number> = [4, 8, 12];
   public listFilter: Array<string> = ['Nom', 'Prix', 'Promotion', 'Aucun'];
   public filter: string;
+  public events;
 
   constructor(public api: APIService,
               public router: Router,
@@ -36,7 +37,7 @@ export class ProductsComponent implements OnInit {
 
     this.listSearchCriteria = new Array<SearchCriteria>();
     // on écoute un changement de route
-    this.router.events.subscribe((val) => {
+    this.events = this.router.events.subscribe((val) => {
       // si la navigation arrive à terme (il y a plusieur event, donc on en garde que un pour éviter plusieur éxécution)
       if (val instanceof NavigationEnd && val.url.startsWith('/products')) {
         this.listSearchCriteria = new Array<SearchCriteria>();
@@ -51,23 +52,16 @@ export class ProductsComponent implements OnInit {
 
   }
 
+  ngOnDestroy(): void {
+    this.events.unsubscribe();
+  }
+
   setParam() {
     this.activeRoute.queryParamMap.subscribe(params => {
       this.paramCategoryId = params.get('category');
       this.paramSearch = params.get('search');
     });
   }
-
-  /* setParamCategoryId() {
-     this.paramCategoryId = undefined;
-     this.activeRoute.url.subscribe(() => {
-       if (this.activeRoute.snapshot.firstChild) {
-         if (this.activeRoute.snapshot.firstChild.paramMap.get('categoryId')) {
-           this.paramCategoryId = this.activeRoute.snapshot.firstChild.paramMap.get('categoryId');
-         }
-       }
-     });
-   }*/
 
   private getProduct(page, size, object) {
     this.api.postRessources<Page<Product>>('/p12-stock/public/searchProduct/' + page + '/' + size, object).subscribe(data => {
@@ -76,6 +70,7 @@ export class ProductsComponent implements OnInit {
   }
 
   checkProductsHome(page, size) {
+    window.scroll(0, 0);
     if (this.paramCategoryId) {
       this.api.getRessources<Category>('/p12-stock/public/category/' + this.paramCategoryId).subscribe(cat => {
         if (cat) {

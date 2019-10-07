@@ -1,70 +1,204 @@
 <div class="row" *ngIf="authService.isAuth() && authService.isAdmin()">
   <div class="col-12 text-center mb-3">
-    <button *ngIf="!modification" class="btn btn-info" (click)="modification = true">Modification</button>
-    <button *ngIf="modification" class="btn btn-info" (click)="modification = false">Détails</button>
+    <a *ngIf="operation !== 'edit' && productId" class="btn btn-outline-info m-1" [routerLink]="['/product', 'edit', productId]">Modification</a>
+    <a *ngIf="operation !== 'details' && productId" class="btn btn-outline-primary m-1"
+       [routerLink]="['/product', 'details', productId]">Détails</a>
+    <a *ngIf="operation !== 'create'" class="btn btn-outline-success m-1"
+       [routerLink]="['/product', 'create']">Création</a>
   </div>
 </div>
 
-<div class="row">
-
-  <div class="col-6 offset-3" *ngIf="modification">
+<div *ngIf="product" class="row">
+  <div class="col-md-6" *ngIf="operation === 'edit'">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Edit product</h5>
-        <form *ngIf="productForm" [formGroup]="productForm" (ngSubmit)="onSubmitProduct()">
+        <h5 class="card-title">Modification du produit</h5>
+        <form #f="ngForm" (ngSubmit)="onSubmitEditProduct(f.value)">
 
-          <div *ngIf="errorUpdate != null" class="alert alert-danger">
-            <span>{{errorUpdate}}</span>
+          <div *ngIf="error != null" class="alert alert-danger">
+            <span>{{error}}</span>
           </div>
 
-          <div *ngIf="successUpdate" class="alert alert-success">
-            <span>Mise à jour réussi !</span>
+          <div *ngIf="errors != null" class="alert alert-danger">
+            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message}}</p>
           </div>
 
-          <div class="form-group">
-            <label>Product Name : </label>
-            <input type="text" required class="form-control" formControlName="name">
-          </div>
-
-          <div class="form-group">
-            <label>Product price : </label>
-            <input type="number" required class="form-control" formControlName="price">
+          <div *ngIf="success" class="alert alert-success">
+            <span>{{success}}</span>
           </div>
 
           <div class="form-group">
-            <label>Product oldPrice : </label>
-            <input type="number" required class="form-control" formControlName="promotionPrice">
+            <label>Nom du produit : </label>
+            <input type="text" required class="form-control" [ngModel]="product.name" name="name">
           </div>
 
           <div class="form-group">
-            <label>Product stock : </label>
-            <input type="number" required class="form-control" formControlName="quantity">
+            <label for="Textarea1">Description du produit : </label>
+            <textarea class="form-control" [ngModel]="product.description" name="description" id="Textarea"
+                      rows="3"></textarea>
           </div>
 
           <div class="form-group">
-            <label>Product capacity : </label>
-            <input type="number" required class="form-control" formControlName="capacity">
+            <label>Prix du produit : </label>
+            <input type="number" required class="form-control" [ngModel]="product.price" name="price">
           </div>
 
-          <button class="btn btn-primary mt-2" [disabled]="productForm.invalid" type="submit">Save</button>
+          <div class="form-group form-check">
+            <input type="checkbox" required class="form-check-input" [ngModel]="product.promotion" name="promotion">
+            <label class="form-check-label">Produit en promotion </label>
+          </div>
+
+          <div class="form-group">
+            <label>Ancien prix : </label>
+            <input type="number" required class="form-control" [ngModel]="product.oldPrice" name="oldPrice">
+          </div>
+
+          <div class="form-group">
+            <label>Stock du produit : </label>
+            <input type="number" required class="form-control" [ngModel]="product.quantity" name="quantity">
+          </div>
+
+          <div class="form-group form-check">
+            <input type="checkbox" required class="form-check-input" [ngModel]="product.available" name="available">
+            <label class="form-check-label">Produit disponible </label>
+          </div>
+
+          <div class="form-group">
+            <label>Capacité du produit : </label>
+            <input type="number" required class="form-control" [ngModel]="product.capacity" name="capacity">
+          </div>
+
+          <div class="form-group">
+            <label for="inputState">Unité de mesure du produit :</label>
+            <select id="inputState" class="form-control" name="measure" [ngModel]="product.measure">
+              <option *ngFor="let m of measureService.measures" [ngValue]="m"
+                      [selected]="m === product.measure">{{m}}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputState1">Catégorie du produit :</label>
+            <select id="inputState1" class="form-control" name="category" [ngModel]="product.category">
+              <option *ngFor="let c of categoryService.categories" [ngValue]="c">{{c.name}}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputState2">Agriculteur du produit :</label>
+            <select id="inputState2" class="form-control" name="farmer" [ngModel]="product.farmer">
+              <option *ngFor="let f of farmerService.farmers" [ngValue]="f">{{f.name}}</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary mt-2" type="submit">Modifier</button>
         </form>
       </div>
     </div>
+  </div>
 
-    <div *ngIf="product" class="card mt-5">
+  <div class="col-md-6 offset-3" *ngIf="operation === 'create'">
+    <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Edit product photo</h5>
+        <h5 class="card-title">Création d'un produit</h5>
+        <form #f="ngForm" (ngSubmit)="onSubmitCreateProduct(f.value)">
+
+          <div *ngIf="error != null" class="alert alert-danger">
+            <span>{{error}}</span>
+          </div>
+
+          <div *ngIf="success" class="alert alert-success">
+            <span>{{success}}</span>
+          </div>
+
+          <div *ngIf="errors != null" class="alert alert-danger">
+            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message}}</p>
+          </div>
+
+          <div class="form-group">
+            <label>Nom du produit : </label>
+            <input type="text" required class="form-control" [ngModel]="product.name" name="name">
+          </div>
+
+          <div class="form-group">
+            <label for="Textarea1">Description du produit : </label>
+            <textarea class="form-control" [ngModel]="product.description" name="description" id="Textarea1"
+                      rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Prix du produit : </label>
+            <input type="number" required class="form-control" [ngModel]="product.price" name="price">
+          </div>
+
+          <div class="form-group form-check">
+            <input type="checkbox" required class="form-check-input" [ngModel]="product.promotion" name="promotion">
+            <label class="form-check-label">Produit en promotion </label>
+          </div>
+
+          <div class="form-group">
+            <label>Ancien prix : </label>
+            <input type="number" required class="form-control" [ngModel]="product.oldPrice" name="oldPrice">
+          </div>
+
+          <div class="form-group">
+            <label>Stock du produit : </label>
+            <input type="number" required class="form-control" [ngModel]="product.quantity" name="quantity">
+          </div>
+
+          <div class="form-group form-check">
+            <input type="checkbox" required class="form-check-input" [ngModel]="product.available" name="available">
+            <label class="form-check-label">Produit disponible </label>
+          </div>
+
+          <div class="form-group">
+            <label>Capacité du produit : </label>
+            <input type="number" required class="form-control" [ngModel]="product.capacity" name="capacity">
+          </div>
+
+          <div class="form-group">
+            <label for="input">Unité de mesure du produit :</label>
+            <select id="input" class="form-control" name="measure" [ngModel]="product.measure">
+              <option *ngFor="let m of measureService.measures" [ngValue]="m"
+                      [selected]="m === product.measure">{{m}}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="input1">Catégorie du produit :</label>
+            <select id="input1" class="form-control" name="category" [ngModel]="product.category">
+              <option *ngFor="let c of categoryService.categories" [ngValue]="c">{{c.name}}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="input2">Agriculteur du produit :</label>
+            <select id="input2" class="form-control" name="farmer" [ngModel]="product.farmer">
+              <option *ngFor="let f of farmerService.farmers" [ngValue]="f">{{f.name}}</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary mt-2" type="submit">Créer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6" *ngIf="operation === 'edit'">
+    <div *ngIf="product" class="card">
+      <div class="card-body">
+        <h5 class="card-title">Modifier la photo du produit</h5>
 
         <div *ngIf="errorUpload != null" class="alert alert-danger">
           <span>{{errorUpload}}</span>
         </div>
 
         <div *ngIf="successUpload" class="alert alert-success">
-          <span>Mise à jour réussi !</span>
+          <span>{{successUpload}}</span>
         </div>
 
         <div *ngIf="product.photo" class="text-center mb-3">
-          <img height="200" class="img-fluid rounded" [src]="this.api.host + '/p12-stock/public/product/photo/' + product.id" alt="">
+          <img class="img-fluid rounded" height="200"
+               [src]="this.api.host + '/p12-stock/public/product/' + product.id + '/photo' + '?ts=' + timeStamp" alt="">
         </div>
         <div *ngIf="!product.photo" class="text-center mb-3">
           <img height="200" class="img-fluid rounded" src="../../assets/img/340719-200.png" alt="">
@@ -84,17 +218,18 @@
           </div>
         </div>
 
-        <button class="btn btn-primary mt-4" (click)="uploadPhoto()">Upload</button>
+        <button class="btn btn-primary mt-4" (click)="uploadPhoto()">Modifier</button>
       </div>
     </div>
   </div>
 
-  <div class="col-6 offset-3" *ngIf="!modification && product">
+  <div class="col-6 offset-3" *ngIf="operation === 'details' && product">
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Détails du produit</h5>
         <div *ngIf="product.photo" class="text-center mb-3">
-          <img class="img-fluid rounded" height="200" [src]="this.api.host + '/p12-stock/public/product/photo/' + product.id" alt="">
+          <img class="img-fluid rounded" height="200"
+               [src]="this.api.host + '/p12-stock/public/product/' + product.id + '/photo'" alt="">
         </div>
         <div *ngIf="!product.photo" class="text-center mb-3">
           <img class="img-fluid rounded" height="200" src="../../assets/img/340719-200.png" alt="">
