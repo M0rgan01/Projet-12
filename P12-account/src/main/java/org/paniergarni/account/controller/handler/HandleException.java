@@ -24,14 +24,14 @@ public class HandleException {
     private static final Logger logger = LoggerFactory.getLogger(HandleException.class);
 
     @ExceptionHandler(AccountException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleException(AccountException ex) {
-        return ErrorResponse.of(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleException(MethodArgumentNotValidException ex) {
 
@@ -45,7 +45,7 @@ public class HandleException {
             errorDetails.add(error);
         }
 
-        return ErrorResponse.of(errorDetails, HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of(errorDetails, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(UserNotActiveException.class)

@@ -19,7 +19,7 @@ public class ExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(ExceptionHandler.class);
 
     @org.springframework.web.bind.annotation.ExceptionHandler(FeignException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public byte[] handleException(FeignException ex) {
         return ex.content();
@@ -49,17 +49,17 @@ public class ExceptionHandler {
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleException(IllegalArgumentException ex) {
-        return ErrorResponse.of(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(AuthenticationException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleException(AuthenticationException ex) {
-        return ErrorResponse.of(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
 }

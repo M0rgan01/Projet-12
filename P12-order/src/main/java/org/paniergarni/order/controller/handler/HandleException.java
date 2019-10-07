@@ -29,14 +29,14 @@ public class HandleException {
     private static final Logger logger = LoggerFactory.getLogger(HandleException.class);
 
     @ExceptionHandler(OrderException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleException(OrderException ex) {
-        return ErrorResponse.of(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(FeignException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public byte[] handleException(FeignException ex) {
         return ex.content();
@@ -51,7 +51,7 @@ public class HandleException {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleException(MethodArgumentNotValidException ex) {
 
@@ -65,20 +65,21 @@ public class HandleException {
             errorDetails.add(error);
         }
 
-        return ErrorResponse.of(errorDetails, HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of(errorDetails, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleException(IllegalArgumentException ex) {
-        return ErrorResponse.of(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse handleException(Exception ex) {
+        ex.printStackTrace();
         logger.error("Internal error : " + ex.getMessage());
         return ErrorResponse.of("internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
     }

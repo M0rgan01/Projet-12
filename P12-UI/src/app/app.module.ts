@@ -26,15 +26,21 @@ import { OrdersComponent } from './orders/orders.component';
 import { OrderComponent } from './order/order.component';
 import { RecoveryComponent } from './recovery/recovery.component';
 import { AccountUpdateComponent } from './account-update/account-update.component';
+import { CategoryComponent } from './category/category.component';
+import { FarmerComponent } from './farmer/farmer.component';
+import {FarmerService} from '../services/farmer.service';
+import {MeasureService} from '../services/measure.service';
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, children: [{path: ':redirect', component: LoginComponent}]},
   {path: 'recovery', component: RecoveryComponent},
   {path: 'register', component: RegistrationComponent},
   {path: 'account', component: AccountUpdateComponent , canActivate: [AuthGuardService]},
-  {path: 'products', component: ProductsComponent, children: [{path: ':categoryId', component: ProductsComponent}]},
-  {path: 'product/:id', component: ProductComponent},
-  {path: 'orders', canActivate: [AuthGuardService], component: OrdersComponent},
+  {path: 'products', component: ProductsComponent},
+  {path: 'product/:operation', component: ProductComponent, children: [{path: ':id', component: ProductComponent}]},
+  {path: 'category/:operation', component: CategoryComponent},
+  {path: 'farmer/:operation', component: FarmerComponent},
+  {path: 'orders', canActivate: [AuthGuardService], component: OrdersComponent, children: [{path: ':admin', component: OrdersComponent}]},
   {path: 'order/:id', canActivate: [AuthGuardService], component: OrderComponent},
   {path: 'caddies', component: CaddiesComponent},
   {path: '', redirectTo: 'products', pathMatch: 'full'},
@@ -71,7 +77,9 @@ export function createTranslateLoader(http: HttpClient) {
     OrdersComponent,
     OrderComponent,
     RecoveryComponent,
-    AccountUpdateComponent
+    AccountUpdateComponent,
+    CategoryComponent,
+    FarmerComponent
   ],
   imports: [
     BrowserModule,
@@ -88,7 +96,7 @@ export function createTranslateLoader(http: HttpClient) {
       }
     })
   ],
-  providers: [AuthenticationService, CaddyService, AuthGuardService, ProductService, CategoryService, APIService, {
+  providers: [AuthenticationService, CaddyService, AuthGuardService, ProductService, CategoryService, APIService, FarmerService, MeasureService, {
     provide: HTTP_INTERCEPTORS,
     useClass: TokenInterceptor,
     multi: true

@@ -41,4 +41,8 @@ export class AppComponent {
     }
   }
 
+  onSearch(data) {
+    this.router.navigate(['/products'], { queryParams: { search: data.name } });
+  }
+
 }

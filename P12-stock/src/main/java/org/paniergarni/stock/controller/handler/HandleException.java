@@ -24,14 +24,14 @@ public class HandleException {
     private static final Logger logger = LoggerFactory.getLogger(HandleException.class);
 
     @ExceptionHandler(StockException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleException(StockException ex) {
-        return ErrorResponse.of(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleException(MethodArgumentNotValidException ex) {
 
@@ -45,14 +45,14 @@ public class HandleException {
             errorDetails.add(error);
         }
 
-        return ErrorResponse.of(errorDetails, HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of(errorDetails, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleException(IllegalArgumentException ex) {
-        return ErrorResponse.of(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)
@@ -64,10 +64,10 @@ public class HandleException {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
     @ResponseBody
     public ErrorResponse handleException(HttpMessageNotReadableException ex) {
-        return ErrorResponse.of("json.error", HttpStatus.BAD_REQUEST);
+        return ErrorResponse.of("json.error", HttpStatus.PRECONDITION_FAILED);
     }
 
     @ExceptionHandler(CriteriaException.class)

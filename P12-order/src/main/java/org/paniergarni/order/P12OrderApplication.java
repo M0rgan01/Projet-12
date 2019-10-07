@@ -5,7 +5,6 @@ import org.paniergarni.order.business.OrderBusinessImpl;
 import org.paniergarni.order.dao.OrderRepository;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
-import org.paniergarni.order.object.User;
 import org.paniergarni.order.proxy.UserProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

@@ -1,7 +1,5 @@
-import {Product} from './product.model';
-
-export interface Category {
+export class Category {
   id: number;
   name: string;
-  Products: Array<Product>;
+  photo: string;
 }

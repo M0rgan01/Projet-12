@@ -20,7 +20,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-
     this.activeRoute.url.subscribe(() => {
         if (this.activeRoute.snapshot.firstChild) {
           if (this.activeRoute.snapshot.firstChild.paramMap.get('redirect')) {

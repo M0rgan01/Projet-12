@@ -62,11 +62,7 @@ export class CaddyService {
 
   getTotalPriceRow(orderProduct: OrderProduct): number {
     let total: number;
-    if (orderProduct.product.promotion) {
-      total = orderProduct.product.promotionPrice * orderProduct.orderQuantity;
-    } else {
-      total = orderProduct.product.price * orderProduct.orderQuantity;
-    }
+    total = orderProduct.product.price * orderProduct.orderQuantity;
     return total;
   }
 

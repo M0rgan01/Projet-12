@@ -14,6 +14,6 @@ public interface ProductProxy {
     @GetMapping(value = "/public/product/{id}")
     Product findById(@PathVariable Long id);
 
-    @PutMapping(value = "/adminRole/productQuantity/{quantity}/{id}/{cancel}")
-    Product updateProductQuantity(@PathVariable int quantity, @PathVariable Long id,@PathVariable boolean cancel);
+    @PutMapping(value = "/adminRole/productQuantity/{id}/{quantity}/{cancel}")
+    Product updateProductQuantity(@PathVariable int quantity, @PathVariable Long id, @PathVariable boolean cancel);
 }

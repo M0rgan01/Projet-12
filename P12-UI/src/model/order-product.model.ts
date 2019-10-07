@@ -7,4 +7,6 @@ export class OrderProduct {
   realQuantity: number;
   totalPriceRow: number;
   product: Product;
+  productPrice: number;
+  productOldPrice: number;
 }

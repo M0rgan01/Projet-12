@@ -1,12 +1,12 @@
 <!--BARRE DE NAVIGATION TOP-->
-<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-dark border-bottom border-light">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark border-bottom border-light">
 
   <a class="navbar-brand ml-2 text-white cliquable" routerLink="/products">{{title}}</a>
 
-  <button (click)="onSwitchToggle()" type="button" class="btn mr-auto d-none d-md-block"><span
+  <button (click)="onSwitchToggle()" type="button" class="btn mr-auto d-none d-lg-block"><span
     class="navbar-toggler-icon"></span></button>
 
-  <button class="btn d-md-none" type="button" data-toggle="collapse" data-target="#navbarNav"
+  <button class="btn d-lg-none" type="button" data-toggle="collapse" data-target="#navbarNav"
           aria-controls="navbarNav"
           aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -21,14 +21,15 @@
           Catégories
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a *ngFor="let c of categoryService.categories" class="dropdown-item cliquable"
-             [routerLink]="['/products', c.id]">{{c.name}}</a>
+          <a *ngFor="let c of categoryService.categories" routerLinkActive="active" class="dropdown-item cliquable"
+             routerLink="/products" [queryParams]="{ category: c.id}">{{c.name}}</a>
         </div>
       </li>
 
       <!-- This menu is hidden in bigger devices with d-sm-none.
            The sidebar isn't proper for smaller screens imo, so this dropdown menu can keep all the useful sidebar itens exclusively for smaller screens  -->
-      <li class="nav-item dropdown d-sm-block d-md-none">
+      <li class="nav-item dropdown d-md-block d-lg-none">
+
         <a class="nav-link dropdown-toggle" href="#" id="smallerscreenmenu" data-toggle="dropdown" aria-haspopup="true"
            aria-expanded="false">
           Mon compte
@@ -46,12 +47,26 @@
           </div>
         </div>
       </li>
+      <li class="nav-item dropdown d-sm-block d-lg-none">
+        <a class="nav-link dropdown-toggle" href="#" id="smallerscreenmenu2" data-toggle="dropdown" aria-haspopup="true"
+           aria-expanded="false">
+          Administration
+        </a>
+        <div class="dropdown-menu" aria-labelledby="smallerscreenmenu2">
+          <div *ngIf="authService.isAuth() && authService.isAdmin()">
+            <a class="dropdown-item cliquable" routerLinkActive="active" [routerLink]="['/orders', 'admin']">Commande</a>
+            <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/product/create">Produit</a>
+            <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/category/create">Catégorie</a>
+            <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/farmer/create">Agriculteur</a>
+          </div>
+        </div>
+      </li>
 
     </ul>
 
-    <form class="form-inline ml-auto">
-      <input class="form-control" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-success my-2 my-md-0 mx-sm-2 mx-0" type="submit">Search</button>
+    <form #f="ngForm" (ngSubmit)="onSearch(f.value)" class="form-inline ml-auto">
+      <input class="form-control" type="search" placeholder="Patate, Tomate..." aria-label="Search" ngModel name="name" required>
+      <button routerLink="/products/search" [disabled]="f.invalid" class="btn btn-success my-2 my-lg-0 mx-sm-2 mx-0" type="submit">Recherche</button>
     </form>
 
     <button routerLink="/caddies" class="btn btn-primary">Panier <span
@@ -63,8 +78,8 @@
 <!-- SIDEBAR https://www.codeply.com/go/7XYosZ7VH5 -->
 <div class="row h-100 m-0" id="body-row">
   <!-- Sidebar -->
-  <div class="d-none d-md-block col-2 p-0 border-right bg-info"
-       [ngClass]="{'d-md-block': isTogled, 'd-md-none': !isTogled}">
+  <div class="d-none d-lg-block col-2 p-0 border-right bg-info"
+       [ngClass]="{'d-lg-block': isTogled, 'd-md-none': !isTogled}">
 
     <ul class="list-group sticky-offset sticky-top list-group-flush mt-4">
 
@@ -76,26 +91,42 @@
          class="list-group-item list-group-item-action border-0 bg-info">Register</a>
       <a *ngIf="!authService.isAuth()" routerLinkActive="text-dark font-weight-bold" routerLink="/login"
          class="list-group-item list-group-item-action border-0 bg-info">Login</a>
-      <a *ngIf="authService.isAuth()"
-         class="list-group-item list-group-item-action border-0 bg-info" routerLink="/orders">Mes commandes</a>
 
       <!-- /END Separator -->
       <!-- Menu with submenu -->
       <a *ngIf="authService.isAuth()" href="#submenu1" data-toggle="collapse" aria-expanded="false"
-         class="bg-dark font-weight-bold list-group-item list-group-item-action flex-column align-items-start border-0">
+         class="bg-primary font-weight-bold list-group-item list-group-item-action flex-column align-items-start border-0">
         <div class="d-flex w-100 justify-content-start align-items-center">
-          <span>Mon compte</span>
+          <span>Mon compte</span><span class="ml-2 dropdown-toggle"></span>
         </div>
       </a>
       <!-- Submenu content -->
       <div  *ngIf="authService.isAuth()" id="submenu1" class="collapse">
-        <a routerLink="/account" class="list-group-item list-group-item-action text-white text-center border-0 bg-dark">
-          <span class="menu-collapsed">Modifier mon compte</span>
+        <a routerLink="/account" class="list-group-item list-group-item-action text-white bg-dark">
+          <span class="ml-2">Modifier mon compte</span>
+        </a>
+        <a routerLink="/orders" class="list-group-item list-group-item-action text-white bg-dark">
+          <span class="ml-2">Mes commandes</span>
         </a>
         <a (click)="onLogout()"
-           class="list-group-item list-group-item-action text-white text-center border-0 bg-dark cliquable">
-          <span class="menu-collapsed">Logout</span>
+           class="list-group-item list-group-item-action text-white bg-dark cliquable">
+          <span class="ml-2">Logout</span>
         </a>
+      </div>
+
+      <!-- Menu with submenu -->
+      <a *ngIf="authService.isAuth() && authService.isAdmin()" href="#submenu2" data-toggle="collapse" aria-expanded="false"
+         class="bg-primary font-weight-bold list-group-item list-group-item-action flex-column align-items-start border-0">
+        <div class="d-flex w-100 justify-content-start align-items-center">
+          <span>Administration</span><span class="ml-2 dropdown-toggle"></span>
+        </div>
+      </a>
+      <!-- Submenu content -->
+      <div  *ngIf="authService.isAuth() && authService.isAdmin()" id="submenu2" class="collapse">
+        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" [routerLink]="['/orders', 'admin']" ><span class="ml-2">Commande</span></a>
+        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/product/create"><span class="ml-2">Produit</span></a>
+        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/category/create"><span class="ml-2">Catégorie</span></a>
+        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/farmer/create"><span class="ml-2">Agriculteur</span></a>
       </div>
 
     </ul>

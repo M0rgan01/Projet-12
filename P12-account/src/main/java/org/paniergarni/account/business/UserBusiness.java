@@ -1,19 +1,16 @@
 package org.paniergarni.account.business;
 
 import org.paniergarni.account.entities.User;
-import org.paniergarni.account.entities.dto.CreateUserDTO;
-import org.paniergarni.account.entities.dto.UserRecoveryDTO;
-import org.paniergarni.account.entities.dto.UserUpdatePassWordDTO;
+import org.paniergarni.account.entities.CreateUserDTO;
+import org.paniergarni.account.entities.UserRecoveryDTO;
+import org.paniergarni.account.entities.UserUpdatePassWordDTO;
 import org.paniergarni.account.exception.AccountException;
-import org.paniergarni.account.exception.PassWordException;
-
-import java.util.List;
 
 public interface UserBusiness {
 
     User createUser(CreateUserDTO user) throws AccountException;
 
-    User updateUser(Long id, User user) throws AccountException;
+    User updateUserActive(Long id, boolean active) throws AccountException;
     User updateUserName(Long id, String userName)throws AccountException;
 
     void updatePassWord(Long id, UserUpdatePassWordDTO user)throws AccountException;
@@ -26,4 +23,6 @@ public interface UserBusiness {
 
     void editPassWordByRecovery(String email, UserRecoveryDTO user) throws AccountException;
 
+    User setUserRole(Long id) throws AccountException;
+    User setAdminRole(Long id) throws AccountException;
 }

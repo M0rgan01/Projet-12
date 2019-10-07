@@ -51,18 +51,11 @@ export class APIService {
 
   /////////////////////////////// UPLOAD /////////////////////////////////
 
-  uploadPhoto(file: File, url): Observable<HttpEvent<{}>> {
+  uploadPhoto(file: File, url) {
     const formData: FormData = new FormData();
     formData.append('file', file);
-    const rep = new HttpRequest('POST', this.host + url, formData,
-      {
-        reportProgress: true, // ici nous recevons la progession
-        responseType: 'text' // évite le format json pour l'envoie de fichier
-      });
-
-    return this.http.request(rep).pipe(
+    return this.http.post(this.host + url, formData, {reportProgress: true, observe: 'events'}).pipe(
       retryWhen(this.genericRetryStrategy()));
-    ;
   }
 
   /////////////////////////////// ERROR /////////////////////////////////

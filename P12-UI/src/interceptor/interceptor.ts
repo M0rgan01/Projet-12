@@ -40,7 +40,9 @@ export class TokenInterceptor implements HttpInterceptor {
     return next.handle(this.addToken(request)).pipe(catchError(err => {
       if (err.status === 401) {
         if (err.error.error === 'jwt.expired') {
+          console.log('refreshing token...');
           this.api.sendRefreshToken().subscribe(resp => {
+            console.log('refreshing token !');
             // nous définisson un object jwt qui aura pour valeur l'en-tete
             if (resp.status === 200) {
               const jwtAuth = resp.headers.get('Authorization');
@@ -56,10 +58,8 @@ export class TokenInterceptor implements HttpInterceptor {
           });
 
         }
-      } else if (err.status === 403) {
-        if (err.error.error === 'jwt.expired' || err.error.error === 'jwt.invalid') {
-          this.authService.logout();
-        }
+      } else if (err.status === 500 || err.status === 503) {
+        this.api.redirectToError();
       }
       return throwError(err);
     }));

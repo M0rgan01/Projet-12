@@ -4,7 +4,6 @@ import {Order} from '../../model/order.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthenticationService} from '../../services/authentification.service';
 import {Product} from '../../model/product.model';
-import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-order',
@@ -15,7 +14,7 @@ export class OrderComponent implements OnInit {
 
   public order: Order;
   public maxHourCancel: number;
-  public cancel: boolean;
+  public update: boolean;
   constructor(public api: APIService,
               public router: Router,
               public activeRoute: ActivatedRoute,
@@ -24,13 +23,32 @@ export class OrderComponent implements OnInit {
 
   ngOnInit() {
     const paramId = this.activeRoute.snapshot.paramMap.get('id');
-    this.getOrder(paramId);
+    if (this.authService.isAdmin()) {
+      this.getAdminOrder(paramId);
+    } else {
+      this.getOrder(paramId);
+    }
     this.getMaxHourCancel();
   }
 
 
   getOrder(id) {
     this.api.getRessources<Order>('/p12-order/userRole/order/' + id + '/' + this.authService.getUserName()).subscribe(value => {
+      for (const orderProduct of value.orderProducts) {
+        this.api.getRessources<Product>('/p12-stock/public/product/' + orderProduct.productId).subscribe(value2 => {
+          orderProduct.product = value2;
+        }, error1 => {
+          this.router.navigateByUrl('/error');
+        });
+      }
+      this.order = value;
+    }, error1 => {
+      this.router.navigateByUrl('/error');
+    });
+  }
+
+  getAdminOrder(id) {
+    this.api.getRessources<Order>('/p12-order/adminRole/order/' + id).subscribe(value => {
       for (const orderProduct of value.orderProducts) {
         this.api.getRessources<Product>('/p12-stock/public/product/' + orderProduct.productId).subscribe(value2 => {
           orderProduct.product = value2;
@@ -64,12 +82,38 @@ export class OrderComponent implements OnInit {
   }
 
   onCancelOrder() {
-    this.api.putRessources<Order>('/p12-order/userRole/cancelOrder/' + this.order.id + '/' + this.authService.getUserName(),
-      null).subscribe(value => {
-      this.order.cancel = true;
-      this.cancel = true;
-    }, error1 => {
-      this.router.navigateByUrl('/error');
-    });
+    if (confirm('Êtes-vous sûr ?')) {
+      this.api.putRessources<Order>('/p12-order/userRole/cancelOrder/' + this.order.id + '/' + this.authService.getUserName(),
+        null).subscribe(value => {
+        this.order.cancel = true;
+        this.update = true;
+      }, error1 => {
+        this.router.navigateByUrl('/error');
+      });
+    }
+  }
+
+  onCancelOrderAdmin() {
+    if (confirm('Êtes-vous sûr ?')) {
+      this.api.putRessources<Order>('/p12-order/adminRole/cancelOrder/' + this.order.id,
+        null).subscribe(value => {
+        this.order.cancel = true;
+        this.update = true;
+      }, error1 => {
+        this.router.navigateByUrl('/error');
+      });
+    }
+  }
+
+  onPaidOrder() {
+    if (confirm('Êtes-vous sûr ?')) {
+      this.api.putRessources<Order>('/p12-order/adminRole/paidOrder/' + this.order.id,
+        null).subscribe(value => {
+        this.order.paid = true;
+        this.update = true;
+      }, error1 => {
+        this.router.navigateByUrl('/error');
+      });
+    }
   }
 }

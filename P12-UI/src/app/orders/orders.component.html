@@ -1,19 +1,55 @@
-<div class="row justify-content-center">
-  <h3>Mes commandes</h3>
+<div class="row justify-content-center my-3">
+  <h3>{{title}}</h3>
 </div>
 
 <!-- ------PHILTRE------- -->
-<form #f="ngForm" (ngSubmit)="onSearchByPhiltre(f.value)">
-  <div class="form-row">
-    <div class="form-group col-md-4">
-      <label for="inputState">Size</label>
-      <select id="inputState" class="form-control" name="size" [ngModel]="size">
-        <option *ngFor="let s of listSize" [ngValue]="s" [selected]="size == s">{{s}}</option>
-      </select>
+<div class="collapse" id="collapseFilter">
+  <form #f="ngForm" (ngSubmit)="onSearchByPhiltre(f.value)">
+    <div class="form-row">
+      <div class="form-group col-lg-3">
+        <label for="inputState">Taille de la page :</label>
+        <select id="inputState" class="form-control" name="size" [ngModel]="size">
+          <option *ngFor="let s of listSize" [ngValue]="s" [selected]="size == s">{{s}}</option>
+        </select>
+      </div>
+      <div class="form-group col-lg-3">
+        <label for="inputState1">Trié par :</label>
+        <select id="inputState1" class="form-control" name="filter" [ngModel]="filter">
+          <option *ngFor="let s of listFilter" [ngValue]="s" [selected]="filter == s">{{s}}</option>
+        </select>
+      </div>
+      <div class="form-group col-lg-3">
+        <label for="inputState11">Recherche par référence</label>
+        <input id="inputState11" type="search" ngModel name="searchByRef" class="form-control">
+      </div>
     </div>
-  </div>
-  <button type="submit" class="btn btn-primary">Search</button>
-</form>
+    <div class="form-row">
+      <div *ngIf="authService.isAdmin() && adminOrder" class="form-group col-lg-3">
+        <label for="inputState2">Recherche par utilisateur</label>
+        <input id="inputState2" type="search" ngModel name="searchByUserName" class="form-control">
+      </div>
+      <div class="form-group col-lg-3 col-6">
+        <label for="inputState3">Prix total minimum</label>
+        <input id="inputState3" type="number" ngModel name="searchMinPrice" class="form-control">
+      </div>
+      <div class="form-group col-lg-3 col-6">
+        <label for="inputState4">Prix total maximum</label>
+        <input id="inputState4" type="number" ngModel name="searchMaxPrice" class="form-control">
+      </div>
+    </div>
+    <div class="form-row ml-1">
+      <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" ngModel name="searchNoCancel" id="exampleCheck1">
+        <label class="form-check-label" for="exampleCheck1">Uniquement commande non annulée</label>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Rechercher</button>
+  </form>
+</div>
+<button class="btn btn-success mt-1" type="button" data-toggle="collapse" data-target="#collapseFilter"
+        aria-expanded="false" aria-controls="collapseFilter">
+  Recherche avancée
+</button>
 
 <div *ngIf="orders">
   <div class="table-responsive my-3">
@@ -21,18 +57,27 @@
       <thead>
       <tr>
         <th>Référence</th>
+        <th *ngIf="authService.isAdmin() && adminOrder">ID utilisateur</th>
         <th>Date de la commande</th>
         <th>Réception de la commande</th>
         <th>Prix total</th>
+        <th>Statut</th>
         <th></th>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let order of orders.content">
         <td class="align-middle font-weight-bold">{{order.reference}}</td>
-        <td class="align-middle">{{order.date| date: 'dd/MM/yyyy'}}</td>
-        <td class="align-middle">{{order.reception| date: 'dd/MM/yyyy'}}</td>
+        <td *ngIf="authService.isAdmin() && adminOrder" class="align-middle font-weight-bold">{{order.userId}}</td>
+        <td class="align-middle">{{order.date | date: 'dd/MM/yyyy'}}</td>
+        <td class="align-middle">{{order.reception | date: 'dd/MM/yyyy'}}</td>
         <td class="align-middle">{{order.totalPrice | number:'0.2'}}</td>
+        <td class="align-middle">
+          <span *ngIf="order.cancel" class="badge badge-warning">Annulée</span>
+          <span *ngIf="order.paid && !order.cancel" class="badge badge-success">Payée</span>
+          <span *ngIf="getDate(order.reception) < date && !order.paid && !order.cancel" class="badge badge-danger">En retard</span>
+          <span *ngIf="getDate(order.reception) > date && !order.paid && !order.cancel" class="badge badge-primary">En attente</span>
+        </td>
         <td>
           <button [routerLink]="['/order', order.id]" class="btn btn-info">Détails</button>
         </td>
@@ -75,11 +120,14 @@
       </li>
     </ul>
   </div>
-</div>
 
-
-<div *ngIf="!orders">
-  <div *ngIf="orders === undefined" class="row justify-content-center mt-5 font-weight-bold">
-    <p>Vous n'avez aucune commande !</p>
+  <div *ngIf="orders.numberOfElements === 0">
+    <div class="row justify-content-center mt-5 font-weight-bold">
+      <p>Aucune commande trouvé !</p>
+    </div>
   </div>
+
 </div>
+
+
+

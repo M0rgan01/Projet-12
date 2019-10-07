@@ -3,6 +3,7 @@ package org.paniergarni.order.business;
 import feign.FeignException;
 import org.paniergarni.order.entities.Order;
 import org.paniergarni.order.entities.OrderProduct;
+import org.paniergarni.order.entities.WrapperOrderProductDTO;
 import org.paniergarni.order.exception.CriteriaException;
 import org.paniergarni.order.exception.OrderException;
 import org.paniergarni.order.dao.specification.SearchCriteria;
@@ -12,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface OrderBusiness {
-    Order createOrder(List<OrderProduct> orderProducts, String userName, Long reception) throws OrderException;
+    Order createOrder(WrapperOrderProductDTO wrapperOrderProductDTO, String userName, Long reception) throws OrderException;
 
     Order getOrder(Long id) throws OrderException ;
     Order getOrder(Long id, String userName) throws OrderException, FeignException;
