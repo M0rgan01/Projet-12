@@ -3,6 +3,7 @@ import {AuthenticationService} from 'src/services/authentification.service';
 import {Router} from '@angular/router';
 import {APIService} from 'src/services/api.service';
 import {User} from '../../model/user.model';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-registration',
@@ -15,10 +16,11 @@ export class RegistrationComponent implements OnInit {
   public errors: Array<any> = null;
   public user: User = new User();
 
-  constructor(public authService: AuthenticationService, public router: Router, public api: APIService) {
+  constructor(public authService: AuthenticationService, public router: Router, public api: APIService, public titleService: Title) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Inscription');
   }
 
   onRegister(contactDTO: User) {

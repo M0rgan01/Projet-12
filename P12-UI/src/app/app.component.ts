@@ -3,15 +3,16 @@ import {Router} from '@angular/router';
 import {CaddyService} from '../services/caddy.service';
 import {APIService} from '../services/api.service';
 import {AuthenticationService} from '../services/authentification.service';
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
 
   public title = 'Panier garni';
   public isTogled = false;
@@ -21,7 +22,8 @@ export class AppComponent {
               public caddyService: CaddyService,
               public router: Router,
               public categoryService: CategoryService,
-              public translate: TranslateService) {
+              public translate: TranslateService,
+              public titleService: Title) {
     translate.setDefaultLang('fr');
     translate.use('fr');
   }
@@ -43,6 +45,10 @@ export class AppComponent {
 
   onSearch(data) {
     this.router.navigate(['/products'], { queryParams: { search: data.name } });
+  }
+
+  ngOnInit(): void {
+    this.titleService.setTitle('Panier garni');
   }
 
 }

@@ -5,6 +5,7 @@ import {AuthenticationService} from '../../services/authentification.service';
 import {Order} from '../../model/order.model';
 import {Router} from '@angular/router';
 import {OrderProductWrapper} from '../../model/order-product-wrapper.model';
+import {Title} from '@angular/platform-browser';
 
 
 @Component({
@@ -13,7 +14,8 @@ import {OrderProductWrapper} from '../../model/order-product-wrapper.model';
   styleUrls: ['./caddies.component.css']
 })
 export class CaddiesComponent implements OnInit {
-
+  public error: string;
+  public errors: Array<any>;
   public listDate: Array<Date> = new Array<Date>();
   public date: number;
   public orderProductWrapper: OrderProductWrapper;
@@ -21,10 +23,12 @@ export class CaddiesComponent implements OnInit {
   constructor(public caddyService: CaddyService,
               public api: APIService,
               public authenticationService: AuthenticationService,
-              public router: Router) {
+              public router: Router,
+              public titleService: Title) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Mon panier');
     this.caddyService.loadCaddyFromLocalStorage();
     if (this.authenticationService.isAuth()) {
       this.api.getRessources<Array<Date>>('/p12-order/userRole/listDateReception/').subscribe(value => {
@@ -43,7 +47,12 @@ export class CaddiesComponent implements OnInit {
         this.caddyService.removeCaddy();
         this.caddyService.loadCaddyFromLocalStorage();
     }, error1 => {
-      this.router.navigateByUrl('/error');
+      if (error1.error.error) {
+        this.error = error1.error.error;
+      }
+      if (error1.error.errors) {
+        this.errors = error1.error.errors;
+      }
     });
   }
 

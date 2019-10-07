@@ -4,6 +4,7 @@ import {Order} from '../../model/order.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthenticationService} from '../../services/authentification.service';
 import {Product} from '../../model/product.model';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-order',
@@ -18,7 +19,8 @@ export class OrderComponent implements OnInit {
   constructor(public api: APIService,
               public router: Router,
               public activeRoute: ActivatedRoute,
-              public  authService: AuthenticationService) {
+              public  authService: AuthenticationService,
+              public titleService: Title) {
   }
 
   ngOnInit() {
@@ -42,6 +44,7 @@ export class OrderComponent implements OnInit {
         });
       }
       this.order = value;
+      this.titleService.setTitle('Commande ' + this.order.reference);
     }, error1 => {
       this.router.navigateByUrl('/error');
     });
@@ -57,6 +60,7 @@ export class OrderComponent implements OnInit {
         });
       }
       this.order = value;
+      this.titleService.setTitle('Commande ' + this.order.reference);
     }, error1 => {
       this.router.navigateByUrl('/error');
     });

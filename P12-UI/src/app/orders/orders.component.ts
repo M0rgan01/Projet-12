@@ -5,6 +5,7 @@ import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {Page} from '../../model/page.model';
 import {Order} from '../../model/order.model';
 import {SearchCriteria} from '../../model/search-criteria.model';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-orders',
@@ -16,7 +17,8 @@ export class OrdersComponent implements OnInit, OnDestroy {
   constructor(public api: APIService,
               public authService: AuthenticationService,
               public router: Router,
-              public activeRoute: ActivatedRoute) {
+              public activeRoute: ActivatedRoute,
+              public titleService: Title) {
   }
 
   public adminOrder: string;
@@ -61,12 +63,14 @@ export class OrdersComponent implements OnInit, OnDestroy {
     if (this.adminOrder) {
       if (this.authService.isAuth() && this.adminOrder === 'admin') {
         this.title = 'Administration des commandes';
+        this.titleService.setTitle('Administration des commandes');
         this.getOrders(this.page, this.size);
       } else {
         this.router.navigateByUrl('/404');
       }
     } else {
       this.title = 'Mes commandes';
+      this.titleService.setTitle('Mes commandes');
       this.getOrdersByUserName(this.page, this.size, this.authService.getUserName());
     }
   }

@@ -8,6 +8,7 @@ import {CaddyService} from '../../services/caddy.service';
 import {CategoryService} from '../../services/category.service';
 import {FarmerService} from '../../services/farmer.service';
 import {MeasureService} from '../../services/measure.service';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-edit-product',
@@ -44,7 +45,8 @@ export class ProductComponent implements OnInit, OnDestroy {
               public caddyService: CaddyService,
               public categoryService: CategoryService,
               public farmerService: FarmerService,
-              public measureService: MeasureService) {
+              public measureService: MeasureService,
+              public titleService: Title) {
   }
 
   ngOnInit() {
@@ -87,6 +89,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.router.navigateByUrl('/404');
         }
       } else if (this.operation === 'create') {
+        this.titleService.setTitle("Création d'un produit");
         this.product = new Product();
       } else {
         this.router.navigateByUrl('/404');
@@ -99,6 +102,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     // on récupère le produit
     this.api.getRessources<Product>('/p12-stock/public/product/' + id).subscribe(dataProduct => {
       this.product = dataProduct;
+      this.titleService.setTitle('Produit : ' + this.product.name);
     }, error1 => {
       this.router.navigateByUrl('/error');
     });
@@ -112,6 +116,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     this.api.putRessources<Product>('/p12-stock/adminRole/product/' + data.id, data).subscribe(dataProduct => {
       this.success = 'Mise à jour réussi !';
       this.product = dataProduct;
+      this.titleService.setTitle('Produit : ' + this.product.name);
     }, error1 => {
       if (error1.error.error) {
         this.error = error1.error.error;

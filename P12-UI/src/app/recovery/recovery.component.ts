@@ -3,6 +3,7 @@ import {APIService} from '../../services/api.service';
 import {Router} from '@angular/router';
 import {Mail} from '../../model/mail.model';
 import {User} from '../../model/user.model';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-recovery',
@@ -18,10 +19,11 @@ export class RecoveryComponent implements OnInit {
   public user: User = new User();
   public loading: boolean;
 
-  constructor(public api: APIService, public router: Router) {
+  constructor(public api: APIService, public router: Router, public titleService: Title) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Récupération du mot de passe');
   }
 
   onSubmitEmail(email: string) {
@@ -31,11 +33,7 @@ export class RecoveryComponent implements OnInit {
       this.error = null;
     }, error1 => {
       this.loading = false;
-      if (error1.status === 400) {
-        this.error = error1.error.error;
-      } else {
-        this.error = 'Une erreur est survenue, veuillez réesayer plus tard';
-      }
+      this.error = error1.error.error;
     }, () => {
       this.loading = false;
     });
@@ -48,11 +46,7 @@ export class RecoveryComponent implements OnInit {
       this.error = null;
     }, error1 => {
       this.loading = false;
-      if (error1.status === 400) {
-        this.error = error1.error.error;
-      } else {
-        this.error = 'Une erreur est survenue, veuillez réesayer plus tard';
-      }
+      this.error = error1.error.error;
     }, () => {
       this.loading = false;
     });
@@ -65,12 +59,11 @@ export class RecoveryComponent implements OnInit {
       this.router.navigateByUrl('/login/returnRecovery');
     }, error1 => {
       this.loading = false;
-      if (error1.status === 400) {
-        if (error1.error.errors) {
-          this.errors = error1.error.errors;
-        }
-      } else {
-        this.error = 'Une erreur est survenue, veuillez réesayer plus tard';
+      if (error1.error.error) {
+        this.error = error1.error.error;
+      }
+      if (error1.error.errors) {
+        this.errors = error1.error.errors;
       }
     }, () => {
       this.loading = false;

@@ -28,8 +28,7 @@
 
       <!-- This menu is hidden in bigger devices with d-sm-none.
            The sidebar isn't proper for smaller screens imo, so this dropdown menu can keep all the useful sidebar itens exclusively for smaller screens  -->
-      <li class="nav-item dropdown d-md-block d-lg-none">
-
+      <li *ngIf="authService.isAuth() && authService.isAdmin()" class="nav-item dropdown d-md-block d-lg-none">
         <a class="nav-link dropdown-toggle" href="#" id="smallerscreenmenu" data-toggle="dropdown" aria-haspopup="true"
            aria-expanded="false">
           Mon compte
@@ -47,18 +46,16 @@
           </div>
         </div>
       </li>
-      <li class="nav-item dropdown d-sm-block d-lg-none">
+      <li *ngIf="authService.isAuth() && authService.isAdmin()" class="nav-item dropdown d-sm-block d-lg-none">
         <a class="nav-link dropdown-toggle" href="#" id="smallerscreenmenu2" data-toggle="dropdown" aria-haspopup="true"
            aria-expanded="false">
           Administration
         </a>
         <div class="dropdown-menu" aria-labelledby="smallerscreenmenu2">
-          <div *ngIf="authService.isAuth() && authService.isAdmin()">
             <a class="dropdown-item cliquable" routerLinkActive="active" [routerLink]="['/orders', 'admin']">Commande</a>
             <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/product/create">Produit</a>
             <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/category/create">Catégorie</a>
             <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/farmer/create">Agriculteur</a>
-          </div>
         </div>
       </li>
 
@@ -79,16 +76,16 @@
 <div class="row h-100 m-0" id="body-row">
   <!-- Sidebar -->
   <div class="d-none d-lg-block col-2 p-0 border-right bg-info"
-       [ngClass]="{'d-lg-block': isTogled, 'd-md-none': !isTogled}">
+       [ngClass]="{'d-lg-block': isTogled, 'd-lg-none': !isTogled}">
 
-    <ul class="list-group sticky-offset sticky-top list-group-flush mt-4">
+    <ul class="list-group sticky-offset sticky-top list-group-flush">
 
-      <li class="list-group-item bg-info font-weight-bold" *ngIf="authService.isAuth()">
+      <li class="list-group-item bg-info font-weight-bold mt-3" *ngIf="authService.isAuth()">
         Bonjour {{authService.getUserName()}}
       </li>
 
       <a *ngIf="!authService.isAuth()" routerLinkActive="text-dark font-weight-bold" routerLink="/register"
-         class="list-group-item list-group-item-action border-0 bg-info">Register</a>
+         class="list-group-item list-group-item-action border-0 bg-info mt-3">Register</a>
       <a *ngIf="!authService.isAuth()" routerLinkActive="text-dark font-weight-bold" routerLink="/login"
          class="list-group-item list-group-item-action border-0 bg-info">Login</a>
 

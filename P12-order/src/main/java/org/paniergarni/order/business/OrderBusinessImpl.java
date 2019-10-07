@@ -89,7 +89,6 @@ public class OrderBusinessImpl implements OrderBusiness {
                 totalPrice = totalPrice + orderProduct.getTotalPriceRow();
                 orderProducts.add(orderProduct);
             } catch (FeignException e) {
-                System.out.println("Catch");
                 orderProduct.setRealQuantity(0);
             }
         }
@@ -119,7 +118,7 @@ public class OrderBusinessImpl implements OrderBusiness {
 
     @Override
     public Order getOrder(Long id, String userName) throws OrderException, FeignException {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderException("order.id.incorrect"));
+        Order order = getOrder(id);
         User user = userProxy.findByUserName(userName);
 
         if (!order.getUserId().equals(user.getId())) {

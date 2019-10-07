@@ -7,7 +7,7 @@
           un code vous sera envoyé pour confirmer votre identité.</p>
 
         <div *ngIf="error" class="row justify-content-center">
-          <span class="alert alert-danger">{{error}}</span>
+          <span class="alert alert-danger">{{error | translate}}</span>
         </div>
 
         <form (ngSubmit)="onSubmitEmail(email)">
@@ -24,7 +24,7 @@
         <p class="card-text text-center">Veuillez renseigner le jeton reçu par email.</p>
 
         <div *ngIf="error" class="row justify-content-center">
-          <span class="alert alert-danger">{{error}}</span>
+          <span class="alert alert-danger">{{error | translate}}</span>
         </div>
 
 
@@ -45,11 +45,11 @@
         <form #f="ngForm" (ngSubmit)="onSubmitPassWord(user)">
 
           <div *ngIf="errors != null" class="alert alert-danger">
-            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message}}</p>
+            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message | translate}}</p>
           </div>
 
           <div *ngIf="error" class="row justify-content-center">
-            <span class="alert alert-danger">{{error}}</span>
+            <span class="alert alert-danger">{{error | translate}}</span>
           </div>
 
           <div class="form-group">

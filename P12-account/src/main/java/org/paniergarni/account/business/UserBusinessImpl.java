@@ -106,7 +106,7 @@ public class UserBusinessImpl implements UserBusiness {
 
     @Override
     public User getUserByUserName(String userName) throws AccountException {
-        return userRepository.findByUserName(userName).orElseThrow(() -> new AccountException("user.username.incorrect"));
+        return userRepository.findByUserName(userName).orElseThrow(() -> new AccountException("user.userName.incorrect"));
     }
 
     @Override

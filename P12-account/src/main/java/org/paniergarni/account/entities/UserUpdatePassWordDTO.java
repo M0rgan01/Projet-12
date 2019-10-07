@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
@@ -17,13 +18,13 @@ import javax.validation.constraints.Pattern;
 @ApiModel(description = "Represente les données permettant la modifcation du passWord")
 public class UserUpdatePassWordDTO {
     @ApiModelProperty(notes = "Mot de passe, minimum 8 caractères, une majuscule et un chiffre", example = "TestPassWord1", required = true)
-    @NotBlank(message ="user.password.blank")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$", message = "user.password.not.true")
+    @NotNull(message ="user.passWord.null")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$", message = "user.passWord.not.true")
     private String passWord;
     @ApiModelProperty(notes = "Confirmation du mot de passe", example = "TestPassWord1", required = true)
-    @NotBlank(message ="user.passwordConfirm.blank")
+    @NotNull(message ="user.passWordConfirm.null")
     private String passWordConfirm;
     @ApiModelProperty(notes = "Ancien mot de passe", example = "TestPassWord1", required = true)
-    @NotBlank(message ="user.oldPassWord.blank")
+    @NotNull(message ="user.oldPassWord.null")
     private String oldPassWord;
 }
