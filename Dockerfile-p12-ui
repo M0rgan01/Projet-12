@@ -1,4 +1,4 @@
-FROM node:12.2.0 as build
+FROM node:12.11.1-alpine as build
 
 COPY ./P12-UI /app/P12-UI
 WORKDIR /app/P12-UI
