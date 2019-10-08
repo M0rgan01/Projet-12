@@ -1,0 +1,4 @@
+FROM node:8
+COPY ./P12-UI /user/
+WORKDIR /user
+RUN npm install -g @angular/cli@8.0.6

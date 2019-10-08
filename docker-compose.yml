@@ -1,0 +1,102 @@
+version: "3.0"
+services:
+
+  p12-config:
+    build:
+      context: .
+      dockerfile: Dockerfile-p12-config
+    container_name: p12-config
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9101/eureka
+      - SERVER_PORT=9101
+    ports:
+      - "9101:9101"
+
+  p12-register:
+    build:
+      context: .
+      dockerfile: Dockerfile-p12-register
+    container_name: p12-register
+    environment:
+      - SERVER_PORT=9102
+    depends_on:
+      - p12-config
+    links:
+      - p12-config
+    ports:
+      - "9102:9102"
+
+  p12-api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile-p12-api-gateway
+    container_name: p12-api-gateway
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9101/eureka
+      - SERVER_PORT=9103
+    depends_on:
+      - p12-config
+    links:
+      - p12-config
+    ports:
+      - "9103:9103"
+
+  p12-account:
+    build:
+      context: .
+      dockerfile: Dockerfile-p12-account
+    container_name: p12-account
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9101/eureka
+      - SERVER_PORT=9104
+    depends_on:
+      - p12-config
+      - p12-register
+    links:
+      - p12-config
+      - p12-register
+    ports:
+      - "9104:9104"
+
+  p12-stock:
+    build:
+      context: .
+      dockerfile: Dockerfile-p12-stock
+    container_name: p-12-stock
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9101/eureka
+      - SERVER_PORT=9105
+    depends_on:
+      - p12-config
+      - p12-register
+    links:
+      - p12-config
+      - p12-register
+    ports:
+      - "9105:9105"
+
+  p12-order:
+    build:
+      context: .
+      dockerfile: Dockerfile-p12-order
+    container_name: p12-order
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9101/eureka
+    depends_on:
+      - p12-config
+      - p12-register
+    links:
+      - p12-config
+      - p12-register
+    ports:
+      - "9105:9105"
+
+  p12-ui:
+    container_name: p12-ui
+    build:
+      context: .
+      dockerfile: Dockerfile-p12-ui
+    ports:
+      - '4200:4200'
+    command: >
+      bash -c "npm install && ng serve --host 0.0.0.0 --port 4200"
