@@ -1,6 +1,48 @@
 version: "3.0"
 services:
 
+  postgres1:
+    image: postgres:9.6
+    container_name: postgres1
+    hostname: postgres1
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ACCOUNT
+    volumes:
+      - ./postgres1-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  postgres2:
+    image: postgres:9.6
+    container_name: postgres2
+    hostname: postgres2
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: STOCK
+    volumes:
+      - ./postgres2-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  postgres3:
+    image: postgres:9.6
+    container_name: postgres3
+    hostname: postgres3
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ORDER
+    volumes:
+      - ./postgres3-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
   p12-config:
     build:
       context: .
@@ -48,6 +90,7 @@ services:
     container_name: p12-account
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9101/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres1:5432/ACCOUNT
       - SERVER_PORT=9104
     depends_on:
       - p12-config
@@ -65,6 +108,7 @@ services:
     container_name: p-12-stock
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9101/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres2:5433/STOCK
       - SERVER_PORT=9105
     depends_on:
       - p12-config
@@ -82,6 +126,8 @@ services:
     container_name: p12-order
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9101/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres3:5434/ORDER
+      - SERVER_PORT=9106
     depends_on:
       - p12-config
       - p12-register
@@ -89,7 +135,24 @@ services:
       - p12-config
       - p12-register
     ports:
-      - "9105:9105"
+      - "9106:9106"
+
+  p12-batch:
+    build:
+      context: .
+      dockerfile: Dockerfile-p12-batch
+    container_name: p12-batch
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9101/eureka
+      - SERVER_PORT=9107
+    depends_on:
+      - p12-config
+      - p12-register
+    links:
+      - p12-config
+      - p12-register
+    ports:
+      - "9107:9107"
 
   p12-ui:
     container_name: p12-ui
