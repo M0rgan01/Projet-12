@@ -1,4 +1,37 @@
-FROM node:8
-COPY ./P12-UI /user/
-WORKDIR /user
+#############
+### build ###
+#############
+
+# base image
+FROM node:12.2.0 as build
+
+# set working directory
+WORKDIR /app/P12-UI
+
+
+# install and cache app dependencies
+COPY ./P12-UI/package.json /app/P12-UI/package.json
+RUN npm install
 RUN npm install -g @angular/cli@8.0.6
+
+# add app
+COPY ./P12-UI /app/P12-UI
+
+# generate build
+RUN ng build --output-path=dist
+
+############
+### prod ###
+############
+
+# base image
+FROM nginx:1.16.0-alpine
+
+# copy artifact build from the 'build environment'
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# expose port 80
+EXPOSE 80
+
+# run nginx
+CMD ["nginx", "-g", "daemon off;"]
