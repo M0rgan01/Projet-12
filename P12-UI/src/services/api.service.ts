@@ -1,5 +1,5 @@
 import {Injectable,} from '@angular/core';
-import {HttpClient, HttpEvent, HttpRequest} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable, throwError, timer} from 'rxjs';
 import {mergeMap, retryWhen} from 'rxjs/operators';
 import {Router} from '@angular/router';
@@ -8,7 +8,8 @@ import {Router} from '@angular/router';
 @Injectable()
 export class APIService {
 
-  host = 'http://localhost:9103/api';
+  host = 'http://p12-api-gateway:9103/api';
+ // host = 'http://localhost:9103/api';
 
   constructor(private http: HttpClient, private router: Router) {
   }
