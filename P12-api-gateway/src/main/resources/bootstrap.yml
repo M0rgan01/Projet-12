@@ -3,7 +3,7 @@ spring:
     name: P12-api-gateway
   cloud:
     config:
-      uri: http://localhost:9101
+      uri: http://p12-config:9101
 
 
 ribbon:
