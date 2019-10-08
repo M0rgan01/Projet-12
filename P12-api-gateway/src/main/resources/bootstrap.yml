@@ -4,7 +4,7 @@ spring:
   cloud:
     config:
       uri: http://p12-config:9101
-
+      #uri: http://localhost:9101
 
 ribbon:
   ConnectTimeout: 10000

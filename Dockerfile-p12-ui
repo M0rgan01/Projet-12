@@ -4,7 +4,7 @@ COPY ./P12-UI /app/P12-UI
 WORKDIR /app/P12-UI
 
 RUN npm install
-RUN ng build 
+RUN npm run build
 
 FROM nginx:1.16.0-alpine
 COPY --from=build /app/P12-UI/dist/P12-UI /usr/share/nginx/html
