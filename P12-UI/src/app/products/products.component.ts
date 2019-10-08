@@ -6,6 +6,7 @@ import {Category} from '../../model/category.model';
 import {Page} from '../../model/page.model';
 import {Product} from '../../model/product.model';
 import {SearchCriteria} from '../../model/search-criteria.model';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-product',
@@ -30,7 +31,8 @@ export class ProductsComponent implements OnInit, OnDestroy {
   constructor(public api: APIService,
               public router: Router,
               public activeRoute: ActivatedRoute,
-              public caddyService: CaddyService) {
+              public caddyService: CaddyService,
+              public titleService: Title) {
   }
 
   ngOnInit() {
@@ -75,6 +77,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
       this.api.getRessources<Category>('/p12-stock/public/category/' + this.paramCategoryId).subscribe(cat => {
         if (cat) {
           this.title = 'Produit de la catégorie ' + cat.name;
+          this.titleService.setTitle('Produit de la catégorie ' + cat.name);
           this.searchCriteria = new SearchCriteria('category.id', ':', cat.id);
           this.listSearchCriteria.push(this.searchCriteria);
           this.getProduct(page, size, this.listSearchCriteria);
@@ -83,11 +86,13 @@ export class ProductsComponent implements OnInit, OnDestroy {
       });
     } else if (this.paramSearch) {
       this.title = 'Recherche : ' + this.paramSearch;
+      this.titleService.setTitle('Recherche : ' + this.paramSearch);
       this.searchCriteria = new SearchCriteria('name', ':', this.paramSearch);
       this.listSearchCriteria.push(this.searchCriteria);
       this.getProduct(page, size, this.listSearchCriteria);
     } else {
       this.title = 'Produit en promotion';
+      this.titleService.setTitle('Produit en promotion');
       this.searchCriteria = new SearchCriteria('promotion', ':', true);
       this.listSearchCriteria.push(this.searchCriteria);
       this.getProduct(page, size, this.listSearchCriteria);

@@ -26,11 +26,11 @@
         <form #f="ngForm" (ngSubmit)="onSubmitEditCategory(f.value)">
 
           <div *ngIf="error != null" class="alert alert-danger">
-            <span>{{error}}</span>
+            <span>{{error | translate}}</span>
           </div>
 
           <div *ngIf="errors != null" class="alert alert-danger">
-            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message}}</p>
+            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message | translate}}</p>
           </div>
 
           <div *ngIf="success" class="alert alert-success">
@@ -62,11 +62,11 @@
         <form #f="ngForm" (ngSubmit)="onSubmitCreateCategory(f.value)">
 
           <div *ngIf="error != null" class="alert alert-danger">
-            <span>{{error}}</span>
+            <span>{{error | translate}}</span>
           </div>
 
           <div *ngIf="errors != null" class="alert alert-danger">
-            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message}}</p>
+            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message | translate}}</p>
           </div>
 
           <div *ngIf="success" class="alert alert-success">

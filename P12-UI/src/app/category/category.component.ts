@@ -4,6 +4,7 @@ import {APIService} from '../../services/api.service';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {CategoryService} from '../../services/category.service';
 import {Category} from '../../model/category.model';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-category',
@@ -25,9 +26,11 @@ export class CategoryComponent implements OnInit, OnDestroy {
               public api: APIService,
               public router: Router,
               public activeRoute: ActivatedRoute,
-              public categoryService: CategoryService) { }
+              public categoryService: CategoryService,
+              public titleService: Title) { }
 
   ngOnInit() {
+    this.titleService.setTitle('Gestion des catégories');
     if (!this.authService.isAdmin()) {
       this.router.navigateByUrl('/404');
     }

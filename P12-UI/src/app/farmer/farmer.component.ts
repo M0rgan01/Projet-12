@@ -4,6 +4,7 @@ import {APIService} from '../../services/api.service';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {FarmerService} from '../../services/farmer.service';
 import {Farmer} from '../../model/farmer.model';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-farmer',
@@ -26,10 +27,12 @@ export class FarmerComponent implements OnInit, OnDestroy {
               public api: APIService,
               public router: Router,
               public activeRoute: ActivatedRoute,
-              public farmerService: FarmerService) {
+              public farmerService: FarmerService,
+              public titleService: Title) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Gestion des agriculteurs');
     if (!this.authService.isAdmin()) {
       this.router.navigateByUrl('/404');
     }

@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AuthenticationService} from 'src/services/authentification.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {APIService} from '../../services/api.service';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-login',
@@ -16,10 +17,12 @@ export class LoginComponent implements OnInit {
   constructor(public authService: AuthenticationService,
               public api: APIService,
               public router: Router,
-              public activeRoute: ActivatedRoute) {
+              public activeRoute: ActivatedRoute,
+              public titleService: Title) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Authentification');
     this.activeRoute.url.subscribe(() => {
         if (this.activeRoute.snapshot.firstChild) {
           if (this.activeRoute.snapshot.firstChild.paramMap.get('redirect')) {

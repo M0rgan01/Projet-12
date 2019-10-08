@@ -20,15 +20,15 @@ import javax.validation.constraints.Size;
 public class CreateUserDTO {
 
     @ApiModelProperty(notes = "Mot de passe, minimum 8 caractères, une majuscule et un chiffre", example = "TestPassWord1", required = true)
-    @NotBlank(message ="user.password.blank")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$", message = "user.password.not.true")
+    @NotNull(message ="user.passWord.null")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$", message = "user.passWord.not.true")
     private String passWord;
     @ApiModelProperty(notes = "Confirmation du mot de passe", example = "TestPassWord1", required = true)
-    @NotBlank(message ="user.passwordConfirm.blank")
+    @NotNull(message ="user.passwordConfirm.null")
     private String passWordConfirm;
     @ApiModelProperty(notes = "Pseudo de l'utilisateur, entre 4 et 20 caractères", example = "Pseudo", required = true)
-    @NotBlank
-    @Size(min = 4, max = 20)
+    @NotNull(message ="user.userName.null")
+    @Size(min = 4, max = 20, message ="user.userName.size.not.correct")
     private String userName;
     @ApiModelProperty(notes = "Adresse e-mail de l'utilisateur, doit être une email valide", example = "Test@test.com", required = true)
     @NotNull(message = "mail.email.null")

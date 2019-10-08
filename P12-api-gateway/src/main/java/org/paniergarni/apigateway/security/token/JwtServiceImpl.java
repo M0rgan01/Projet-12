@@ -92,7 +92,7 @@ public class JwtServiceImpl implements JwtService {
 
         // si le contact est toujours bon, alors le token est toujours valide
         if (contact.isActive() != (boolean) claims.getBody().get(activePrefix))
-            throw new DisabledException("contact.not.active");
+            throw new DisabledException("user.not.active");
 
         contact.setAuthorities(Role.getListAuthorities(contact.getRoles()));
         logger.debug("Validate refreshToken for userName " + contact.getUserName());

@@ -1,6 +1,17 @@
-
 <div class="row justify-content-center my-3">
   <h3>Mon panier</h3>
+</div>
+
+<div *ngIf="error != null" class="row text-center">
+  <div class="alert alert-danger">
+    <span>{{error | translate}}</span>
+  </div>
+</div>
+
+<div *ngIf="errors != null" class="row justify-content-center">
+  <div class="alert alert-danger">
+    <p class="p-1 m-0" *ngFor="let err of errors">{{err.message | translate}}</p>
+  </div>
 </div>
 
 <div *ngIf="caddyService.getSize() != 0">
@@ -20,10 +31,12 @@
         <td>{{pi.value.product.name}}</td>
         <td>{{pi.value.orderQuantity}}</td>
         <td *ngIf="!pi.value.product.promotion">{{pi.value.product.price |number:'0.2'}}</td>
-        <td *ngIf="pi.value.product.promotion">{{pi.value.product.price | number:'0.2'}} <del class="ml-2">{{pi.value.product.oldPrice | number:'0.2'}}</del></td>
+        <td *ngIf="pi.value.product.promotion">{{pi.value.product.price | number:'0.2'}}
+          <del class="ml-2">{{pi.value.product.oldPrice | number:'0.2'}}</del>
+        </td>
         <td>{{pi.value.totalPriceRow | number:'0.2'}}</td>
         <td>
-          <button class="btn btn-danger" (click)="caddyService.removeProductToCaddy(pi.value.product)">Remove product
+          <button class="btn btn-danger" (click)="caddyService.removeProductToCaddy(pi.value.product)">Retirer produit
           </button>
         </td>
       </tr>
@@ -54,7 +67,7 @@
 
 <div *ngIf="caddyService.getSize() == 0">
   <div class="row justify-content-center font-weight-bold mt-5">
-  <p>Votre panier est vide !</p>
+    <p>Votre panier est vide !</p>
   </div>
   <div class="row justify-content-center font-weight-bold">
     <button routerLink="/" class="btn btn-primary">Voir les produits en promotion</button>

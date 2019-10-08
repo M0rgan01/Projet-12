@@ -50,7 +50,7 @@ public class ProductDTO {
     private boolean promotion;
 
     @ApiModelProperty(notes = "Prix du produit avant promotion", example = "200.50")
-    @Min(value = 0, message = "product.price.incorrect.min.value")
+    @Min(value = 0, message = "product.oldPrice.incorrect.min.value")
     private double oldPrice;
 
     @ApiModelProperty(notes = "Categorie du produit")

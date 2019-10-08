@@ -69,7 +69,9 @@ public class ProductSpecification implements Specification<Product> {
 
                 if (path.getJavaType() == String.class) {
 
-                    return builder.like(path, "%" + criteria.getValue() + "%");
+                    String toLower = (String) criteria.getValue();
+
+                    return builder.like(builder.lower(path), "%" + toLower.toLowerCase() + "%");
 
                 } else if (path.getJavaType() == Date.class) {
 

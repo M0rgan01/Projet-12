@@ -3,6 +3,7 @@ import {User} from '../../model/user.model';
 import {APIService} from '../../services/api.service';
 import {AuthenticationService} from '../../services/authentification.service';
 import {Mail} from '../../model/mail.model';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-account-update',
@@ -16,10 +17,11 @@ export class AccountUpdateComponent implements OnInit {
   public update: boolean;
   public user: User;
 
-  constructor(public api: APIService, public authService: AuthenticationService) {
+  constructor(public api: APIService, public authService: AuthenticationService, public titleService: Title) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Gestion du compte');
     this.api.getRessources<User>('/p12-account/userRole/userByUserName/' + this.authService.getUserName()).subscribe(value => {
       this.user = value;
     }, error1 => {
