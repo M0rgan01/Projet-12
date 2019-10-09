@@ -8,8 +8,7 @@ import {Router} from '@angular/router';
 @Injectable()
 export class APIService {
 
-  host = 'http://p12-api-gateway:9103/api';
- // host = 'http://localhost:9103/api';
+ host = 'http://localhost:9103/api';
 
   constructor(private http: HttpClient, private router: Router) {
   }
