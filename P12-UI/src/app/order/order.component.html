@@ -32,7 +32,7 @@
         <td class="text-right align-middle">{{orderProducts.productPrice | number:'0.2'}} €</td>
         <td class="text-right align-middle">{{orderProducts.totalPriceRow | number:'0.2'}} €</td>
         <td class="text-right align-middle">
-          <button [routerLink]="['/product', orderProducts.productId]" class="btn btn-info">Détails</button>
+          <button [routerLink]="['/product', 'details', orderProducts.productId]" class="btn btn-info">Détails</button>
         </td>
       </tr>
       <tr>

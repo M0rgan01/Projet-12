@@ -16,6 +16,11 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+/**
+ *  Rappel de commande en retard
+ *
+ * @author PICHAT morgan
+ */
 @Component
 public class BatchCheckLate {
 
@@ -36,7 +41,7 @@ public class BatchCheckLate {
     @Value("${mail.body.late}")
     private String bodyLate;
 
-    /**
+    /** Batch de rappel de commande en retard
      *
      */
     @Scheduled(cron = "${cron.every.days}")

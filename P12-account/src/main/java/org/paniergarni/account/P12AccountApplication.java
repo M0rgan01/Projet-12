@@ -45,7 +45,7 @@ public class P12AccountApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Mail mail = new Mail();
+      /*  Mail mail = new Mail();
         mail.setEmail("pichat.morgan@gmail.com");
 
         Mail mail2 = new Mail();
@@ -73,6 +73,6 @@ public class P12AccountApplication implements CommandLineRunner {
         user2.setRoles(Arrays.asList(role2));
         user2.setActive(true);
 
-        userRepository.saveAll(Arrays.asList(user, user2));
+        userRepository.saveAll(Arrays.asList(user, user2));*/
     }
 }

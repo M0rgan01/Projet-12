@@ -127,7 +127,7 @@ public class ProductBusinessImpl implements ProductBusiness {
     public void setProductPhoto(Long id, MultipartFile file) throws IOException, ProductException {
         Product product = getProduct(id);
         product.setPhoto( product.getId() + ".png");
-        Files.write(Paths.get(System.getProperty("user.home") + photoLocation + product.getPhoto()), file.getBytes());
+        Files.write(Paths.get( photoLocation + product.getPhoto()), file.getBytes());
         productRepository.save(product);
     }
 

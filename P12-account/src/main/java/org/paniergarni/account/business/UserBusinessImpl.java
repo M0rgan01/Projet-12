@@ -17,6 +17,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+/**
+ * Manipulation de User
+ *
+ * @author Pichat morgan
+ *
+ * 05 octobre 2019
+ */
 @Component
 public class UserBusinessImpl implements UserBusiness {
 
@@ -39,8 +46,11 @@ public class UserBusinessImpl implements UserBusiness {
     public User createUser(CreateUserDTO user) throws AccountException {
         User user1 = new User();
         Mail mail = new Mail();
+        // vérification de la présence d'un userName identique
         checkUserNameExist(user.getUserName());
+        // vérification de la présence d'un email identique
         mailBusiness.checkEmailExist(user.getEmail());
+        // vérification de la confirmation du mot de passe
         checkPassWordConfirm(user.getPassWord(), user.getPassWordConfirm());
 
         user1.setPassWord(bCryptPasswordEncoder.encode(user.getPassWord()));
@@ -50,6 +60,7 @@ public class UserBusinessImpl implements UserBusiness {
         user1.getMail().setEmail(user.getEmail());
 
         List<Role> roles = new ArrayList<>();
+        // récupération du role utilisateur
         roles.add(roleBusiness.getUserRole());
         user1.setRoles(roles);
         logger.info("Create user : " + user.getUserName());
@@ -61,6 +72,7 @@ public class UserBusinessImpl implements UserBusiness {
 
         User user = getUserById(id);
 
+        // vérification que l'utilisateur n'est pas déjà dans l'état souhaité
         if (user.isActive() == active)
             throw new AccountException("user.active.same.value");
 
@@ -72,8 +84,9 @@ public class UserBusinessImpl implements UserBusiness {
 
     @Override
     public User updateUserName(Long id, String userName) throws AccountException {
-
+        // récupération de l'utilisateur pour comparaison
         User user = getUserById(id);
+        // on vérifie qu'il est bien actif
         checkUserActive(user.isActive());
 
          if (userName == null || userName.isEmpty()) {
@@ -82,6 +95,7 @@ public class UserBusinessImpl implements UserBusiness {
             throw new AccountException("user.userName.same.value");
         }
 
+        // vérification de la présence d'un userName identique
         checkUserNameExist(userName);
         user.setUserName(userName);
         logger.info("Update userName for user ID : " + user.getId());
@@ -90,9 +104,13 @@ public class UserBusinessImpl implements UserBusiness {
 
     @Override
     public void updatePassWord(Long id, UserUpdatePassWordDTO userDTO) throws AccountException {
+        // récupération de l'utilisateur pour comparaison
         User user = getUserById(id);
+        // on vérifie qu'il est bien actif
         checkUserActive(user.isActive());
+        // vérification de la confirmation
         checkPassWordConfirm(userDTO.getPassWord(), userDTO.getPassWordConfirm());
+        // vérification de l'ancien mot de passe
         checkOldPassWord(userDTO.getOldPassWord(), user.getPassWord());
         user.setPassWord(bCryptPasswordEncoder.encode(userDTO.getPassWord()));
         logger.info("Update passWord for user ID : " + user.getId());
@@ -117,13 +135,15 @@ public class UserBusinessImpl implements UserBusiness {
     @Override
     public User doConnection(String userName, String passWord) throws AccountException {
 
-        // récupération du contact pour la comparaison
+        // récupération de l'utilisateur pour la comparaison
         User contact = userRepository.findByUserName(userName)
                 .orElseGet(() -> userRepository.findByEmail(userName)
                         .orElseThrow(() -> new AccountException("user.not.found")));
 
+        // on vérifie qu'il est bien actif
         checkUserActive(contact.isActive());
 
+        // vérification de la présence d'une expiration de connection
         if (contact.getExpiryConnection() != null) {
             if (contact.getExpiryConnection().after(new Date())) {
                 logger.debug("Expiry connection error for user ID : " + contact.getId());
@@ -140,6 +160,7 @@ public class UserBusinessImpl implements UserBusiness {
         if (!bCryptPasswordEncoder.matches(passWord, contact.getPassWord())) {
             contact.setTryConnection(contact.getTryConnection() + 1);
 
+            // si l'utilisateur à dépassé le nombre maximum d'éssais on lui assigne une date d'expiration
             if (contact.getTryConnection() >= tryIncorrectLogin) {
 
                 Calendar date = Calendar.getInstance();
@@ -184,9 +205,11 @@ public class UserBusinessImpl implements UserBusiness {
     public void editPassWordByRecovery(String email, UserRecoveryDTO user) throws AccountException {
         // récupération du mail
         User user2 = getUserByEmail(email);
+        // vérification de l'éligibilité au changement de mot de passe par récupération
         if (!user2.getMail().isAvailablePasswordRecovery()) {
             logger.debug("User passWord recovery not available for user ID : " + user2.getId());
             throw new AccountException("user.mail.not.available.recovery");
+        // si la date d'expiration pour changement à expirée
         } else if (user2.getMail().getExpiryPasswordRecovery().before(new Date())) {
             user2.getMail().setAvailablePasswordRecovery(false);
             user2.getMail().setExpiryPasswordRecovery(null);

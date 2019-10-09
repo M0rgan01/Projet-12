@@ -1,4 +1,4 @@
-# Projet 12 "Aidez la communauté en tant que développeur d'application Java"
+# Projet 12
 
 Application de e-commerce d'une petite association d'agriculteur
 
@@ -19,6 +19,14 @@ Angular 8 en front-end -> P12-UI
 ## Mise en route
 
 Le lancement du script "build_application.sh" mettra en place l'application dans un environement docker. Le site web sera accesible depuis localhost:80.
+
+## Documentation
+
+L'ensemble de la documentation API rest est consultable depuis : http://localhost:9103/swagger-ui.html
+
+## Configuration
+
+La configuration des micro-services est disponible à cette adresse : https://github.com/M0rgan01/MC-config
 
 ## Base de données
 

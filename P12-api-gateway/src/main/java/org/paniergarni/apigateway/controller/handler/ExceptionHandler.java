@@ -12,7 +12,13 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+/**
+ * Gestion des erreurs des controlleurs
+ *
+ * @author Pichat morgan
+ *
+ * 05 octobre 2019
+ */
 @RestControllerAdvice
 public class ExceptionHandler {
 
