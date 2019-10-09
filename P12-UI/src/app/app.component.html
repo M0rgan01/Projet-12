@@ -28,7 +28,7 @@
 
       <!-- This menu is hidden in bigger devices with d-sm-none.
            The sidebar isn't proper for smaller screens imo, so this dropdown menu can keep all the useful sidebar itens exclusively for smaller screens  -->
-      <li *ngIf="authService.isAuth() && authService.isAdmin()" class="nav-item dropdown d-md-block d-lg-none">
+      <li class="nav-item dropdown d-md-block d-lg-none">
         <a class="nav-link dropdown-toggle" href="#" id="smallerscreenmenu" data-toggle="dropdown" aria-haspopup="true"
            aria-expanded="false">
           Mon compte
@@ -37,12 +37,12 @@
           <div *ngIf="authService.isAuth()">
           <a class="dropdown-item" routerLink="/account">Modifier mon compte</a>
           <a (click)="onLogout()"
-             class="dropdown-item">Logout
+             class="dropdown-item cliquable">Se déconnecter
           </a>
           </div>
           <div *ngIf="!authService.isAuth()">
-            <a class="dropdown-item" routerLink="/login">Login</a>
-            <a class="dropdown-item" routerLink="/register">Register</a>
+            <a class="dropdown-item" routerLink="/login">Authentification</a>
+            <a class="dropdown-item" routerLink="/register">Inscription</a>
           </div>
         </div>
       </li>
@@ -85,9 +85,9 @@
       </li>
 
       <a *ngIf="!authService.isAuth()" routerLinkActive="text-dark font-weight-bold" routerLink="/register"
-         class="list-group-item list-group-item-action border-0 bg-info mt-3">Register</a>
+         class="list-group-item list-group-item-action border-0 bg-info mt-3">Inscription</a>
       <a *ngIf="!authService.isAuth()" routerLinkActive="text-dark font-weight-bold" routerLink="/login"
-         class="list-group-item list-group-item-action border-0 bg-info">Login</a>
+         class="list-group-item list-group-item-action border-0 bg-info">Authentification</a>
 
       <!-- /END Separator -->
       <!-- Menu with submenu -->
@@ -107,7 +107,7 @@
         </a>
         <a (click)="onLogout()"
            class="list-group-item list-group-item-action text-white bg-dark cliquable">
-          <span class="ml-2">Logout</span>
+          <span class="ml-2">Se déconnecter</span>
         </a>
       </div>
 
@@ -125,7 +125,8 @@
         <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/category/create"><span class="ml-2">Catégorie</span></a>
         <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/farmer/create"><span class="ml-2">Agriculteur</span></a>
       </div>
-
+      <a routerLinkActive="text-dark font-weight-bold" routerLink="/about"
+         class="list-group-item list-group-item-action border-0 bg-info">À-propos</a>
     </ul>
     <!-- List Group END-->
   </div>

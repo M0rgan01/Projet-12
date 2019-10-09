@@ -114,7 +114,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     data.id = this.product.id;
     this.setNullErrorAndSuccess();
     this.api.putRessources<Product>('/p12-stock/adminRole/product/' + data.id, data).subscribe(dataProduct => {
-      this.success = 'Mise à jour réussi !';
+      this.success = 'Mise à jour réussie !';
       this.product = dataProduct;
       this.titleService.setTitle('Produit : ' + this.product.name);
     }, error1 => {
@@ -162,7 +162,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.progress = Math.round(100 * event.loaded / event.total);
           // si c'est terminé
         } else if (event instanceof HttpResponse) {
-          this.successUpload = 'Mise à jour réussi !';
+          this.successUpload = 'Mise à jour réussie !';
           this.timeStamp = Date.now();
           this.product.photo = ' ';
         }

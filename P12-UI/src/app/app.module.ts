@@ -1,6 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-
 import {AppComponent} from './app.component';
 import {FourHoFourComponent} from './four-ho-four/four-ho-four.component';
 import {ErrorComponent} from './error/error.component';
@@ -30,6 +29,7 @@ import { CategoryComponent } from './category/category.component';
 import { FarmerComponent } from './farmer/farmer.component';
 import {FarmerService} from '../services/farmer.service';
 import {MeasureService} from '../services/measure.service';
+import { AboutComponent } from './about/about.component';
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, children: [{path: ':redirect', component: LoginComponent}]},
@@ -43,6 +43,7 @@ const appRoutes: Routes = [
   {path: 'orders', canActivate: [AuthGuardService], component: OrdersComponent, children: [{path: ':admin', component: OrdersComponent}]},
   {path: 'order/:id', canActivate: [AuthGuardService], component: OrderComponent},
   {path: 'caddies', component: CaddiesComponent},
+  {path: 'about', component: AboutComponent},
   {path: '', redirectTo: 'products', pathMatch: 'full'},
   {path: 'error', component: ErrorComponent},
   {path: 'not-found', component: FourHoFourComponent},
@@ -79,7 +80,8 @@ export function createTranslateLoader(http: HttpClient) {
     RecoveryComponent,
     AccountUpdateComponent,
     CategoryComponent,
-    FarmerComponent
+    FarmerComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
