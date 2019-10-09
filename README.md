@@ -6,8 +6,8 @@ Application de e-commerce d'une petite association d'agriculteur
 
 Architecture micro-service en back-end :
 
-- micro-service de configuration, P12-configuration -> à éxécuté en 1er
-- micro-service de registre, P12-configuration -> à éxécuté en 2eme
+- micro-service de configuration, P12-configuration -> à éxécuter en 1er
+- micro-service de registre, P12-configuration -> à éxécuter en 2eme
 - micro-service API-gateway, P12-api-gateway 
 - micro-service stock, P12-stock
 - micro-service account, P12-account
@@ -22,8 +22,8 @@ Le lancement du script "build_application.sh" mettra en place l'application dans
 
 ## Base de données
 
-Les données de l'application sont répartis dans 3 base de données, l'ensemble des scripts sont situés et dans leur dossier respectif du dossier "Database". Les scritps sont éxécuté automatiquement par docker.
-L'ensemble des données peuvent être récupéré dans les dossier "data" créé par docker.
+Les données de l'application sont répartis dans 3 base de données, l'ensemble des scripts sont situés dans leurs dossiers respectifs du dossier "Database". Les scritps sont éxécutés automatiquement par docker.
+L'ensemble des données peuvent être récupérées dans les dossiers "data" créé par docker.
 
 ## Logs
 

@@ -76,7 +76,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
   onSubmitCreateCategory(value: any) {
     this.setNullErrorAndSuccess();
     this.api.postRessources<Category>('/p12-stock/adminRole/category', value).subscribe(data => {
-      this.success = 'Création réussi !';
+      this.success = 'Création réussie !';
       this.categoryService.setCategories();
       this.category.name = null;
     }, error1 => {
@@ -92,7 +92,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
   onSubmitEditCategory(value: any) {
     this.setNullErrorAndSuccess();
     this.api.putRessources<Category>('/p12-stock/adminRole/category/' + this.categoryId, value).subscribe(data => {
-      this.success = 'Mise à jour réussi !';
+      this.success = 'Mise à jour réussie !';
       this.category = data;
       this.categoryService.setCategories();
     }, error1 => {

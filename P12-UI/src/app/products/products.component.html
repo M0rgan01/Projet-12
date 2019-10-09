@@ -76,7 +76,7 @@
               <p *ngIf="!p.available" class="card-text m-2"><span
                 class="badge badge-warning">Produit indisponible</span>
               </p>
-              <h6 class="card-subtitle text-muted mt-1">Categorie</h6>
+              <h6 class="card-subtitle text-muted mt-1">Catégorie</h6>
               <p class="card-text m-2">{{p.category.name}}</p>
               <a [routerLink]="['/product', 'details', p.id]" class="btn btn-info text-white cliquable mt-1">Détails</a>
             </div>
@@ -145,5 +145,5 @@
 
 <div *ngIf="!products || products.totalElements == 0"
      class="justify-content-center row mt-5 font-weight-bold">
-  <p>Votre recherche n'à donnée aucun résultat !</p>
+  <p>Votre recherche n'a donnée aucun résultat !</p>
 </div>

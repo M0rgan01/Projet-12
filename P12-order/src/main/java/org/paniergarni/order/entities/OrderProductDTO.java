@@ -15,13 +15,13 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel(description = "Represente les données permettant la création d'une commande")
+@ApiModel(description = "Représente les données permettant la création d'une commande")
 public class OrderProductDTO {
 
     @NotNull(message = "order.product.quantity.null")
     @Min(value = 1, message = "order.product.quantity.min.error")
     @Max(value = 99, message = "order.product.quantity.max.error")
-    @ApiModelProperty(notes = "Quantité demandé pour la commande", example = "1", required = true)
+    @ApiModelProperty(notes = "Quantité demandée pour la commande", example = "1", required = true)
     private int orderQuantity;
     @ApiModelProperty(notes = "ID du produit concerné", example = "1", required = true)
     @NotNull(message = "order.product.product.id.null")

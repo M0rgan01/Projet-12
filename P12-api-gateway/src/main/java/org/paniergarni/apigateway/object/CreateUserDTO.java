@@ -16,7 +16,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel(description = "Represente les données permettant la création d'un utilisateur")
+@ApiModel(description = "Représente les données permettant la création d'un utilisateur")
 public class CreateUserDTO {
 
     @ApiModelProperty(notes = "Mot de passe, minimum 8 caractères, une majuscule et un chiffre", example = "TestPassWord1", required = true)

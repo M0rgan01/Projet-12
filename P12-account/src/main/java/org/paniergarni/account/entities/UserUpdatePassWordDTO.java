@@ -15,7 +15,7 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel(description = "Represente les données permettant la modifcation du passWord")
+@ApiModel(description = "Représente les données permettant la modifcation du passWord")
 public class UserUpdatePassWordDTO {
     @ApiModelProperty(notes = "Mot de passe, minimum 8 caractères, une majuscule et un chiffre", example = "TestPassWord1", required = true)
     @NotNull(message ="user.passWord.null")

@@ -78,7 +78,7 @@ export class FarmerComponent implements OnInit, OnDestroy {
   onSubmitCreateCategory(value: any) {
     this.setNullErrorAndSuccess();
     this.api.postRessources<Farmer>('/p12-stock/adminRole/farmer', value).subscribe(data => {
-      this.success = 'Création réussi !';
+      this.success = 'Création réussie !';
       this.farmer.name = null;
       this.farmer.location = null;
       this.farmer.phone = null;
@@ -96,7 +96,7 @@ export class FarmerComponent implements OnInit, OnDestroy {
   onSubmitEditCategory(value: any) {
     this.setNullErrorAndSuccess();
     this.api.putRessources<Farmer>('/p12-stock/adminRole/farmer/' + this.farmerId, value).subscribe(data => {
-      this.success = 'Mise à jour réussi !';
+      this.success = 'Mise à jour réussie !';
       this.farmerService.setFarmers();
       this.farmer = data;
     }, error1 => {

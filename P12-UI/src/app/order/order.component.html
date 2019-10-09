@@ -5,11 +5,11 @@
   </div>
 
   <div *ngIf="update" class="row justify-content-center">
-    <span class="alert alert-success">Mise à jour réussi !</span>
+    <span class="alert alert-success">Mise à jour réussie !</span>
   </div>
 
   <div *ngIf="order.cancel" class="row justify-content-center">
-    <span class="alert alert-danger">Cette commande à été annulé</span>
+    <span class="alert alert-danger">Cette commande a été annulée</span>
   </div>
 
   <div class="table-responsive">
@@ -17,8 +17,8 @@
       <thead>
       <tr>
         <th>Nom</th>
-        <th class="text-right">Quantité commandé</th>
-        <th class="text-right">Quantité réel commandé</th>
+        <th class="text-right">Quantité commandée</th>
+        <th class="text-right">Quantité réelle commandée</th>
         <th class="text-right">Prix unitaire</th>
         <th class="text-right">Prix total</th>
         <th></th>
@@ -45,7 +45,7 @@
   </div>
 
   <div *ngIf="!order.cancel && !authService.isAdmin()" class="row justify-content-center my-3">
-    <p>Vous disposez d'une durée de {{maxHourCancel}} heures pour annulé une commande.</p>
+    <p>Vous disposez d'une durée de {{maxHourCancel}} heures pour annuler une commande.</p>
   </div>
 
   <div class="row justify-content-center">
