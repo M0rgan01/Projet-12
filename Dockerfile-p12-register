@@ -1,0 +1,9 @@
+FROM maven:3.5.0-jdk-8-alpine as builder
+COPY ./P12-instance-register /app/P12-instance-register
+WORKDIR /app/P12-instance-register
+RUN mvn clean install -DskipTests
+
+FROM openjdk:8u131-jre-alpine
+COPY --from=builder /app/P12-instance-register/target/register-0.0.1-SNAPSHOT.jar /app/register-0.0.1-SNAPSHOT.jar
+WORKDIR /app
+CMD java -jar register-0.0.1-SNAPSHOT.jar

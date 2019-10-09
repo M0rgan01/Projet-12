@@ -1,0 +1,9 @@
+FROM maven:3.5.0-jdk-8-alpine as builder
+COPY ./P12-account /app/P12-account
+WORKDIR /app/P12-account
+RUN mvn clean install -DskipTests
+
+FROM openjdk:8u131-jre-alpine
+COPY --from=builder /app/P12-account/target/account-0.0.1-SNAPSHOT.jar /app/account-0.0.1-SNAPSHOT.jar
+WORKDIR /app
+CMD java -jar account-0.0.1-SNAPSHOT.jar
