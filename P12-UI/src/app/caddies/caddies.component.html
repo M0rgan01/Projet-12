@@ -30,11 +30,11 @@
       <tr *ngFor="let pi of caddyService.caddy.items|keyvalue">
         <td>{{pi.value.product.name}}</td>
         <td>{{pi.value.orderQuantity}}</td>
-        <td *ngIf="!pi.value.product.promotion">{{pi.value.product.price |number:'0.2'}}</td>
-        <td *ngIf="pi.value.product.promotion">{{pi.value.product.price | number:'0.2'}}
-          <del class="ml-2">{{pi.value.product.oldPrice | number:'0.2'}}</del>
+        <td *ngIf="!pi.value.product.promotion">{{pi.value.product.price |number:'0.2'}} €</td>
+        <td *ngIf="pi.value.product.promotion">{{pi.value.product.price | number:'0.2'}} €
+          <del class="ml-2">{{pi.value.product.oldPrice | number:'0.2'}} €</del>
         </td>
-        <td>{{pi.value.totalPriceRow | number:'0.2'}}</td>
+        <td>{{pi.value.totalPriceRow | number:'0.2'}} €</td>
         <td>
           <button class="btn btn-danger" (click)="caddyService.removeProductToCaddy(pi.value.product)">Retirer produit
           </button>
@@ -42,7 +42,7 @@
       </tr>
       <tr>
         <td colspan="3">Total</td>
-        <td>{{caddyService.getTotalPrice() |number:'0.2'}}</td>
+        <td>{{caddyService.getTotalPrice() |number:'0.2'}} €</td>
         <td></td>
       </tr>
       </tbody>

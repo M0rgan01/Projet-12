@@ -45,8 +45,6 @@ public class P12AccountApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        logger.info("info");
-        logger.error("error");
         Mail mail = new Mail();
         mail.setEmail("pichat.morgan@gmail.com");
 

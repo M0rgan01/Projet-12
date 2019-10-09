@@ -77,8 +77,8 @@ export class CategoryComponent implements OnInit, OnDestroy {
     this.setNullErrorAndSuccess();
     this.api.postRessources<Category>('/p12-stock/adminRole/category', value).subscribe(data => {
       this.success = 'Création réussie !';
-      this.categoryService.setCategories();
       this.category.name = null;
+      this.categoryService.setCategories();
     }, error1 => {
       if (error1.error.error) {
         this.error = error1.error.error;

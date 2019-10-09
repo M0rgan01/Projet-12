@@ -26,7 +26,7 @@ import java.util.List;
 @Component
 public class ProductBusinessImpl implements ProductBusiness {
 
-   // @Value("${product.photo.location}")
+    @Value("${product.photo.location}")
     private String photoLocation;
 
     @Autowired
@@ -127,7 +127,7 @@ public class ProductBusinessImpl implements ProductBusiness {
     public void setProductPhoto(Long id, MultipartFile file) throws IOException, ProductException {
         Product product = getProduct(id);
         product.setPhoto( product.getId() + ".png");
-        Files.write(Paths.get(System.getProperty("user.home") + "/Test/" + product.getPhoto()), file.getBytes());
+        Files.write(Paths.get(System.getProperty("user.home") + photoLocation + product.getPhoto()), file.getBytes());
         productRepository.save(product);
     }
 
