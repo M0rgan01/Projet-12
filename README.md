@@ -18,7 +18,7 @@ Angular 8 en front-end -> P12-UI
 
 ## Mise en route
 
-Le lancement du script "build_application.sh" mettra en place l'application dans un environement docker. Le site web sera accesible depuis localhost:80.
+Le lancement du script "build_application.sh" mettra en place l'application dans un environement docker. Le site web sera accessible depuis localhost:80.
 
 ## Documentation
 
