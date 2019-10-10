@@ -10,7 +10,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Manipulation de Role
+ *
+ * @author Pichat morgan
+ *
+ * 05 octobre 2019
+ */
 @Component
 public class RoleBusinessImpl implements RoleBusiness {
 

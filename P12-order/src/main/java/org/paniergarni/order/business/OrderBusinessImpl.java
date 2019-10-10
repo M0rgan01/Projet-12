@@ -50,6 +50,7 @@ public class OrderBusinessImpl implements OrderBusiness {
 
     @Override
     public synchronized Order createOrder(WrapperOrderProductDTO wrapperOrderProductDTO, String userName, Long reception) throws OrderException {
+       // récupération de l'utilisateur
         User user = userProxy.findByUserName(userName);
         Order order = new Order();
         List<OrderProduct> orderProducts = new ArrayList<>();
@@ -57,17 +58,18 @@ public class OrderBusinessImpl implements OrderBusiness {
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, minHoursReception);
-
+        // création de la date de réception
         Date receptionDate = new Date(reception);
         receptionDate = truncateTime(receptionDate);
 
+        // vérification de la valeur minimum de la date de réception
         if (receptionDate.before(truncateTime(calendar.getTime()))) {
             logger.warn("Order reception before min value");
             throw new ReceptionException("order.reception.before.min.value");
         }
 
         calendar.setTime(getListDateReception().get(getListDateReception().size() - 1));
-
+        // vérification de la valeur maximum de la date de réception
         if (receptionDate.after(truncateTime(calendar.getTime()))) {
             logger.warn("Order reception after max value");
             throw new ReceptionException("order.reception.after.max.value");
@@ -80,7 +82,9 @@ public class OrderBusinessImpl implements OrderBusiness {
             orderProduct.setOrderQuantity(orderProductDTO.getOrderQuantity());
             orderProduct.setProductId(orderProductDTO.getProductId());
             try {
+                // on ajuste la quantitée du produit pour la commande
                 Product product = productProxy.updateProductQuantity(orderProductDTO.getOrderQuantity(), orderProductDTO.getProductId(), false);
+                // on assigne la quantitée réelle retourne par la mise à jour du produit
                 orderProduct.setRealQuantity(product.getOrderProductRealQuantity());
                 orderProduct.setTotalPriceRow(product.getPrice() * orderProduct.getRealQuantity());
                 orderProduct.setProductPrice(product.getPrice());
@@ -89,10 +93,12 @@ public class OrderBusinessImpl implements OrderBusiness {
                 totalPrice = totalPrice + orderProduct.getTotalPriceRow();
                 orderProducts.add(orderProduct);
             } catch (FeignException e) {
+                // dans le cas d'une indisponibilité du produit, on assigne la quantitée réelle à 0
                 orderProduct.setRealQuantity(0);
             }
         }
 
+        // si aucun produit n'étais disponible
         if (totalPrice == 0) {
             logger.warn("Order product quantity null");
             throw new OrderException("order.products.quantity.null");

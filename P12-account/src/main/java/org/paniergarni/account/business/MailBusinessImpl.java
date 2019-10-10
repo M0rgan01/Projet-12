@@ -19,6 +19,13 @@ import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Manipulation de Mail
+ *
+ * @author Pichat morgan
+ *
+ * 05 octobre 2019
+ */
 @Component
 public class MailBusinessImpl implements MailBusiness {
 
@@ -48,11 +55,14 @@ public class MailBusinessImpl implements MailBusiness {
 
     @Override
     public Mail updateMail(Long id, String email) throws AccountException {
+        // récupération du Mail pour comparaison
         Mail mail = getMailById(id);
+        // si l'email n'a pas changé
         if (mail.getEmail().equals(email)) {
             logger.debug("Equals email for Mail id : " + mail.getId());
             throw new AccountException("mail.email.same.value");
         }
+        // vérification de la présence d'un email similaire
         checkEmailExist(email);
         mail.setEmail(email);
         logger.debug("Success update email for Mail id : " + mail.getId());
@@ -98,6 +108,8 @@ public class MailBusinessImpl implements MailBusiness {
         String body = MessageFormat.format(bodyRecovery, user.getMail().getToken());
 
         String[] tableau_email = {user.getMail().getEmail()};
+
+        // envoie de l'email contenant le token
         try {
             sendMail.sendFromGMail(emailUsers, emailPassword, tableau_email, objectRecovery, body);
         } catch (Exception e) {
@@ -123,8 +135,9 @@ public class MailBusinessImpl implements MailBusiness {
                 logger.info("Token for email " + mail.getId() + " expiry");
                 throw new ExpirationException("mail.token.expiry");
             }
+            // le mail devient éligible au changement de mot de passe
             mail.setAvailablePasswordRecovery(true);
-            // creation d'une date d'expiration pour le token
+            // creation d'une date d'expiration pour le mot de passe
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.MINUTE, expirationRecovery);
             mail.setExpiryPasswordRecovery(cal.getTime());

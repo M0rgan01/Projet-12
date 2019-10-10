@@ -66,10 +66,10 @@
           <div class="row">
             <div class="col-sm-6">
               <h6 class="card-subtitle text-muted mt-1">Prix</h6>
-              <p class="card-text m-2" *ngIf="!p.promotion">{{p.price | number:'0.2'}}</p>
+              <p class="card-text m-2" *ngIf="!p.promotion">{{p.price | number:'0.2'}} €</p>
               <p class="card-text m-2" *ngIf="p.promotion">
-                <del>{{p.oldPrice | number:'0.2'}}</del>
-                <span class="mx-2">{{p.price | number:'0.2'}}</span><span
+                <del>{{p.oldPrice | number:'0.2'}} €</del>
+                <span class="mx-2">{{p.price | number:'0.2'}} €</span><span
                 class="badge badge-success">En promotion !</span></p>
               <h6 class="card-subtitle text-muted mt-1">Disponibilité</h6>
               <p *ngIf="p.available" class="card-text m-2"><span class="badge badge-success">En stock !</span></p>

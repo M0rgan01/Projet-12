@@ -82,7 +82,12 @@ export class OrdersComponent implements OnInit, OnDestroy {
       userName + '/' + page + '/' + size, this.listSearchCriteria).subscribe(value => {
       this.orders = value;
     }, error1 => {
-      this.router.navigateByUrl('/error');
+      if (this.adminOrder && error1.status === 409) {
+        this.orders.numberOfElements = 0;
+        this.orders.content = null;
+      } else {
+        this.router.navigateByUrl('/error');
+      }
     });
   }
 

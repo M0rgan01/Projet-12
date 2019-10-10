@@ -29,15 +29,15 @@
         <td class="align-middle font-weight-bold" *ngIf="orderProducts.product">{{orderProducts.product.name}}</td>
         <td class="text-right align-middle">{{orderProducts.orderQuantity}}</td>
         <td class="text-right align-middle">{{orderProducts.realQuantity}}</td>
-        <td class="text-right align-middle">{{orderProducts.productPrice | number:'0.2'}}</td>
-        <td class="text-right align-middle">{{orderProducts.totalPriceRow | number:'0.2'}}</td>
+        <td class="text-right align-middle">{{orderProducts.productPrice | number:'0.2'}} €</td>
+        <td class="text-right align-middle">{{orderProducts.totalPriceRow | number:'0.2'}} €</td>
         <td class="text-right align-middle">
-          <button [routerLink]="['/product', orderProducts.productId]" class="btn btn-info">Détails</button>
+          <button [routerLink]="['/product', 'details', orderProducts.productId]" class="btn btn-info">Détails</button>
         </td>
       </tr>
       <tr>
         <td class="font-weight-bold" colspan="4">Total</td>
-        <td class="text-right align-middle">{{order.totalPrice |number:'0.2'}}</td>
+        <td class="text-right align-middle">{{order.totalPrice |number:'0.2'}} €</td>
         <td></td>
       </tr>
       </tbody>

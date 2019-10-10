@@ -5,15 +5,15 @@ echo "-----------------------------------------------Build the application -----
 docker-compose -f docker-compose.yml build
 
 echo "-----------------------------------------------Starting db1 -----------------------------------"
-docker-compose -f docker-compose.yml  up -d postgres1
+docker-compose -f docker-compose.yml  up -d db_account
 sleep 15s 
 
 echo "-----------------------------------------------Starting db2 -----------------------------------"
-docker-compose -f docker-compose.yml  up -d postgres2
+docker-compose -f docker-compose.yml  up -d db_stock
 sleep 15s 
 
 echo "-----------------------------------------------Starting db3 -----------------------------------"
-docker-compose -f docker-compose.yml  up -d postgres3
+docker-compose -f docker-compose.yml  up -d db_order
 sleep 15s 
 
 echo "-----------------------------------------------Starting the config microservice -----------------------------------"

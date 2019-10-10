@@ -15,6 +15,11 @@ import org.springframework.stereotype.Component;
 import java.text.MessageFormat;
 import java.util.List;
 
+/**
+ *  Rappel de réception de commande
+ *
+ * @author PICHAT morgan
+ */
 @Component
 public class BatchCheckReception {
 
@@ -36,7 +41,7 @@ public class BatchCheckReception {
     private String bodyRecall;
 
     /**
-     *
+     * batch de rappel de réception de commande
      */
     @Scheduled(cron = "${cron.every.days}")
     public void checkRecallOrder() {

@@ -34,20 +34,24 @@ export class CaddyService {
   }
 
   addProductToCaddy(product: Product) {
-    let orderProduct = this.caddy.items[product.id];
-    if (orderProduct === undefined) {
-      orderProduct = new OrderProduct();
-      orderProduct.productId = product.id;
-      orderProduct.product = product;
-      orderProduct.orderQuantity = product.orderQuantity;
-      orderProduct.totalPriceRow = this.getTotalPriceRow(orderProduct);
-      this.caddy.items[product.id] = orderProduct;
+    if (product.orderQuantity <= 0 || product.orderQuantity >= 100) {
+      alert('Quantitée incorrect : de 1 à 99');
     } else {
-      orderProduct.orderQuantity += product.orderQuantity;
-      orderProduct.totalPriceRow = this.getTotalPriceRow(orderProduct);
-      this.caddy.items[product.id] = orderProduct;
+      let orderProduct = this.caddy.items[product.id];
+      if (orderProduct === undefined) {
+        orderProduct = new OrderProduct();
+        orderProduct.productId = product.id;
+        orderProduct.product = product;
+        orderProduct.orderQuantity = product.orderQuantity;
+        orderProduct.totalPriceRow = this.getTotalPriceRow(orderProduct);
+        this.caddy.items[product.id] = orderProduct;
+      } else {
+        orderProduct.orderQuantity += product.orderQuantity;
+        orderProduct.totalPriceRow = this.getTotalPriceRow(orderProduct);
+        this.caddy.items[product.id] = orderProduct;
+      }
+      this.saveCaddies();
     }
-    this.saveCaddies();
   }
 
   removeProductToCaddy(product: Product) {
