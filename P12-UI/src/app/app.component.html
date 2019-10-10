@@ -1,20 +1,144 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<!--BARRE DE NAVIGATION TOP-->
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark border-bottom border-light">
 
+  <a class="navbar-brand ml-2 text-white cliquable" routerLink="/products">{{title}}</a>
+
+  <button (click)="onSwitchToggle()" type="button" class="btn mr-auto d-none d-lg-block"><span
+    class="navbar-toggler-icon"></span></button>
+
+  <button class="btn d-lg-none" type="button" data-toggle="collapse" data-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+
+      <li class="nav-item dropdown" *ngIf="categoryService.categories">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+           aria-haspopup="true" aria-expanded="false">
+          Catégories
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a *ngFor="let c of categoryService.categories" routerLinkActive="active" class="dropdown-item cliquable"
+             routerLink="/products" [queryParams]="{ category: c.id}">{{c.name}}</a>
+        </div>
+      </li>
+
+      <!-- This menu is hidden in bigger devices with d-sm-none.
+           The sidebar isn't proper for smaller screens imo, so this dropdown menu can keep all the useful sidebar itens exclusively for smaller screens  -->
+      <li class="nav-item dropdown d-md-block d-lg-none">
+        <a class="nav-link dropdown-toggle" href="#" id="smallerscreenmenu" data-toggle="dropdown" aria-haspopup="true"
+           aria-expanded="false">
+          Mon compte
+        </a>
+        <div class="dropdown-menu" aria-labelledby="smallerscreenmenu">
+          <div *ngIf="authService.isAuth()">
+          <a class="dropdown-item" routerLink="/account">Modifier mon compte</a>
+          <a (click)="onLogout()"
+             class="dropdown-item cliquable">Se déconnecter
+          </a>
+          </div>
+          <div *ngIf="!authService.isAuth()">
+            <a class="dropdown-item" routerLink="/login">Authentification</a>
+            <a class="dropdown-item" routerLink="/register">Inscription</a>
+          </div>
+        </div>
+      </li>
+      <li *ngIf="authService.isAuth() && authService.isAdmin()" class="nav-item dropdown d-sm-block d-lg-none">
+        <a class="nav-link dropdown-toggle" href="#" id="smallerscreenmenu2" data-toggle="dropdown" aria-haspopup="true"
+           aria-expanded="false">
+          Administration
+        </a>
+        <div class="dropdown-menu" aria-labelledby="smallerscreenmenu2">
+            <a class="dropdown-item cliquable" routerLinkActive="active" [routerLink]="['/orders', 'admin']">Commande</a>
+            <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/product/create">Produit</a>
+            <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/category/create">Catégorie</a>
+            <a class="dropdown-item cliquable" routerLinkActive="active" routerLink="/farmer/create">Agriculteur</a>
+        </div>
+      </li>
+
+    </ul>
+
+    <form #f="ngForm" (ngSubmit)="onSearch(f.value)" class="form-inline ml-auto">
+      <input class="form-control" type="search" placeholder="Patate, Tomate..." aria-label="Search" ngModel name="name" required>
+      <button routerLink="/products/search" [disabled]="f.invalid" class="btn btn-success my-2 my-lg-0 mx-sm-2 mx-0" type="submit">Recherche</button>
+    </form>
+
+    <button routerLink="/caddies" class="btn btn-primary">Panier <span
+      class="badge badge-light">{{caddyService.getSize()}}</span></button>
+
+  </div>
+</nav>
+
+<!-- SIDEBAR https://www.codeply.com/go/7XYosZ7VH5 -->
+<div class="row h-100 m-0" id="body-row">
+  <!-- Sidebar -->
+  <div class="d-none d-lg-block col-2 p-0 border-right bg-info"
+       [ngClass]="{'d-lg-block': isTogled, 'd-lg-none': !isTogled}">
+
+    <ul class="list-group sticky-offset sticky-top list-group-flush">
+
+      <li class="list-group-item bg-info font-weight-bold mt-3" *ngIf="authService.isAuth()">
+        Bonjour {{authService.getUserName()}}
+      </li>
+
+      <a *ngIf="!authService.isAuth()" routerLinkActive="text-dark font-weight-bold" routerLink="/register"
+         class="list-group-item list-group-item-action border-0 bg-info mt-3">Inscription</a>
+      <a *ngIf="!authService.isAuth()" routerLinkActive="text-dark font-weight-bold" routerLink="/login"
+         class="list-group-item list-group-item-action border-0 bg-info">Authentification</a>
+
+      <!-- /END Separator -->
+      <!-- Menu with submenu -->
+      <a *ngIf="authService.isAuth()" href="#submenu1" data-toggle="collapse" aria-expanded="false"
+         class="bg-primary font-weight-bold list-group-item list-group-item-action flex-column align-items-start border-0">
+        <div class="d-flex w-100 justify-content-start align-items-center">
+          <span>Mon compte</span><span class="ml-2 dropdown-toggle"></span>
+        </div>
+      </a>
+      <!-- Submenu content -->
+      <div  *ngIf="authService.isAuth()" id="submenu1" class="collapse">
+        <a routerLink="/account" class="list-group-item list-group-item-action text-white bg-dark">
+          <span class="ml-2">Modifier mon compte</span>
+        </a>
+        <a routerLink="/orders" class="list-group-item list-group-item-action text-white bg-dark">
+          <span class="ml-2">Mes commandes</span>
+        </a>
+        <a (click)="onLogout()"
+           class="list-group-item list-group-item-action text-white bg-dark cliquable">
+          <span class="ml-2">Se déconnecter</span>
+        </a>
+      </div>
+
+      <!-- Menu with submenu -->
+      <a *ngIf="authService.isAuth() && authService.isAdmin()" href="#submenu2" data-toggle="collapse" aria-expanded="false"
+         class="bg-primary font-weight-bold list-group-item list-group-item-action flex-column align-items-start border-0">
+        <div class="d-flex w-100 justify-content-start align-items-center">
+          <span>Administration</span><span class="ml-2 dropdown-toggle"></span>
+        </div>
+      </a>
+      <!-- Submenu content -->
+      <div  *ngIf="authService.isAuth() && authService.isAdmin()" id="submenu2" class="collapse">
+        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" [routerLink]="['/orders', 'admin']" ><span class="ml-2">Commande</span></a>
+        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/product/create"><span class="ml-2">Produit</span></a>
+        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/category/create"><span class="ml-2">Catégorie</span></a>
+        <a class="list-group-item list-group-item-action text-white bg-dark cliquable" routerLink="/farmer/create"><span class="ml-2">Agriculteur</span></a>
+      </div>
+      <a routerLinkActive="text-dark font-weight-bold" routerLink="/about"
+         class="list-group-item list-group-item-action border-0 bg-info">À-propos</a>
+    </ul>
+    <!-- List Group END-->
+  </div>
+  <!-- sidebar-container END -->
+
+  <div class="col">
+    <div class="container">
+      <div class="mb-5"></div>
+      <router-outlet></router-outlet>
+    </div>
+    <div class="mt-5"></div>
+  </div>
+
+
+</div>

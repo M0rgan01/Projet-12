@@ -1,0 +1,75 @@
+<div class="row justify-content-center my-3">
+  <h3>Mon panier</h3>
+</div>
+
+<div *ngIf="error != null" class="row text-center">
+  <div class="alert alert-danger">
+    <span>{{error | translate}}</span>
+  </div>
+</div>
+
+<div *ngIf="errors != null" class="row justify-content-center">
+  <div class="alert alert-danger">
+    <p class="p-1 m-0" *ngFor="let err of errors">{{err.message | translate}}</p>
+  </div>
+</div>
+
+<div *ngIf="caddyService.getSize() != 0">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Quantité</th>
+        <th>Prix unitaire</th>
+        <th>Prix total</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let pi of caddyService.caddy.items|keyvalue">
+        <td>{{pi.value.product.name}}</td>
+        <td>{{pi.value.orderQuantity}}</td>
+        <td *ngIf="!pi.value.product.promotion">{{pi.value.product.price |number:'0.2'}} €</td>
+        <td *ngIf="pi.value.product.promotion">{{pi.value.product.price | number:'0.2'}} €
+          <del class="ml-2">{{pi.value.product.oldPrice | number:'0.2'}} €</del>
+        </td>
+        <td>{{pi.value.totalPriceRow | number:'0.2'}} €</td>
+        <td>
+          <button class="btn btn-danger" (click)="caddyService.removeProductToCaddy(pi.value.product)">Retirer produit
+          </button>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">Total</td>
+        <td>{{caddyService.getTotalPrice() |number:'0.2'}} €</td>
+        <td></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div *ngIf="authenticationService.isAuth()">
+    <select class="form-control" [(ngModel)]="date">
+      <option disabled selected [value]="undefined">Choisir une date de réception</option>
+      <option *ngFor="let opt of listDate" [value]="opt.getTime()">{{opt | date: 'dd/MM/yyyy'}}</option>
+    </select>
+    <button class="btn btn-primary mt-2" [disabled]="date == undefined" type="submit" (click)="onSubmitOrder()">
+      Commander
+    </button>
+  </div>
+
+  <div *ngIf="!authenticationService.isAuth()">
+    <p>Pour commander ce panier, veuillez vous identifier</p>
+    <button type="button" routerLink="/login/returnCaddy" routerLinkActive="active" class="btn btn-success mt-1">Login
+    </button>
+  </div>
+</div>
+
+<div *ngIf="caddyService.getSize() == 0">
+  <div class="row justify-content-center font-weight-bold mt-5">
+    <p>Votre panier est vide !</p>
+  </div>
+  <div class="row justify-content-center font-weight-bold">
+    <button routerLink="/" class="btn btn-primary">Voir les produits en promotion</button>
+  </div>
+</div>

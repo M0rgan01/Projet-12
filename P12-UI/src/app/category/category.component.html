@@ -1,0 +1,78 @@
+<div class="row">
+  <div class="col-12 text-center mb-3">
+    <a *ngIf="operation !== 'edit'" class="btn btn-outline-info m-1"
+       [routerLink]="['/category', 'edit']">Modification</a>
+    <a *ngIf="operation !== 'create'" class="btn btn-outline-success m-1"
+       [routerLink]="['/category', 'create']">Création</a>
+  </div>
+
+  <form #f="ngForm" (ngSubmit)="setCurrentCategory(f.value)" *ngIf="operation === 'edit'">
+    <div class="form-group">
+      <label for="inputState1">Catégorie à modifier :</label>
+      <select id="inputState1" class="form-control" name="categoryId" [ngModel]="categoryId">
+        <option *ngFor="let c of categoryService.categories" [ngValue]="c.id">{{c.name}}</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Choisir</button>
+  </form>
+</div>
+
+<div *ngIf="category" class="row mt-3">
+  <div class="col-md-6 offset-md-3" *ngIf="operation === 'edit' && categoryId">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Modification d'une catégorie</h5>
+        <form #f="ngForm" (ngSubmit)="onSubmitEditCategory(f.value)">
+
+          <div *ngIf="error != null" class="alert alert-danger">
+            <span>{{error | translate}}</span>
+          </div>
+
+          <div *ngIf="errors != null" class="alert alert-danger">
+            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message | translate}}</p>
+          </div>
+
+          <div *ngIf="success" class="alert alert-success">
+            <span>{{success}}</span>
+          </div>
+
+          <div class="form-group">
+            <label>Nom de la catégorie : </label>
+            <input type="text" required class="form-control" [ngModel]="category.name" name="name">
+          </div>
+          <button class="btn btn-primary mt-2" type="submit">Modifier</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 offset-md-3" *ngIf="operation === 'create'">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Création d'une catégorie</h5>
+        <form #f="ngForm" (ngSubmit)="onSubmitCreateCategory(f.value)">
+
+          <div *ngIf="error != null" class="alert alert-danger">
+            <span>{{error | translate}}</span>
+          </div>
+
+          <div *ngIf="errors != null" class="alert alert-danger">
+            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message | translate}}</p>
+          </div>
+
+          <div *ngIf="success" class="alert alert-success">
+            <span>{{success}}</span>
+          </div>
+
+          <div class="form-group">
+            <label>Nom de la catégorie : </label>
+            <input type="text" required class="form-control" [ngModel]="category.name" name="name">
+          </div>
+          <button [disabled]="f.invalid" class="btn btn-primary mt-2" type="submit">Créer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+

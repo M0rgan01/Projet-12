@@ -1,0 +1,12 @@
+FROM node:12.11.1-alpine as build
+
+COPY ./P12-UI /app/P12-UI
+WORKDIR /app/P12-UI
+
+RUN npm install
+RUN npm run build
+
+FROM nginx:1.16.0-alpine
+COPY --from=build /app/P12-UI/dist/P12-UI /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

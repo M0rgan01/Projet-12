@@ -1,0 +1,78 @@
+<div class="row">
+  <div class="col-6 offset-3">
+    <div class="card">
+      <div class="card-body" *ngIf="!mail">
+        <h5 class="card-title text-center">Récupération du mot de passe</h5>
+        <p class="card-text text-center">Veuillez renseigner votre adresse e-mail,
+          un code vous sera envoyé pour confirmer votre identité.</p>
+
+        <div *ngIf="error" class="row justify-content-center">
+          <span class="alert alert-danger">{{error | translate}}</span>
+        </div>
+
+        <form (ngSubmit)="onSubmitEmail(email)">
+          <div class="form-group">
+            <label>Adresse e-mail :</label>
+            <input class="form-control" [(ngModel)]='email' type="text" name="email" required>
+          </div>
+          <button type="submit" [disabled]="email === undefined" class="btn btn-primary">Valider</button>
+        </form>
+      </div>
+
+      <div class="card-body" *ngIf="mail && !mail.availablePasswordRecovery">
+        <h5 class="card-title text-center">Vérification du jeton</h5>
+        <p class="card-text text-center">Veuillez renseigner le jeton reçu par email.</p>
+
+        <div *ngIf="error" class="row justify-content-center">
+          <span class="alert alert-danger">{{error | translate}}</span>
+        </div>
+
+
+        <form (ngSubmit)="onSubmitToken(token)">
+          <div class="form-group">
+            <label>Jeton :</label>
+            <input class="form-control" [(ngModel)]='token' type="text" name="token">
+          </div>
+          <button type="submit" [disabled]="token === undefined" class="btn btn-primary">Valider</button>
+        </form>
+      </div>
+
+      <div class="card-body" *ngIf="mail && mail.availablePasswordRecovery">
+        <h5 class="card-title text-center">Changement de mot de passe</h5>
+        <p class="card-text text-center">Veuillez renseigner votre
+          nouveau mot de passe.</p>
+
+        <form #f="ngForm" (ngSubmit)="onSubmitPassWord(user)">
+
+          <div *ngIf="errors != null" class="alert alert-danger">
+            <p class="p-1 m-0" *ngFor="let err of errors">{{err.message | translate}}</p>
+          </div>
+
+          <div *ngIf="error" class="row justify-content-center">
+            <span class="alert alert-danger">{{error | translate}}</span>
+          </div>
+
+          <div class="form-group">
+            <label>Mot de passe :</label>
+            <input class="form-control" [(ngModel)]='user.passWord' required type="password" name="password"/>
+          </div>
+
+          <div class="form-group">
+            <label>Confirmation du mot de passe :</label>
+            <input class="form-control" [(ngModel)]='user.passWordConfirm' required type="password" name="passwordConfirm"/>
+          </div>
+
+          <button type="submit" [disabled]="f.invalid" class="btn btn-primary">Valider</button>
+
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+<div *ngIf="loading" class="row justify-content-center mt-4">
+  <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
