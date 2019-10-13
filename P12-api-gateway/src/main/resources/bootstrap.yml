@@ -1,19 +1,7 @@
-server:
-  port: 9103
-
 spring:
-  application:
-    name: P12-api-gateway
   cloud:
     config:
       uri: http://localhost:9101
+  application:
+    name: P12-api-gateway
 
-ribbon:
-  ConnectTimeout: 10000
-  ReadTimeout: 10000
-
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:9102/eureka/
