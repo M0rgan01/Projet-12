@@ -54,7 +54,7 @@ services:
       dockerfile: Dockerfile-p12-config
     container_name: p12-config
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9101/eureka
+      - SPRING_CLOUD_CONFIG_SERVER_GIT_SEARCH-PATHS=P-12-prod
       - SERVER_PORT=9101
     ports:
       - "9101:9101"
@@ -66,7 +66,6 @@ services:
     container_name: p12-register
     environment:
       - SPRING_CLOUD_CONFIG_URI=http://p12-config:9101
-      - SERVER_PORT=9102
     volumes:
       - ./logs:/app/logs
     depends_on:
@@ -82,9 +81,7 @@ services:
       dockerfile: Dockerfile-p12-api-gateway
     container_name: p12-api-gateway
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9102/eureka
       - SPRING_CLOUD_CONFIG_URI=http://p12-config:9101
-      - SERVER_PORT=9103
     volumes:
       - ./logs:/app/logs
     depends_on:
@@ -102,9 +99,6 @@ services:
       dockerfile: Dockerfile-p12-account
     container_name: p12-account
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9102/eureka
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db_account:5432/ACCOUNT
-      - SERVER_PORT=9104
       - SPRING_CLOUD_CONFIG_URI=http://p12-config:9101
     volumes:
       - ./logs:/app/logs
@@ -125,9 +119,6 @@ services:
       dockerfile: Dockerfile-p12-stock
     container_name: p12-stock
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9102/eureka
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db_stock:5433/STOCK
-      - SERVER_PORT=9105
       - SPRING_CLOUD_CONFIG_URI=http://p12-config:9101
     volumes:
       - ./logs:/app/logs
@@ -148,9 +139,6 @@ services:
       dockerfile: Dockerfile-p12-order
     container_name: p12-order
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9102/eureka
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db_order:5434/ORDER
-      - SERVER_PORT=9106
       - SPRING_CLOUD_CONFIG_URI=http://p12-config:9101
     volumes:
       - ./logs:/app/logs
@@ -171,8 +159,6 @@ services:
       dockerfile: Dockerfile-p12-batch
     container_name: p12-batch
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://p12-register:9102/eureka
-      - SERVER_PORT=9107
       - SPRING_CLOUD_CONFIG_URI=http://p12-config:9101
     volumes:
       - ./logs:/app/logs
