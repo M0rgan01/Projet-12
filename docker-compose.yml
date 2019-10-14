@@ -54,7 +54,7 @@ services:
       dockerfile: Dockerfile-p12-config
     container_name: p12-config
     environment:
-      - SPRING_CLOUD_CONFIG_SERVER_GIT_SEARCH-PATHS=P-12-prod
+      - SPRING_CLOUD_CONFIG_SERVER_GIT_SEARCH_PATHS=P-12-prod
       - SERVER_PORT=9101
     ports:
       - "9101:9101"

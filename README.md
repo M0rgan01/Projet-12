@@ -16,6 +16,10 @@ Architecture micro-service en back-end :
 
 Angular 8 en front-end -> P12-UI
 
+## Pré-requis
+
+Installation de Docker et Docker-compose présente 
+
 ## Mise en route
 
 Le lancement du script "build_application.sh" mettra en place l'application dans un environement docker. Le site web sera accessible depuis localhost:80.
