@@ -6,6 +6,7 @@ import {Page} from '../../model/page.model';
 import {Order} from '../../model/order.model';
 import {SearchCriteria} from '../../model/search-criteria.model';
 import {Title} from '@angular/platform-browser';
+import {PaginationService} from '../../services/pagination.service';
 
 @Component({
   selector: 'app-orders',
@@ -18,7 +19,8 @@ export class OrdersComponent implements OnInit, OnDestroy {
               public authService: AuthenticationService,
               public router: Router,
               public activeRoute: ActivatedRoute,
-              public titleService: Title) {
+              public titleService: Title,
+              public paginationService: PaginationService) {
   }
 
   public adminOrder: string;
