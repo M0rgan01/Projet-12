@@ -7,6 +7,7 @@ import {Page} from '../../model/page.model';
 import {Product} from '../../model/product.model';
 import {SearchCriteria} from '../../model/search-criteria.model';
 import {Title} from '@angular/platform-browser';
+import {PaginationService} from '../../services/pagination.service';
 
 @Component({
   selector: 'app-product',
@@ -32,11 +33,11 @@ export class ProductsComponent implements OnInit, OnDestroy {
               public router: Router,
               public activeRoute: ActivatedRoute,
               public caddyService: CaddyService,
-              public titleService: Title) {
+              public titleService: Title,
+              public paginationService: PaginationService) {
   }
 
   ngOnInit() {
-
     this.listSearchCriteria = new Array<SearchCriteria>();
     // on écoute un changement de route
     this.events = this.router.events.subscribe((val) => {

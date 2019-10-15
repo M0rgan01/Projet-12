@@ -21,21 +21,22 @@ import {TokenInterceptor} from '../interceptor/interceptor';
 import {JwtModule, JwtModuleOptions} from '@auth0/angular-jwt';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import { OrdersComponent } from './orders/orders.component';
-import { OrderComponent } from './order/order.component';
-import { RecoveryComponent } from './recovery/recovery.component';
-import { AccountUpdateComponent } from './account-update/account-update.component';
-import { CategoryComponent } from './category/category.component';
-import { FarmerComponent } from './farmer/farmer.component';
+import {OrdersComponent} from './orders/orders.component';
+import {OrderComponent} from './order/order.component';
+import {RecoveryComponent} from './recovery/recovery.component';
+import {AccountUpdateComponent} from './account-update/account-update.component';
+import {CategoryComponent} from './category/category.component';
+import {FarmerComponent} from './farmer/farmer.component';
 import {FarmerService} from '../services/farmer.service';
 import {MeasureService} from '../services/measure.service';
-import { AboutComponent } from './about/about.component';
+import {AboutComponent} from './about/about.component';
+import {PaginationService} from '../services/pagination.service';
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, children: [{path: ':redirect', component: LoginComponent}]},
   {path: 'recovery', component: RecoveryComponent},
   {path: 'register', component: RegistrationComponent},
-  {path: 'account', component: AccountUpdateComponent , canActivate: [AuthGuardService]},
+  {path: 'account', component: AccountUpdateComponent, canActivate: [AuthGuardService]},
   {path: 'products', component: ProductsComponent},
   {path: 'product/:operation', component: ProductComponent, children: [{path: ':id', component: ProductComponent}]},
   {path: 'category/:operation', component: CategoryComponent},
@@ -98,11 +99,12 @@ export function createTranslateLoader(http: HttpClient) {
       }
     })
   ],
-  providers: [AuthenticationService, CaddyService, AuthGuardService, ProductService, CategoryService, APIService, FarmerService, MeasureService, {
-    provide: HTTP_INTERCEPTORS,
-    useClass: TokenInterceptor,
-    multi: true
-  }],
+  providers: [AuthenticationService, CaddyService, AuthGuardService, ProductService, CategoryService, APIService,
+    FarmerService, MeasureService, PaginationService, {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    }],
   bootstrap: [AppComponent]
 })
 export class AppModule {
